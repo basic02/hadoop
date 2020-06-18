@@ -134,6 +134,7 @@ public class FsVolumeImpl implements FsVolumeSpi {
   protected volatile long configuredCapacity;
   private final FileIoProvider fileIoProvider;
   private final DataNodeVolumeMetrics metrics;
+  private URI baseURI;
 
   /**
    * Per-volume worker pool that processes new blocks to cache.
@@ -164,6 +165,7 @@ public class FsVolumeImpl implements FsVolumeSpi {
         DFSConfigKeys.DFS_DATANODE_DU_RESERVED_KEY,
         DFSConfigKeys.DFS_DATANODE_DU_RESERVED_DEFAULT));
     this.configuredCapacity = -1;
+    this.baseURI = new File(currentDir.getParent()).toURI();
     this.conf = conf;
     this.fileIoProvider = fileIoProvider;
     cacheExecutor = initializeCacheExecutor(parent);
@@ -483,7 +485,7 @@ public class FsVolumeImpl implements FsVolumeSpi {
 
   @Override
   public URI getBaseURI() {
-    return new File(currentDir.getParent()).toURI();
+    return baseURI;
   }
 
   @Override
