@@ -352,6 +352,11 @@ public class FSNamesystem implements Namesystem, FSNamesystemMBean,
   @Metric final MutableRatesWithAggregation detailedLockHoldTimeMetrics =
       registry.newRatesWithAggregation("detailedLockHoldTimeMetrics");
 
+  @VisibleForTesting
+  public void setBlockManagerForTesting(BlockManager bm) {
+    this.blockManager = bm;
+  }
+
   boolean isAuditEnabled() {
     return (!isDefaultAuditLogger || auditLog.isInfoEnabled())
         && !auditLoggers.isEmpty();
@@ -453,7 +458,7 @@ public class FSNamesystem implements Namesystem, FSNamesystemMBean,
 
   /** The namespace tree. */
   FSDirectory dir;
-  private final BlockManager blockManager;
+  private BlockManager blockManager;
   private final SnapshotManager snapshotManager;
   private final CacheManager cacheManager;
   private final DatanodeStatistics datanodeStatistics;
@@ -1803,7 +1808,12 @@ public class FSNamesystem implements Namesystem, FSNamesystemMBean,
     LightWeightHashSet<Long> openFileIds = new LightWeightHashSet<>();
     for (DatanodeDescriptor dataNode :
         blockManager.getDatanodeManager().getDatanodes()) {
-      for (long ucFileId : dataNode.getLeavingServiceStatus().getOpenFiles()) {
+      // Sort open files
+      LightWeightHashSet<Long> dnOpenFiles =
+          dataNode.getLeavingServiceStatus().getOpenFiles();
+      Long[] dnOpenFileIds = new Long[dnOpenFiles.size()];
+      Arrays.sort(dnOpenFiles.toArray(dnOpenFileIds));
+      for (Long ucFileId : dnOpenFileIds) {
         INode ucFile = getFSDirectory().getInode(ucFileId);
         if (ucFile == null || ucFileId <= prevId ||
             openFileIds.contains(ucFileId)) {
