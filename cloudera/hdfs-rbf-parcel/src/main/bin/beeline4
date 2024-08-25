@@ -1,0 +1,21 @@
+#!/bin/bash
+  # Reference: http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+SOURCE="${BASH_SOURCE[0]}"
+BIN_DIR="$( dirname "$SOURCE" )"
+while [ -h "$SOURCE" ]
+do
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$BIN_DIR/$SOURCE"
+  BIN_DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
+done
+BIN_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+# Autodetect JAVA_HOME if not defined
+CDH_HOME=/opt/cloudera/parcels/CDH
+. $CDH_HOME/lib/bigtop-utils/bigtop-detect-javahome
+
+BIGTOP_DEFAULTS_DIR=${BIGTOP_DEFAULTS_DIR-$CDH_HOME/etc/default}
+[ -n "${BIGTOP_DEFAULTS_DIR}" -a -r ${BIGTOP_DEFAULTS_DIR}/hbase ] && . ${BIGTOP_DEFAULTS_DIR}/hbase
+
+export HIVE_HOME=$BIN_DIR/../lib/hive4
+exec $HIVE_HOME/bin/beeline "$@"

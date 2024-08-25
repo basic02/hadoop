@@ -1,0 +1,187 @@
+{
+  "bin/beeline4": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "bin/hive4": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "bin/hiveserver2-4": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/beeline": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/hive": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/hive-config.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/hiveserver2": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/hplsql": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/init-hive-dfs.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/metatool": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/replstats.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/schematool": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/beeline.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/cleardanglingscratchdir.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/cli.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/debug.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/fixacidkeyindex.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/help.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/hiveburninclient.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/hiveserver2.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/hplsql.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/jar.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/lineage.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/llap.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/llapdump.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/llapstatus.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/metastore.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/metatool.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/orcfiledump.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/rcfilecat.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/replMigration.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/schemaTool.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/strictmanagedmigration.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/tokentool.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/version.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "lib/hive4/bin/ext/util/execHiveCmd.sh": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  },
+  "etc/hive4/conf.dist": {
+    "user":  "hive",
+    "group": "hive",
+    "permissions": "0755"
+  }
+}
