@@ -34,25 +34,11 @@
       <includes>
         <include>*</include>
       </includes>
-      <excludes>
-        <!--<exclude>org.apache.hadoop:*</exclude>-->
+      <!--<excludes>
         <exclude>org.slf4j:slf4j-api</exclude>
         <exclude>org.slf4j:slf4j-reload4j</exclude>
-        <exclude>junit:junit</exclude>
-      </excludes>
+      </excludes>-->
     </dependencySet>
-
-    <!--<dependencySet>
-      <outputDirectory>/lib/hdfs_rbf</outputDirectory>
-      <unpack>false</unpack>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useProjectAttachments>false</useProjectAttachments>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useTransitiveFiltering>false</useTransitiveFiltering>
-      <includes>
-        <include>org.apache.hadoop:*</include>
-      </includes>
-    </dependencySet>-->
   </dependencySets>
 
   <files>
@@ -70,34 +56,13 @@
   </files>
 
   <fileSets>
-    <!-- Copy executable binary wrappers from src/main/bin -->
-    <!--<fileSet>
+    <!-- Copy executable script wrappers from src/main/bin -->
+    <fileSet>
       <directory>${basedir}/src/main/bin</directory>
       <outputDirectory>/bin</outputDirectory>
       <fileMode>0755</fileMode>
       <includes>
         <include>*</include>
-      </includes>
-    </fileSet>-->
-
-    <!-- Copy executable binaries from bin directory of hadoop-hdfs module -->
-    <fileSet>
-      <directory>../../hadoop-hdfs-project/hadoop-hdfs/src/main/bin</directory>
-      <outputDirectory>/lib/hdfs_rbf/bin</outputDirectory>
-      <fileMode>0755</fileMode>
-      <includes>
-        <include>hdfs</include>
-      </includes>
-    </fileSet>
-
-    <!-- Copy executable binaries from bin directory of hadoop-hdfs module -->
-    <fileSet>
-      <directory>../../hadoop-hdfs-project/hadoop-hdfs/src/main/bin</directory>
-      <outputDirectory>/lib/hdfs_rbf/sbin</outputDirectory>
-      <fileMode>0755</fileMode>
-      <includes>
-        <include>distribute-exclude.sh</include>
-        <include>refresh-namenodes.sh</include>
       </includes>
     </fileSet>
 
@@ -105,38 +70,10 @@
     <fileSet>
       <directory>${basedir}/src/main/bin</directory>
       <outputDirectory>/etc/hadoop/conf.dist</outputDirectory>
-      <fileMode>0644</fileMode>
+      <fileMode>0755</fileMode>
       <excludes>
         <exclude>*</exclude>
       </excludes>
-    </fileSet>
-
-    <!-- Copy webapps from target directory of hadoop-hdfs module -->
-    <fileSet>
-      <directory>../../hadoop-hdfs-project/hadoop-hdfs/dev-support/jdiff</directory>
-      <outputDirectory>/lib/hdfs_rbf/jdiff</outputDirectory>
-      <fileMode>0644</fileMode>
-      <includes>
-        <include>*</include>
-      </includes>
-    </fileSet>
-
-    <!-- Copy webapps from target directory of hadoop-hdfs module -->
-    <fileSet>
-      <directory>../../hadoop-hdfs-project/hadoop-hdfs/target/webapps</directory>
-      <outputDirectory>/lib/hdfs_rbf/webapps</outputDirectory>
-      <includes>
-        <include>**/*</include>
-      </includes>
-    </fileSet>
-
-    <!-- Copy webapps from target directory of hadoop-hdfs-rbf module -->
-    <fileSet>
-      <directory>../../hadoop-hdfs-project/hadoop-hdfs-rbf/target/webapps</directory>
-      <outputDirectory>/lib/hdfs_rbf/webapps</outputDirectory>
-      <includes>
-        <include>**/*</include>
-      </includes>
     </fileSet>
 
     <!-- Copy meta files -->
@@ -147,6 +84,212 @@
       <fileMode>0644</fileMode>
       <includes>
         <include>*</include>
+      </includes>
+    </fileSet>
+
+    <!-- Copy executable scripts from hadoop-hdfs module to the bin directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs/target/hadoop-hdfs-${project.version}/bin</directory>
+      <outputDirectory>/lib/hdfs_rbf/bin</outputDirectory>
+      <fileMode>0755</fileMode>
+      <includes>
+        <include>*</include>
+      </includes>
+      <excludes>
+        <exclude>*.cmd</exclude>
+      </excludes>
+    </fileSet>
+
+    <!-- Copy jar libraries from hadoop-hdfs module to the lib directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs/target/hadoop-hdfs-${project.version}/share/hadoop/hdfs</directory>
+      <outputDirectory>/lib/hdfs_rbf/lib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
+
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs/target/hadoop-hdfs-${project.version}/share/hadoop/hdfs/lib</directory>
+      <outputDirectory>/lib/hdfs_rbf/lib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
+
+    <!-- Copy executable scripts from hadoop-hdfs module to the libexec directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs/target/hadoop-hdfs-${project.version}/libexec</directory>
+      <outputDirectory>/lib/hdfs_rbf/libexec</outputDirectory>
+      <fileMode>0755</fileMode>
+      <includes>
+        <include>**/*</include>
+      </includes>
+      <excludes>
+        <exclude>*.cmd</exclude>
+      </excludes>
+    </fileSet>
+
+    <!-- Copy executable scripts from hadoop-hdfs module to the sbin directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs/target/hadoop-hdfs-${project.version}/sbin</directory>
+      <outputDirectory>/lib/hdfs_rbf/sbin</outputDirectory>
+      <fileMode>0755</fileMode>
+      <includes>
+        <include>**/*</include>
+      </includes>
+      <excludes>
+        <exclude>*.cmd</exclude>
+      </excludes>
+    </fileSet>
+
+    <!-- Copy webapps from hadoop-hdfs module to the webapps directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs/target/hadoop-hdfs-${project.version}/share/hadoop/hdfs/webapps</directory>
+      <outputDirectory>/lib/hdfs_rbf/webapps</outputDirectory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+
+    <!-- Copy jar libraries from hadoop-hdfs-client module to the lib directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-client/target/hadoop-hdfs-client-${project.version}/share/hadoop/hdfs</directory>
+      <outputDirectory>/lib/hdfs_rbf/lib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
+
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-client/target/hadoop-hdfs-client-${project.version}/share/hadoop/hdfs/lib</directory>
+      <outputDirectory>/lib/hdfs_rbf/lib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
+
+    <!-- Copy jar libraries from hadoop-hdfs-httpfs module to the lib directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-httpfs/target/hadoop-hdfs-httpfs-${project.version}/share/hadoop/hdfs</directory>
+      <outputDirectory>/lib/hdfs_rbf/lib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
+
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-httpfs/target/hadoop-hdfs-httpfs-${project.version}/share/hadoop/hdfs/lib</directory>
+      <outputDirectory>/lib/hdfs_rbf/lib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
+
+    <!-- Copy executable scripts from hadoop-hdfs-httpfs module to the libexec directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-httpfs/target/hadoop-hdfs-httpfs-${project.version}/libexec</directory>
+      <outputDirectory>/lib/hdfs_rbf/libexec</outputDirectory>
+      <fileMode>0755</fileMode>
+      <includes>
+        <include>**/*</include>
+      </includes>
+      <excludes>
+        <exclude>*.cmd</exclude>
+      </excludes>
+    </fileSet>
+
+    <!-- Copy executable scripts from hadoop-hdfs-httpfs module to the sbin directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-httpfs/target/hadoop-hdfs-httpfs-${project.version}/sbin</directory>
+      <outputDirectory>/lib/hdfs_rbf/sbin</outputDirectory>
+      <fileMode>0755</fileMode>
+      <includes>
+        <include>**/*</include>
+      </includes>
+      <excludes>
+        <exclude>*.cmd</exclude>
+      </excludes>
+    </fileSet>
+
+    <!-- Copy c files from hadoop-hdfs-native-client module to the include directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-native-client/target/hadoop-hdfs-native-client-${project.version}/include</directory>
+      <outputDirectory>/lib/hdfs_rbf/include</outputDirectory>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
+
+    <!-- Copy native libraries from hadoop-hdfs-native-client module to the lib/native directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-native-client/target/hadoop-hdfs-native-client-${project.version}/lib/native</directory>
+      <outputDirectory>/lib/hdfs_rbf/lib/native</outputDirectory>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
+
+    <!-- Copy jar libraries from hadoop-hdfs-native-client module to the lib directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-native-client/target/hadoop-hdfs-native-client-${project.version}/share/hadoop/hdfs</directory>
+      <outputDirectory>/lib/hdfs_rbf/lib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
+
+    <!-- Copy jar libraries from hadoop-hdfs-nfs module to the lib directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-nfs/target/hadoop-hdfs-nfs-${project.version}/share/hadoop/hdfs</directory>
+      <outputDirectory>/lib/hdfs_rbf/lib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
+
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-nfs/target/hadoop-hdfs-nfs-${project.version}/share/hadoop/hdfs/lib</directory>
+      <outputDirectory>/lib/hdfs_rbf/lib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
+
+    <!-- Copy jar libraries from hadoop-hdfs-rbf module to the lib directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-rbf/target/hadoop-hdfs-rbf-${project.version}/share/hadoop/hdfs</directory>
+      <outputDirectory>/lib/hdfs_rbf/lib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
+
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-rbf/target/hadoop-hdfs-rbf-${project.version}/share/hadoop/hdfs/lib</directory>
+      <outputDirectory>/lib/hdfs_rbf/lib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
+
+    <!-- Copy webapps from hadoop-hdfs-rbf module to webapps directory -->
+    <fileSet>
+      <directory>../../hadoop-hdfs-project/hadoop-hdfs-rbf/target/hadoop-hdfs-rbf-${project.version}/share/hadoop/hdfs/webapps</directory>
+      <outputDirectory>/lib/hdfs_rbf/webapps</outputDirectory>
+      <includes>
+        <include>**/*</include>
       </includes>
     </fileSet>
   </fileSets>

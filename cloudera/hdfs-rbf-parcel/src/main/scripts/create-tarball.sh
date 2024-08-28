@@ -22,6 +22,11 @@ printlog "INFO: Creating symbolic link of /etc/hadoop/conf under lib/hdfs_rbf"
 cd "${BUILD_DIRECTORY}/${PARCEL_BASENAME}/lib/hdfs_rbf"
 ln -sf "/etc/hadoop/conf" "conf"
 
+printlog "INFO: Creating symbolic links under lib/native"
+cd "${BUILD_DIRECTORY}/${PARCEL_BASENAME}/lib/hdfs_rbf/lib/native"
+ln -sf "libhdfs.so.0.0.0" "libhdfs.so"
+ln -sf "libhdfspp.so.0.1.0" "libhdfspp.so"
+
 printlog "INFO: Changing to ${BUILD_DIRECTORY} and creating ${TAR_GZ_FILENAME} from ${PARCEL_BASENAME}"
 cd "${BUILD_DIRECTORY}"
 tar -czf "${TAR_GZ_FILENAME}" -C "${BUILD_DIRECTORY}" "${PARCEL_BASENAME}"

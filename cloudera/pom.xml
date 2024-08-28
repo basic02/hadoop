@@ -40,7 +40,6 @@
     <hadoop.downstream.gbn>${maven.build.timestamp}</hadoop.downstream.gbn>
     <maven.build.timestamp.format>yyMMddHH</maven.build.timestamp.format>
 
-    <hadoop.path.to.root>..</hadoop.path.to.root>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 

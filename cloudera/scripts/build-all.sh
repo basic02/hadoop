@@ -40,7 +40,7 @@ set_gbn () {
 
 set_mvn () {
   MVN_FLAG="nsu"
-  MVN_CMD="-DskipTests -DcreateChecksum=true -Drat.consoleOutput=true -Dhadoop.downstream.gbn=${GBN} -Dmaven.repo.local=${MVN_REPO}"
+  MVN_CMD="-Pdist -Pnative -Dtar -DskipTests -DcreateChecksum=true -Drat.consoleOutput=true -Dhadoop.downstream.gbn=${GBN} -Dmaven.repo.local=${MVN_REPO}"
   MVN="${MVN_HOME}/bin/mvn -B -${MVN_FLAG} ${MVN_CMD}"
 }
 

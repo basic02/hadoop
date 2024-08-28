@@ -1,19 +1,7 @@
 {
-  "beeline4": {
-    "destination": "/usr/bin/beeline4",
-    "source": "bin/beeline4",
-    "priority": 10,
-    "isDirectory": false
-  },
-  "hive4": {
-    "destination": "/usr/bin/hive4",
-    "source": "bin/hive4",
-    "priority": 10,
-    "isDirectory": false
-  },
-  "hiveserver2-4": {
-    "destination": "/usr/bin/hiveserver2-4",
-    "source": "bin/hiveserver2-4",
+  "hdfs-rbf": {
+    "destination": "/usr/bin/hdfs-rbf",
+    "source": "bin/hdfs",
     "priority": 10,
     "isDirectory": false
   }

@@ -2,23 +2,14 @@
 
 # Set extra variable to let underlying script known
 case $1 in
-  (start_metastore)
-    export HIVE_ROLE_TYPE="hivemetastore"
+  (start_router)
+    export HDFS_RBF_ROLE_TYPE="router"
     ;;
-  (start_hiveserver2)
-    export HIVE_ROLE_TYPE="hiveserver2"
+  (create_sql_token_store_tables)
+    export HDFS_RBF_ROLE_TYPE="command"
     ;;
-  (create_metastore_tables)
-    export HIVE_ROLE_TYPE="command"
-    ;;
-  (validate_metastore)
-    export HIVE_ROLE_TYPE="command"
-    ;;
-  (upgrade_metastore)
-    export HIVE_ROLE_TYPE="command"
-    ;;
-  (client)
-    export HIVE_ROLE_TYPE="client"
+  (upgrade_sql_token_store_tables)
+    export HDFS_RBF_ROLE_TYPE="command"
     ;;
   (*)
     echo "Don't understand [$1]"
@@ -28,25 +19,16 @@ esac
 
 . $(cd $(dirname $0) && pwd)/common.sh
 
-echo "Running HIVE4 command: $1"
+echo "Running HDFS RBF command: $1"
 case $1 in
-  (start_metastore)
-    start_metastore
+  (start_router)
+    start_router
     ;;
-  (start_hiveserver2)
-    start_hiveserver2
+  (create_sql_token_store_tables)
+    create_sql_token_store_tables
     ;;
-  (create_metastore_tables)
-    create_metastore_tables
-    ;;
-  (validate_metastore)
-    validate_metastore
-    ;;
-  (upgrade_metastore)
-    upgrade_metastore
-    ;;
-  (client)
-    deploy_client_config
+  (upgrade_sql_token_store_tables)
+    upgrade_sql_token_store_tables
     ;;
   (*)
     echo "Don't understand [$1]"

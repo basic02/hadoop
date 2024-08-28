@@ -9,12 +9,14 @@ do
   BIN_DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
 done
 BIN_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-LIB_DIR=$BIN_DIR/../lib
 
 # Autodetect JAVA_HOME if not defined
-. $LIB_DIR/bigtop-utils/bigtop-detect-javahome
+CDH_HOME=/opt/cloudera/parcels/CDH
+. $CDH_HOME/lib/bigtop-utils/bigtop-detect-javahome
 
-export HADOOP_LIBEXEC_DIR=//$LIB_DIR/hadoop/libexec
-export HADOOP_LOG_DIR=${HADOOP_LOG_DIR:-/var/log/hadoop-hdfs}
+export HADOOP_HOME=$BIN_DIR/../lib/hdfs_rbf
+export HADOOP_LIBEXEC_DIR=$HADOOP_HOME/libexec
+export HADOOP_LOG_DIR=${HADOOP_LOG_DIR:-/var/log/hdfs-rbf}
+export HADOOP_CLASSPATH=/etc/hadoop/conf:$HADOOP_HOME:$HADOOP_HOME/lib/*:$HADOOP_HOME/*
 
-exec $LIB_DIR/hadoop-hdfs/bin/hdfs "$@"
+exec $HADOOP_HOME/bin/hdfs "$@"

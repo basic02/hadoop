@@ -51,17 +51,7 @@
     "preStartSteps": [
     ]
   },
-  "kerberos": "${kerberos_auth_enabled}",
   "parameters": [
-    {
-      "name": "kerberos_auth_enabled",
-      "label": "Enable Kerberos Authentication",
-      "description": "When checked, kerberos authentication is enabled.",
-      "configurableInWizard": "true",
-      "type": "boolean",
-      "default": "false",
-      "required": "true"
-    }
   ],
   "rolesWithExternalLinks": [
     "HDFS_RBF_ROUTER"
@@ -81,9 +71,16 @@
       "startRunner": {
         "program": "scripts/control.sh",
         "args": [
-          "start"
+          "start_router"
         ],
         "environmentVariables": {
+          "ROUTER_JAVA_HEAPSIZE": "${router_java_heapsize}",
+          "ROUTER_JAVA_EXTRA_OPTS": "${router_java_opts}",
+          "ROUTER_SECRET_MANAGER_CLASS": "${router_secret_manager_class}",
+          "SECRET_MANAGER_DATABASE_TYPE": "${sql_dt_secret_manager_database_type}",
+          "GENERATE_JCEKS_PASSWORD": "${generate_jceks_password}",
+          "SECRET_MANAGER_CONNECTION_PASSWORD": "${sql_dt_secret_manager_connection_password}",
+          "USER": "${user}"
         }
       },
       "kerberosPrincipals": [
@@ -141,6 +138,24 @@
         }
       ],
       "parameters": [
+        {
+          "name": "router_java_heapsize",
+          "label": "Java Heap Size of Router in Bytes",
+          "description": "Maximum size for the Java Process heap. Passed to Java -Xmx. Measured in megabytes.",
+          "type": "memory",
+          "unit": "megabytes",
+          "default": 4096,
+          "min": 512,
+          "required": "true"
+        },
+        {
+          "name": "router_java_opts",
+          "label": "Java Configuration Options for Router",
+          "description": "These arguments will be passed as part of the Java command line. Commonly, garbage collection flags, PermGen, or extra debugging flags would be passed here. Note: When CM version is 6.3.0 or greater, {{JAVA_GC_ARGS}} will be replaced by JVM Garbage Collection arguments based on the runtime Java JVM version.",
+          "type": "string",
+          "default": "{{JAVA_GC_ARGS}}",
+          "required": "false"
+        },
         {
           "name": "router_default_nameservice_enable",
           "label": "Enable Router Default Nameservice",
@@ -475,6 +490,15 @@
           "required": "true"
         },
         {
+          "name": "hadoop_zk_address",
+          "label": "Zookeeper Address",
+          "description": "Zookeeper address",
+          "configName": "hadoop.zk.address",
+          "type": "string",
+          "default": "{{ZOOKEEPER_QUORUM}}",
+          "required": "false"
+        },
+        {
           "name": "router_store_connection_test",
           "label": "Interval to Check Connection to State Store",
           "description": "How often to check for the connection to the State Store in milliseconds.",
@@ -618,6 +642,22 @@
           "type": "boolean",
           "default": "true",
           "required": "true"
+        },
+        {
+          "name": "dfs_nameservice_id",
+          "label": "DFS Nameservice ID",
+          "description": "DFS Nameservice ID",
+          "configName": "dfs.nameservice.id",
+          "type": "string",
+          "required": "false"
+        },
+        {
+          "name": "dfs_ha_namenode_id",
+          "label": "DFS HA NameNode ID",
+          "description": "DFS HA NameNode ID",
+          "configName": "dfs.ha.namenode.id",
+          "type": "string",
+          "required": "false"
         },
         {
           "name": "router_mount_table_cache_enable",
@@ -899,6 +939,23 @@
           "type": "long",
           "default": "10",
           "required": "false"
+        },
+        {
+          "name": "generate_jceks_password",
+          "label": "Generate HADOOP_CREDSTORE_PASSWORD",
+          "description": "Flag to enable or disable the generation of HADOOP_CREDSTORE_PASSWORD.",
+          "type": "boolean",
+          "default": "true",
+          "required": "true"
+        },
+        {
+          "name": "hadoop_security_cred_provider_path",
+          "label": "Hadoop Security Credential Provider Path",
+          "description": "Hadoop security credential provider path",
+          "configName": "hadoop.security.credential.provider.path",
+          "type": "string",
+          "default": "localjceks://file/{{CMF_CONF_DIR}}/creds.localjceks",
+          "required": "false"
         }
       ],
       "configWriter": {
@@ -918,6 +975,11 @@
                 "instanceWildcard": "_HOST"
               },
               {
+                "principalName": "SPNEGO_PRINCIPAL",
+                "propertyName": "dfs.web.authentication.kerberos.principal",
+                "instanceWildcard": "_HOST"
+              },
+              {
                 "principalName": "ROUTER_PRINCIPAL",
                 "propertyName": "zk-dt-secret-manager.kerberos.principal",
                 "instanceWildcard": "_HOST"
@@ -929,6 +991,8 @@
               }
             ],
             "excludedParams": [
+              "router_java_heapsize",
+              "router_java_opts"
             ],
             "includedParams" : [
                 "router_default_nameservice_enable",
@@ -963,6 +1027,7 @@
                 "router_store_enable",
                 "router_store_serializer",
                 "router_store_driver_class",
+                "hadoop_zk_address",
                 "router_store_connection_test",
                 "router_cache_ttl",
                 "router_store_membership_expiration",
@@ -978,6 +1043,8 @@
                 "router_safemode_expiration",
                 "router_monitor_namenode",
                 "router_monitor_localnamenode_enable",
+                "dfs_nameservice_id",
+                "dfs_ha_namenode_id",
                 "router_mount_table_cache_enable",
                 "router_mount_table_max_cache_size",
                 "router_mount_table_cache_update",
@@ -1007,7 +1074,8 @@
                 "sql_dt_secret_manager_connection_url",
                 "sql_dt_secret_manager_connection_username",
                 "sql_dt_secret_manager_connection_password",
-                "sql_dt_secret_manager_token_seqnum_batch_size"
+                "sql_dt_secret_manager_token_seqnum_batch_size",
+                "hadoop_security_cred_provider_path"
             ],
             "additionalConfigs": [
               {
@@ -1017,10 +1085,6 @@
               {
                 "key": "dfs.web.authentication.kerberos.keytab",
                 "value": "${principal}.keytab"
-              },
-              {
-                "key": "hadoop.zk.address",
-                "value": "{{ZOOKEEPER_QUORUM}}"
               },
               {
                 "key": "zk-dt-secret-manager.kerberos.keytab",

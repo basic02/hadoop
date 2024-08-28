@@ -56,9 +56,6 @@
   </pluginRepositories>
 
   <properties>
-    <hadoop.basedir>${project.parent.parent.basedir}</hadoop.basedir>
-    <hadoop.path.to.root>../..</hadoop.path.to.root>
-
     <schema.validator.version>7.7.1</schema.validator.version>
   </properties>
 
