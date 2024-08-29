@@ -43,7 +43,7 @@ function generate_configuration_files {
       if [[ "${GENERATE_JCEKS_PASSWORD}" == "true" ]]; then
         export HADOOP_CREDSTORE_PASSWORD=${SECRET_MANAGER_CONNECTION_PASSWORD}
       fi
-      hadoop credential create javax.jdo.option.ConnectionPassword -value ${SECRET_MANAGER_CONNECTION_PASSWORD} -provider localjceks://file/${CONF_DIR}/creds.localjceks
+      hadoop credential create sql-dt-secret-manager.connection.password -value ${SECRET_MANAGER_CONNECTION_PASSWORD} -provider localjceks://file/${CONF_DIR}/creds.localjceks
       replace "\{\{CMF_CONF_DIR}}" "${CONF_DIR}" ${HDFS_RBF_SITE}
       change_xml_value "sql-dt-secret-manager.connection.password" "********" ${HDFS_RBF_SITE}
     fi
@@ -64,13 +64,8 @@ function generate_hadoop_router_opts {
 function start_router {
   generate_hadoop_router_opts
 
-  echo "Start Router command: hdfs.sh --daemon start dfsrouter"
+  echo "Start Router command: hdfs.sh [\"dfsrouter\"]"
   exec  $(cd $(dirname $0) && pwd)/hdfs.sh --daemon start dfsrouter
-}
-
-function stop_router {
-  echo "Stop Router command: hdfs.sh --daemon stop dfsrouter"
-  exec  $(cd $(dirname $0) && pwd)/hdfs.sh --daemon stop dfsrouter
 }
 
 function create_sql_token_store_tables {
@@ -79,7 +74,7 @@ function create_sql_token_store_tables {
 function upgrade_sql_token_store_tables {
 }
 
-################################# service commands #################################
+####################################################################################
 
 set -ex
 

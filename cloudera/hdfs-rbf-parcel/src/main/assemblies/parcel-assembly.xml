@@ -38,6 +38,7 @@
         <exclude>org.slf4j:slf4j-api</exclude>
         <exclude>org.slf4j:slf4j-reload4j</exclude>
       </excludes>-->
+      <fileMode>0644</fileMode>
     </dependencySet>
   </dependencySets>
 
@@ -52,6 +53,20 @@
       <source>../../NOTICE.txt</source>
       <outputDirectory>/lib/hdfs_rbf</outputDirectory>
       <fileMode>0644</fileMode>
+    </file>
+
+    <!-- Copy hadoop-config.sh from hadoop-common module to the libexec directory -->
+    <file>
+      <source>../../hadoop-common-project/hadoop-common/src/main/bin/hadoop-config.sh</source>
+      <outputDirectory>/lib/hdfs_rbf/libexec</outputDirectory>
+      <fileMode>0755</fileMode>
+    </file>
+
+    <!-- Copy hadoop-functions.sh from hadoop-common module to the libexec directory -->
+    <file>
+      <source>../../hadoop-common-project/hadoop-common/src/main/bin/hadoop-functions.sh</source>
+      <outputDirectory>/lib/hdfs_rbf/libexec</outputDirectory>
+      <fileMode>0755</fileMode>
     </file>
   </files>
 

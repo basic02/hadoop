@@ -100,7 +100,7 @@ make_scripts_executable
 # explicitly
 export HADOOP_IDENT_STRING="hdfs"
 
-if [ "start_router" = "$1" ]; then
+if [ "dfsrouter" = "$1" ]; then
   # Set hadoop security and audit log appenders. These are set here instead
   # of being hardcoded in the log4j template because we only want the hadoop
   # daemons to use them.
