@@ -900,7 +900,7 @@
           "name": "sql_dt_secret_manager_database_type",
           "label": "SQL Token Store Database Type",
           "description": "Database type of SQL based delegation token store",
-          "type": "database_type",
+          "type": "string_enum",
           "validValues": ["mysql"],
           "default": "mysql",
           "required": "false"
@@ -1070,7 +1070,6 @@
                 "zk_dt_secret_manager_token_seqnum_batch_size",
                 "zk_dt_secret_manager_token_watcher_enabled",
                 "zk_dt_secret_manager_router_token_sync_interval",
-                "sql_dt_secret_manager_database_type",
                 "sql_dt_secret_manager_connection_url",
                 "sql_dt_secret_manager_connection_username",
                 "sql_dt_secret_manager_connection_password",
