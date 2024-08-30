@@ -640,7 +640,7 @@
           "configName": "dfs.federation.router.monitor.localnamenode.enable",
           "configurableInWizard": "true",
           "type": "boolean",
-          "default": "true",
+          "default": "false",
           "required": "true"
         },
         {
