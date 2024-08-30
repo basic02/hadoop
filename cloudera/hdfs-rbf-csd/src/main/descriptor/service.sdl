@@ -928,6 +928,7 @@
           "description": "Database password of SQL based delegation token store",
           "configName": "sql-dt-secret-manager.connection.password",
           "type": "password",
+          "default": "",
           "sensitive": "true",
           "required": "false"
         },
