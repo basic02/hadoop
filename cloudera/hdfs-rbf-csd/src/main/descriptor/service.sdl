@@ -1080,15 +1080,15 @@
             "additionalConfigs": [
               {
                 "key": "dfs.federation.router.keytab.file",
-                "value": "${principal}.keytab"
+                "value": "hdfs_rbf.keytab"
               },
               {
                 "key": "dfs.web.authentication.kerberos.keytab",
-                "value": "${principal}.keytab"
+                "value": "hdfs_rbf.keytab"
               },
               {
                 "key": "zk-dt-secret-manager.kerberos.keytab",
-                "value": "${principal}.keytab"
+                "value": "hdfs_rbf.keytab"
               }
             ]
           }

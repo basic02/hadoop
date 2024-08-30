@@ -15,7 +15,7 @@ source_parcel_environment
 locate_cdh_java_home
 
 # simulate /etc/default/hadoop if necessary
-. ${cloudera_config}/cdh-default-hadoop
+#. ${cloudera_config}/cdh-default-hadoop
 
 export HADOOP_ROUTER_OPTS=$(replace_pid $HADOOP_ROUTER_OPTS)
 
@@ -77,6 +77,19 @@ else
   exit 1
 fi
 
+# Calculate full path of keytab file to use.
+# Default is hdfs_rbf.keytab in the CONF_DIR; it can be customized via the env var:
+# $HDFS_RBF_KEYTAB to override the keytab file (eg. for providesDfs CSDs)
+KEYTAB=${HDFS_RBF_KEYTAB:-$CONF_DIR/hdfs_rbf.keytab}
+
+if [ -n "${KERBEROS_AUTH}" ] && [ "${KERBEROS_AUTH}" != "kerberos" ]; then
+  # this is necessary in the case of CSDs because they cannot conditionally set SCM_KERBEROS_PRINCIPAL
+  # therefore they will need to output also the value of KERBEROS_AUTH which if (only if!) present
+  # and not using kerberos => SCM_KERBEROS_PRINCIPAL is removed to prevent triggering other logic in this
+  # script and cloudera-config.sh
+  unset SCM_KERBEROS_PRINCIPAL
+fi
+
 echo "using $JAVA_HOME as JAVA_HOME"
 echo "using $CDH_VERSION as CDH_VERSION"
 echo "using $CONF_DIR as CONF_DIR"
@@ -99,6 +112,9 @@ make_scripts_executable
 # hadoop.id.str ending up to be an empty string so we're setting it here
 # explicitly
 export HADOOP_IDENT_STRING="hdfs"
+
+# kerberos login
+acquire_kerberos_tgt "$KEYTAB" "$SCM_KERBEROS_PRINCIPAL" true
 
 if [ "dfsrouter" = "$1" ]; then
   # Set hadoop security and audit log appenders. These are set here instead
