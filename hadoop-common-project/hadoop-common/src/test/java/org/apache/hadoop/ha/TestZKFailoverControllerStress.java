@@ -23,7 +23,6 @@ import java.util.Random;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeys;
 import org.apache.hadoop.util.Time;
-import org.apache.zookeeper.server.ServerCnxn;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -132,7 +131,7 @@ public class TestZKFailoverControllerStress extends ClientBaseWithFixes {
     long st = Time.now();
     while (Time.now() - st < runFor) {
       cluster.getTestContext().checkException();
-      serverFactory.closeAll(ServerCnxn.DisconnectReason.SERVER_SHUTDOWN);
+      serverFactory.closeAll();
       Thread.sleep(50);
     }
   }
