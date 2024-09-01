@@ -27,14 +27,35 @@ function log {
 function generate_configuration_files {
   replace "\{\{ZOOKEEPER_QUORUM}}" "${ZK_QUORUM}" ${HDFS_RBF_SITE}
 
+  ROUTER_RPC_ADDRESS=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.rpc-address" ${HDFS_RBF_SITE})
+  if [[ -z "${ROUTER_RPC_ADDRESS}" || "${ROUTER_RPC_ADDRESS}" == "None" ]]; then
+    change_xml_value "dfs.federation.router.rpc-address" "${HOST}:${ROUTER_RPC_PORT}" ${HDFS_RBF_SITE}
+  fi
+  ROUTER_ADMIN_ADDRESS=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.admin-address" ${HDFS_RBF_SITE})
+  if [[ -z "${ROUTER_ADMIN_ADDRESS}" || "${ROUTER_ADMIN_ADDRESS}" == "None" ]]; then
+    change_xml_value "dfs.federation.router.admin-address" "${HOST}:${ROUTER_ADMIN_PORT}" ${HDFS_RBF_SITE}
+  fi
+  ROUTER_HTTP_ADDRESS=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.http-address" ${HDFS_RBF_SITE})
+  if [[ -z "${ROUTER_HTTP_ADDRESS}" || "${ROUTER_HTTP_ADDRESS}" == "None" ]]; then
+    change_xml_value "dfs.federation.router.http-address" "${HOST}:${ROUTER_HTTP_PORT}" ${HDFS_RBF_SITE}
+  fi
+  ROUTER_HTTPS_ADDRESS=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.https-address" ${HDFS_RBF_SITE})
+  if [[ -z "${ROUTER_HTTPS_ADDRESS}" || "${ROUTER_HTTPS_ADDRESS}" == "None" ]]; then
+    change_xml_value "dfs.federation.router.https-address" "${HOST}:${ROUTER_HTTPS_PORT}" ${HDFS_RBF_SITE}
+  fi
+
   if [[ $HDFS_RBF_ROLE_TYPE == "router" ]]; then
     if [[ "${ROUTER_SECRET_MANAGER_CLASS}" == "org.apache.hadoop.hdfs.server.federation.router.security.token.SQLDelegationTokenSecretManagerImpl" ]]; then
-      if [[ "${SECRET_MANAGER_DATABASE_TYPE}" == "mysql" ]]; then
-        $(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/add_update_property.py ${HDFS_RBF_SITE} "sql-dt-secret-manager.connection.driver" "com.mysql.jdbc.Driver")
-      elif [[ "${SECRET_MANAGER_DATABASE_TYPE}" == "postgresql" ]]; then
-        $(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/add_update_property.py ${HDFS_RBF_SITE} "sql-dt-secret-manager.connection.driver" "org.postgresql.Driver")
-      elif [[ "${SECRET_MANAGER_DATABASE_TYPE}" == "oracle" ]]; then
-        $(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/add_update_property.py ${HDFS_RBF_SITE} "sql-dt-secret-manager.connection.driver" "oracle.jdbc.driver.OracleDriver")
+      CONNECTION_DRIVER=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "sql-dt-secret-manager.connection.driver" ${HDFS_RBF_SITE})
+      if [[ -z "${CONNECTION_DRIVER}" || "${CONNECTION_DRIVER}" == "None" ]]; then
+        if [[ "${SECRET_MANAGER_DATABASE_TYPE}" == "mysql" ]]; then
+          CONNECTION_DRIVER="com.mysql.jdbc.Driver"
+        elif [[ "${SECRET_MANAGER_DATABASE_TYPE}" == "postgresql" ]]; then
+          CONNECTION_DRIVER="org.postgresql.Driver"
+        elif [[ "${SECRET_MANAGER_DATABASE_TYPE}" == "oracle" ]]; then
+          CONNECTION_DRIVER="oracle.jdbc.driver.OracleDriver"
+        fi
+        change_xml_value "sql-dt-secret-manager.connection.driver" "${CONNECTION_DRIVER}" ${HDFS_RBF_SITE}
       fi
 
       if [ -f ${CONF_DIR}/creds.localjceks ]; then
@@ -54,8 +75,8 @@ function generate_configuration_files {
 }
 
 function generate_hadoop_router_opts {
-  HEAP_DUMP_OPTS="-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/hdfs_rbf_${USER}-$(echo ${HDFS_RBF_ROLE_TYPE} | tr '[:lower:]' '[:upper:]')_pid{{PID}}.hprof -XX:OnOutOfMemoryError=/opt/cloudera/cm-agent/service/common/killparent.sh"
-  export HADOOP_ROUTER_OPTS="${HADOOP_ROUTER_OPTS} -Xms${ROUTER_JAVA_HEAPSIZE}m -Xmx${ROUTER_JAVA_HEAPSIZE}m ${ROUTER_JAVA_EXTRA_OPTS} ${HEAP_DUMP_OPTS}"
+  #HEAP_DUMP_OPTS="-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/hdfs_rbf_${USER}-$(echo ${HDFS_RBF_ROLE_TYPE} | tr '[:lower:]' '[:upper:]')_pid{{PID}}.hprof -XX:OnOutOfMemoryError=/opt/cloudera/cm-agent/service/common/killparent.sh"
+  export HADOOP_ROUTER_OPTS="${HADOOP_ROUTER_OPTS} -Xms${ROUTER_JAVA_HEAPSIZE}m -Xmx${ROUTER_JAVA_HEAPSIZE}m ${ROUTER_JAVA_EXTRA_OPTS} ${CSD_JAVA_OPTS}"
   echo "Generated HADOOP_ROUTER_OPTS: ${HADOOP_ROUTER_OPTS}"
 }
 
@@ -64,14 +85,16 @@ function generate_hadoop_router_opts {
 function start_router {
   generate_hadoop_router_opts
 
-  echo "Start Router command: hdfs.sh [\"dfsrouter\"]"
-  exec  $(cd $(dirname $0) && pwd)/hdfs.sh --daemon start dfsrouter
+  echo "Start router command: hdfs.sh [\"dfsrouter\"]"
+  exec  $(cd $(dirname $0) && pwd)/hdfs.sh dfsrouter
 }
 
 function create_sql_token_store_tables {
+  echo "Create SQL token store tables"
 }
 
 function upgrade_sql_token_store_tables {
+  echo "Upgrade SQL token store tables"
 }
 
 ####################################################################################
@@ -87,6 +110,11 @@ export BIGTOP_DEFAULTS_DIR=""
 
 # If HADOOP_HOME is not set, make it the default
 DEFAULT_HADOOP_HOME=/opt/cloudera/parcels/HDFS_RBF/lib/hdfs_rbf
+DEFAULT_HADOOP_HOME=$(readlink -m "${DEFAULT_HADOOP_HOME}")
+# Temporarily set CDH_HADOOP_HOME & CDH_HDFS_HOME environment variable here because hdfs_rbf_env.sh is not executed
+# when calling source_parcel_environment
+export CDH_HADOOP_HOME=$DEFAULT_HADOOP_HOME
+export CDH_HDFS_HOME=$DEFAULT_HADOOP_HOME
 HADOOP_HOME=${CDH_HADOOP_HOME:-$DEFAULT_HADOOP_HOME}
 export HADOOP_HOME=$(readlink -m "${HADOOP_HOME}")
 export HADOOP_HOME_WARN_SUPPRESS=true
@@ -96,7 +124,13 @@ export HADOOP_HDFS_HOME=$HADOOP_HOME
 export HADOOP_LIBEXEC_DIR=$HADOOP_HOME/libexec
 export HADOOP_LOG_DIR=${HADOOP_LOG_DIR:-/var/log/hdfs-rbf}
 export HADOOP_CONF_DIR=${CONF_DIR}
-export HADOOP_CLASSPATH=/etc/hadoop/conf:$HADOOP_HOME:$HADOOP_HOME/lib/*:$HADOOP_HOME/*
+export HADOOP_SECURITY_LOGGER="INFO,RFAS"
+export HADOOP_AUDIT_LOGGER="INFO,RFAAUDIT"
+export JAVA_LIBRARY_PATH=$HADOOP_HOME/lib/native
+export HADOOP_YARN_HOME=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+#export HADOOP_CLASSPATH=$HADOOP_HOME:$HADOOP_HOME/lib/*:$HADOOP_HOME/*
+export HADOOP_CLASSPATH=$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
 
 # HDFS RBF site xml file
 export HDFS_RBF_SITE="${CONF_DIR}/hdfs-rbf-site.xml"

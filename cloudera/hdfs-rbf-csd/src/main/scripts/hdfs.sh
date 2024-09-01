@@ -9,7 +9,7 @@ cloudera_config=/opt/cloudera/cm-agent/service/common
 . ${cloudera_config}/cloudera-config.sh
 
 # load the parcel environment
-source_parcel_environment
+#source_parcel_environment
 
 # attempt to find java
 locate_cdh_java_home
@@ -96,7 +96,7 @@ echo "using $CONF_DIR as CONF_DIR"
 echo "using $SECURE_USER as SECURE_USER"
 echo "using $SECURE_GROUP as SECURE_GROUP"
 
-set_hadoop_classpath
+#set_hadoop_classpath
 
 # debug
 set -x
@@ -123,7 +123,7 @@ if [ "dfsrouter" = "$1" ]; then
   HADOOP_OPTS="-Dsecurity.audit.logger=$HADOOP_SECURITY_LOGGER $HADOOP_OPTS"
   export HADOOP_OPTS="-Dhdfs.audit.logger=$HADOOP_AUDIT_LOGGER $HADOOP_OPTS"
 
-  exec $HDFS_BIN --config $CONF_DIR "$@"
+  exec $HDFS_BIN --config $CONF_DIR --daemon start "$@"
 else
   exec $HDFS_BIN --config $CONF_DIR "$@"
 fi

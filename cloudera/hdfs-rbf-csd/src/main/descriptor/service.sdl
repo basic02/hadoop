@@ -65,8 +65,8 @@
       "externalLink": {
         "name": "router_web_ui",
         "label": "Router Web UI",
-        "url": "http://${router_http_address}",
-        "secureUrl": "https://${router_https_address}"
+        "url": "http://${host}:${router_http_port}",
+        "secureUrl": "https://${host}:${router_https_port}"
       },
       "startRunner": {
         "program": "scripts/control.sh",
@@ -80,7 +80,12 @@
           "SECRET_MANAGER_DATABASE_TYPE": "${sql_dt_secret_manager_database_type}",
           "GENERATE_JCEKS_PASSWORD": "${generate_jceks_password}",
           "SECRET_MANAGER_CONNECTION_PASSWORD": "${sql_dt_secret_manager_connection_password}",
-          "USER": "${user}"
+          "USER": "${user}",
+          "HOST": "${host}",
+          "ROUTER_RPC_PORT": "${router_rpc_port}",
+          "ROUTER_ADMIN_PORT": "${router_admin_port}",
+          "ROUTER_HTTP_PORT": "${router_http_port}",
+          "ROUTER_HTTPS_PORT": "${router_https_port}"
         }
       },
       "kerberosPrincipals": [
@@ -186,28 +191,13 @@
           "required": "true"
         },
         {
-          "name": "router_rpc_address",
-          "label": "Router RPC Address",
-          "description": "RPC address that handles all clients requests. The value of this property will take the form of router-host:rpc-port.",
-          "configName": "dfs.federation.router.rpc-address",
-          "type": "string",
-          "required": "false"
-        },
-        {
           "name": "router_rpc_port",
           "label": "Router RPC Port",
           "description": "RPC port that handles all clients requests.",
+          "configurableInWizard": "true",
           "type": "port",
           "default": "8888",
-          "required": "false"
-        },
-        {
-          "name": "router_rpc_bind_host",
-          "label": "Router RPC Bind Host",
-          "description": "The actual address the RPC server will bind to. If this optional address is set, it overrides only the hostname portion of dfs.federation.router.rpc-address. This is useful for making the router listen on all interfaces by setting it to 0.0.0.0.",
-          "configName": "dfs.federation.router.rpc-bind-host",
-          "type": "string",
-          "required": "false"
+          "required": "true"
         },
         {
           "name": "router_admin_enable",
@@ -220,28 +210,13 @@
           "required": "true"
         },
         {
-          "name": "router_admin_address",
-          "label": "Router RPC Admin Address",
-          "description": "RPC address that handles the admin requests. The value of this property will take the form of router-host1:rpc-port.",
-          "configName": "dfs.federation.router.admin-address",
-          "type": "string",
-          "required": "false"
-        },
-        {
           "name": "router_admin_port",
           "label": "Router RPC Admin Port",
           "description": "RPC port that handles the admin requests.",
+          "configurableInWizard": "true",
           "type": "port",
           "default": "8111",
-          "required": "false"
-        },
-        {
-          "name": "router_admin_bind_host",
-          "label": "Router RPC Admin Bind Host",
-          "description": "The actual address the RPC admin server will bind to. If this optional address is set, it overrides only the hostname portion of dfs.federation.router.admin-address. This is useful for making the router listen on all interfaces by setting it to 0.0.0.0.",
-          "configName": "dfs.federation.router.admin-bind-host",
-          "type": "string",
-          "required": "false"
+          "required": "true"
         },
         {
           "name": "router_http_enable",
@@ -254,52 +229,22 @@
           "required": "true"
         },
         {
-          "name": "router_http_address",
-          "label": "Router HTTP Address",
-          "description": "HTTP address that handles the web requests to the Router. The value of this property will take the form of router-host:http-port.",
-          "configName": "dfs.federation.router.http-address",
-          "type": "string",
-          "required": "false"
-        },
-        {
           "name": "router_http_port",
           "label": "Router HTTP Port",
           "description": "HTTP port that handles the web requests to the Router.",
+          "configurableInWizard": "true",
           "type": "port",
           "default": "50071",
-          "required": "false"
-        },
-        {
-          "name": "router_http_bind_host",
-          "label": "Router HTTP Bind Host",
-          "description": "The actual address the HTTP server will bind to. If this optional address is set, it overrides only the hostname portion of dfs.federation.router.http-address. This is useful for making the router listen on all interfaces by setting it to 0.0.0.0.",
-          "configName": "dfs.federation.router.http-bind-host",
-          "type": "string",
-          "required": "false"
-        },
-        {
-          "name": "router_https_address",
-          "label": "Router HTTPS Address",
-          "description": "HTTPS address that handles the web requests to the Router. The value of this property will take the form of router-host:https-port.",
-          "configName": "dfs.federation.router.https-address",
-          "type": "string",
-          "required": "false"
+          "required": "true"
         },
         {
           "name": "router_https_port",
           "label": "Router HTTPS Port",
           "description": "HTTPS port that handles the web requests to the Router.",
+          "configurableInWizard": "true",
           "type": "port",
           "default": "50072",
-          "required": "false"
-        },
-        {
-          "name": "router_https_bind_host",
-          "label": "Router HTTPS Bind Host",
-          "description": "The actual address the HTTPS server will bind to. If this optional address is set, it overrides only the hostname portion of dfs.federation.router.https-address. This is useful for making the router listen on all interfaces by setting it to 0.0.0.0.",
-          "configName": "dfs.federation.router.https-bind-host",
-          "type": "string",
-          "required": "false"
+          "required": "true"
         },
         {
           "name": "router_handler_count",
@@ -509,6 +454,15 @@
           "required": "false"
         },
         {
+          "name": "router_store_driver_zk_parent_path",
+          "label": "Zookeeper Parent Path for State Store",
+          "description": "The parent path of zookeeper for StateStoreZooKeeperImpl.",
+          "configName": "dfs.federation.router.store.driver.zk.parent-path",
+          "type": "string",
+          "default": "/hdfs-federation",
+          "required": "true"
+        },
+        {
           "name": "router_cache_ttl",
           "label": "Interval to Refresh State Store Caches",
           "description": "How often to refresh the State Store caches in milliseconds. This setting supports multiple time unit suffixes. If no suffix is specified then milliseconds is assumed.",
@@ -630,6 +584,7 @@
           "label": "Identifies of NameNode to Monitor",
           "description": "The identifier of the namenodes to monitor and heartbeat.",
           "configName": "dfs.federation.router.monitor.namenode",
+          "configurableInWizard": "true",
           "type": "string",
           "required": "false"
         },
@@ -796,6 +751,7 @@
           "label": "Secret Manager Implementation Class",
           "description": "Class to implement state store to delegation tokens. Default implementation uses zookeeper as the backend to store delegation tokens.",
           "configName": "dfs.federation.router.secret.manager.class",
+          "configurableInWizard": "true",
           "type": "string_enum",
           "validValues" : ["org.apache.hadoop.hdfs.server.federation.router.security.token.ZKDelegationTokenSecretManagerImpl", "org.apache.hadoop.hdfs.server.federation.router.security.token.SQLDelegationTokenSecretManagerImpl"],
           "default": "org.apache.hadoop.hdfs.server.federation.router.security.token.ZKDelegationTokenSecretManagerImpl",
@@ -854,6 +810,7 @@
           "label": "Authentication Type of Zookeeper Token Store",
           "description": "Zookeeper authentication type of Zookeeper based delegation token store",
           "configName": "zk-dt-secret-manager.zkAuthType",
+          "configurableInWizard": "true",
           "type": "string_enum",
           "validValues" : ["none", "sasl"],
           "default": "none",
@@ -864,6 +821,7 @@
           "label": "Connection String of Zookeeper Token Store",
           "description": "Zookeeper connection string of Zookeeper based delegation token store",
           "configName": "zk-dt-secret-manager.zkConnectionString",
+          "configurableInWizard": "true",
           "type": "string",
           "default": "{{ZOOKEEPER_QUORUM}}",
           "required": "false"
@@ -900,6 +858,7 @@
           "name": "sql_dt_secret_manager_database_type",
           "label": "SQL Token Store Database Type",
           "description": "Database type of SQL based delegation token store",
+          "configurableInWizard": "true",
           "type": "string_enum",
           "validValues": ["mysql"],
           "default": "mysql",
@@ -910,6 +869,7 @@
           "label": "SQL Token Store Database URL",
           "description": "Database connection URL of SQL based delegation token store. Only MySQL is supported at the moment (e.g. jdbc:mysql://DB_HOST:DB_PORT/DB_SCHEMA_NAME).",
           "configName": "sql-dt-secret-manager.connection.url",
+          "configurableInWizard": "true",
           "type": "string",
           "default": "jdbc:mysql://<DB_HOST>:<DB_PORT>/<DB_SCHEMA_NAME>",
           "required": "false"
@@ -919,6 +879,7 @@
           "label": "SQL Token Store Database User",
           "description": "Database user of SQL based delegation token store",
           "configName": "sql-dt-secret-manager.connection.username",
+          "configurableInWizard": "true",
           "type": "string",
           "required": "false"
         },
@@ -927,6 +888,7 @@
           "label": "SQL Token Store Database Password",
           "description": "Database password of SQL based delegation token store",
           "configName": "sql-dt-secret-manager.connection.password",
+          "configurableInWizard": "true",
           "type": "password",
           "default": "",
           "sensitive": "true",
@@ -984,11 +946,6 @@
                 "principalName": "ROUTER_PRINCIPAL",
                 "propertyName": "zk-dt-secret-manager.kerberos.principal",
                 "instanceWildcard": "_HOST"
-              },
-              {
-                "principalName": "ROUTER_PRINCIPAL",
-                "propertyName": "zk-dt-secret-manager.kerberos.server.principal",
-                "instanceWildcard": "_HOST"
               }
             ],
             "excludedParams": [
@@ -999,16 +956,8 @@
                 "router_default_nameservice_enable",
                 "router_default_nameserviceId",
                 "router_rpc_enable",
-                "router_rpc_address",
-                "router_rpc_bind_host",
                 "router_admin_enable",
-                "router_admin_address",
-                "router_admin_bind_host",
                 "router_http_enable",
-                "router_http_address",
-                "router_http_bind_host",
-                "router_https_address",
-                "router_https_bind_host",
                 "router_handler_count",
                 "router_handler_queue_size",
                 "router_reader_count",
@@ -1030,6 +979,7 @@
                 "router_store_driver_class",
                 "hadoop_zk_address",
                 "router_store_connection_test",
+                "router_store_driver_zk_parent_path",
                 "router_cache_ttl",
                 "router_store_membership_expiration",
                 "router_store_membership_expiration_deletion",
@@ -1078,6 +1028,26 @@
                 "hadoop_security_cred_provider_path"
             ],
             "additionalConfigs": [
+              {
+                "key": "dfs.federation.router.rpc-address",
+                "value": ""
+              },
+              {
+                "key": "dfs.federation.router.admin-address",
+                "value": ""
+              },
+              {
+                "key": "dfs.federation.router.http-address",
+                "value": ""
+              },
+              {
+                "key": "dfs.federation.router.https-address",
+                "value": ""
+              },
+              {
+                "key": "sql-dt-secret-manager.connection.driver",
+                "value": ""
+              },
               {
                 "key": "dfs.federation.router.keytab.file",
                 "value": "hdfs_rbf.keytab"
