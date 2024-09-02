@@ -123,7 +123,7 @@ if [ "dfsrouter" = "$1" ]; then
   HADOOP_OPTS="-Dsecurity.audit.logger=$HADOOP_SECURITY_LOGGER $HADOOP_OPTS"
   export HADOOP_OPTS="-Dhdfs.audit.logger=$HADOOP_AUDIT_LOGGER $HADOOP_OPTS"
 
-  exec $HDFS_BIN --config $CONF_DIR --daemon start "$@"
+  exec $HDFS_BIN --config $CONF_DIR "$@"
 else
   exec $HDFS_BIN --config $CONF_DIR "$@"
 fi
