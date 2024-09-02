@@ -69,13 +69,19 @@ function generate_configuration_files {
       change_xml_value "sql-dt-secret-manager.connection.password" "********" ${HDFS_RBF_SITE}
     fi
 
+    KERBEROS_PRINCIPAL=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.kerberos.principal" ${HDFS_RBF_SITE})
+    if [[ -n "${KERBEROS_PRINCIPAL}" ]]; then
+      KERBEROS_PRIMARY=$(echo $KERBEROS_PRINCIPAL | cut -d "/" -f 1)
+      KERBEROS_REALM=$(echo $KERBEROS_PRINCIPAL | cut -d "/" -f 2 | cut -d "@" -f 2)
+      export SCM_KERBEROS_PRINCIPAL="${KERBEROS_PRIMARY}/${HOST}@${KERBEROS_REALM}"
+    fi
+
     cp -f ${CONF_DIR}/hadoop-conf/core-site.xml ${CONF_DIR}/
     cp -f ${CONF_DIR}/hadoop-conf/hdfs-site.xml ${CONF_DIR}/
   fi
 }
 
 function generate_hadoop_router_opts {
-  #HEAP_DUMP_OPTS="-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/hdfs_rbf_${USER}-$(echo ${HDFS_RBF_ROLE_TYPE} | tr '[:lower:]' '[:upper:]')_pid{{PID}}.hprof -XX:OnOutOfMemoryError=/opt/cloudera/cm-agent/service/common/killparent.sh"
   export HADOOP_ROUTER_OPTS="${HADOOP_ROUTER_OPTS} -Xms${ROUTER_JAVA_HEAPSIZE}m -Xmx${ROUTER_JAVA_HEAPSIZE}m ${ROUTER_JAVA_EXTRA_OPTS} ${CSD_JAVA_OPTS}"
   echo "Generated HADOOP_ROUTER_OPTS: ${HADOOP_ROUTER_OPTS}"
 }
@@ -127,10 +133,6 @@ export HADOOP_LIBEXEC_DIR=$HADOOP_HOME/libexec
 export JAVA_LIBRARY_PATH=$HADOOP_HOME/lib/native
 export HADOOP_CLASSPATH=$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
 export HADOOP_LOGFILE=hadoop-cmf-hdfs-ROUTER-${HOST}.log.out
-
-KERBEROS_PRIMARY=$(echo $KERBEROS_PRINCIPAL | cut -d "/" -f 1)
-KERBEROS_REALM=$(echo $KERBEROS_PRINCIPAL | cut -d "/" -f 2 | cut -d "@" -f 2)
-export SCM_KERBEROS_PRINCIPAL="${KERBEROS_PRIMARY}/${HOST}@${KERBEROS_REALM}"
 
 # HDFS RBF site xml file
 export HDFS_RBF_SITE="${CONF_DIR}/hdfs-rbf-site.xml"
