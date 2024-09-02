@@ -128,6 +128,10 @@ export JAVA_LIBRARY_PATH=$HADOOP_HOME/lib/native
 export HADOOP_CLASSPATH=$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
 export HADOOP_LOGFILE=hadoop-cmf-hdfs-ROUTER-${HOST}.log.out
 
+KERBEROS_PRIMARY=$(echo $KERBEROS_PRINCIPAL | cut -d "/" -f 1)
+KERBEROS_REALM=$(echo $KERBEROS_PRINCIPAL | cut -d "/" -f 2 | cut -d "@" -f 2)
+export SCM_KERBEROS_PRINCIPAL="${KERBEROS_PRIMARY}/${HOST}@${KERBEROS_REALM}"
+
 # HDFS RBF site xml file
 export HDFS_RBF_SITE="${CONF_DIR}/hdfs-rbf-site.xml"
 
