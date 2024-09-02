@@ -85,6 +85,7 @@
           "ROUTER_HTTP_PORT": "${router_http_port}",
           "ROUTER_HTTPS_PORT": "${router_https_port}",
           "USER": "${user}",
+          "SCM_KERBEROS_PRINCIPAL": "${principal}",
           "HOST": "${host}",
           "HADOOP_LOG_DIR": "${log_dir}",
           "HADOOP_ROOT_LOGGER": "${hadoop_root_logger}",
