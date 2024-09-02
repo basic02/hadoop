@@ -85,7 +85,11 @@
           "ROUTER_HTTP_PORT": "${router_http_port}",
           "ROUTER_HTTPS_PORT": "${router_https_port}",
           "USER": "${user}",
-          "HOST": "${host}"
+          "HOST": "${host}",
+          "HADOOP_LOG_DIR": "${log_dir}",
+          "HADOOP_ROOT_LOGGER": "${hadoop_root_logger}",
+          "HADOOP_SECURITY_LOGGER": "${hadoop_security_logger}",
+          "HADOOP_AUDIT_LOGGER": "${hadoop_audit_logger}"
         }
       },
       "kerberosPrincipals": [
@@ -919,6 +923,30 @@
           "type": "string",
           "default": "localjceks://file/{{CMF_CONF_DIR}}/creds.localjceks",
           "required": "false"
+        },
+        {
+          "name": "hadoop_root_logger",
+          "label": "Hadoop Root Logger",
+          "description": "Hadoop root logger",
+          "type": "string",
+          "default": "INFO,RFA",
+          "required": "true"
+        },
+        {
+          "name": "hadoop_security_logger",
+          "label": "Hadoop Security Logger",
+          "description": "Hadoop security logger",
+          "type": "string",
+          "default": "INFO,RFAS",
+          "required": "true"
+        },
+        {
+          "name": "hadoop_audit_logger",
+          "label": "Hadoop Audit Logger",
+          "description": "Hadoop audit logger",
+          "type": "string",
+          "default": "INFO,RFAAUDIT",
+          "required": "true"
         }
       ],
       "configWriter": {
