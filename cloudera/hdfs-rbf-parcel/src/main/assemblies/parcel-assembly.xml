@@ -34,10 +34,9 @@
       <includes>
         <include>*</include>
       </includes>
-      <!--<excludes>
-        <exclude>org.slf4j:slf4j-api</exclude>
-        <exclude>org.slf4j:slf4j-reload4j</exclude>
-      </excludes>-->
+      <excludes>
+        <exclude>org.slf4j:slf4j-log4j12</exclude>
+      </excludes>
       <fileMode>0644</fileMode>
     </dependencySet>
   </dependencySets>

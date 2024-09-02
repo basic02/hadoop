@@ -80,12 +80,12 @@
           "SECRET_MANAGER_DATABASE_TYPE": "${sql_dt_secret_manager_database_type}",
           "GENERATE_JCEKS_PASSWORD": "${generate_jceks_password}",
           "SECRET_MANAGER_CONNECTION_PASSWORD": "${sql_dt_secret_manager_connection_password}",
-          "USER": "${user}",
-          "HOST": "${host}",
           "ROUTER_RPC_PORT": "${router_rpc_port}",
           "ROUTER_ADMIN_PORT": "${router_admin_port}",
           "ROUTER_HTTP_PORT": "${router_http_port}",
-          "ROUTER_HTTPS_PORT": "${router_https_port}"
+          "ROUTER_HTTPS_PORT": "${router_https_port}",
+          "USER": "${user}",
+          "HOST": "${host}"
         }
       },
       "kerberosPrincipals": [
@@ -1061,9 +1061,37 @@
                 "value": "hdfs_rbf.keytab"
               }
             ]
+          },
+          {
+            "filename": "hadoop-policy.xml",
+            "configFormat": "hadoop_xml",
+            "includedParams" : [
+            ],
+            "additionalConfigs": [
+              {
+                "key": "security.client.protocol.acl",
+                "value": "* "
+              },
+              {
+                "key": "security.client.datanode.protocol.acl",
+                "value": "* "
+              },
+              {
+                "key": "security.refresh.policy.protocol.acl",
+                "value": "* "
+              },
+              {
+                "key": "security.ha.service.protocol.acl",
+                "value": "* "
+              }
+            ]
           }
         ],
         "auxConfigGenerators": [
+          {
+            "filename": "redaction-rules.json",
+            "sourceFilename": "aux/defaults/redaction-rules.json"
+          }
         ],
         "peerConfigGenerators": [
         ]

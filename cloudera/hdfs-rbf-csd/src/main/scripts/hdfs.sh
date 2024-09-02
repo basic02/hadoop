@@ -54,6 +54,7 @@ ROUTER_GC_ARGS="$BASIC_GC_TUNING_ARGS"
 # Now, replace the final GC args within the respective OPTs args
 # NOTE: the below replacement only works if CDH >= 6.3.0 [ i.e the version (& future versions) that supports java 11 for CDH ]
 export HADOOP_ROUTER_OPTS=$(replace_gc_args "$HADOOP_ROUTER_OPTS" "$ROUTER_GC_ARGS")
+export HADOOP_OPTS="$HADOOP_ROUTER_OPTS $HADOOP_OPTS"
 
 if [ -n $KRB5_CONFIG ]; then
   # HADOOP_OPTS requires this JVM argument to point to the

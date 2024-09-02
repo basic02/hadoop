@@ -30,6 +30,14 @@
   <packaging>pom</packaging>
 
   <repositories>
+    <repository>
+      <id>cloudera-repo</id>
+      <name>Cloudera Repository</name>
+      <url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
     <!-- Cloudera Internal -->
     <repository>
       <id>in-qa</id>
@@ -47,6 +55,8 @@
     <parcel.basename>HDFS_RBF-${hadoop.full.version}</parcel.basename>
     <parcel.tar.gz.filename>${parcel.basename}.tar.gz</parcel.tar.gz.filename>
     <parcel.filename>${parcel.basename}-${os.suffix}.parcel</parcel.filename>
+
+    <cdh.logredactor.version>2.0.13</cdh.logredactor.version>
   </properties>
 
   <dependencies>
@@ -69,6 +79,12 @@
           <artifactId>stax-api</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.cloudera.logredactor</groupId>
+      <artifactId>logredactor</artifactId>
+      <version>${cdh.logredactor.version}</version>
     </dependency>
   </dependencies>
 
