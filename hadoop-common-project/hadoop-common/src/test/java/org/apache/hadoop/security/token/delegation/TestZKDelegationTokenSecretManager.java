@@ -21,6 +21,8 @@ package org.apache.hadoop.security.token.delegation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 
 import java.util.function.Supplier;
 import org.apache.curator.RetryPolicy;
@@ -320,13 +322,19 @@ public class TestZKDelegationTokenSecretManager {
   @SuppressWarnings("rawtypes")
   protected void verifyDestroy(DelegationTokenManager tm, Configuration conf)
       throws Exception {
+    AbstractDelegationTokenSecretManager sm =
+        tm.getDelegationTokenSecretManager();
+    ZKDelegationTokenSecretManager zksm = (ZKDelegationTokenSecretManager) sm;
+    ExecutorService es = zksm.getListenerThreadPool();
     tm.destroy();
+    Assert.assertTrue(es.isShutdown());
     // wait for the pool to terminate
     long timeout =
         conf.getLong(
             ZKDelegationTokenSecretManager.ZK_DTSM_ZK_SHUTDOWN_TIMEOUT,
             ZKDelegationTokenSecretManager.ZK_DTSM_ZK_SHUTDOWN_TIMEOUT_DEFAULT);
     Thread.sleep(timeout * 3);
+    Assert.assertTrue(es.isTerminated());
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -353,6 +361,17 @@ public class TestZKDelegationTokenSecretManager {
         (Token<DelegationTokenIdentifier>)
     tm1.createToken(UserGroupInformation.getCurrentUser(), "foo");
     Assert.assertNotNull(token);
+
+    AbstractDelegationTokenSecretManager sm = tm1.getDelegationTokenSecretManager();
+    ZKDelegationTokenSecretManager zksm = (ZKDelegationTokenSecretManager)sm;
+    ExecutorService es = zksm.getListenerThreadPool();
+    es.submit(new Callable<Void>() {
+      public Void call() throws Exception {
+        Thread.sleep(shutdownTimeoutMillis * 2); // force this to be shutdownNow
+        return null;
+      }
+    });
+
     tm1.destroy();
   }
 
