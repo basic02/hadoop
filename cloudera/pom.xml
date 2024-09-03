@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.apache.hadoop</groupId>
+    <artifactId>hadoop-main</artifactId>
+    <version>3.3.5</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>hadoop-cloudera</artifactId>
+  <name>Hadoop Cloudera</name>
+  <description>Hadoop Cloudera</description>
+  <packaging>pom</packaging>
+
+  <properties>
+    <os.suffix>el7</os.suffix>
+    <!-- The build versioning consists of upstream and downstream -->
+    <hadoop.build.version>${project.version}-cdh${cdh.version}</hadoop.build.version>
+    <hadoop.full.version>${hadoop.build.version}-${hadoop.downstream.gbn}</hadoop.full.version>
+
+    <cdh.version>7.1.7.0-551</cdh.version>
+    <!-- Generate fake GBN for dev builds based on local build time -->
+    <hadoop.downstream.gbn>${maven.build.timestamp}</hadoop.downstream.gbn>
+    <maven.build.timestamp.format>yyMMddHH</maven.build.timestamp.format>
+
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <modules>
+    <module>hdfs-rbf-parcel</module>
+    <module>hdfs-rbf-csd</module>
+  </modules>
+</project>

@@ -1,0 +1,8 @@
+{
+  "hdfs-rbf": {
+    "destination": "/usr/bin/hdfs-rbf",
+    "source": "bin/hdfs",
+    "priority": 10,
+    "isDirectory": false
+  }
+}

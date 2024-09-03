@@ -1,0 +1,29 @@
+#!/bin/bash
+  # Reference: http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+SOURCE="${BASH_SOURCE[0]}"
+BIN_DIR="$( dirname "$SOURCE" )"
+while [ -h "$SOURCE" ]
+do
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$BIN_DIR/$SOURCE"
+  BIN_DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
+done
+BIN_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+# Autodetect JAVA_HOME if not defined
+CDH_HOME=/opt/cloudera/parcels/CDH
+. $CDH_HOME/lib/bigtop-utils/bigtop-detect-javahome
+
+HADOOP_HOME=$BIN_DIR/../lib/hdfs_rbf
+export HADOOP_HOME=$(readlink -m "${HADOOP_HOME}")
+export HADOOP_HOME_WARN_SUPPRESS=true
+export HADOOP_PREFIX=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export HADOOP_YARN_HOME=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_LIBEXEC_DIR=$HADOOP_HOME/libexec
+export JAVA_LIBRARY_PATH=$HADOOP_HOME/lib/native
+export HADOOP_CLASSPATH=/etc/hadoop/conf:$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
+
+exec $HADOOP_HOME/bin/hdfs "$@"
