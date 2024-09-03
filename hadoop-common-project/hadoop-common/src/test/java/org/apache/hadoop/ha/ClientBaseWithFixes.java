@@ -41,6 +41,7 @@ import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.ZKTestCase;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.server.ServerCnxnFactory;
+import org.apache.zookeeper.server.ServerCnxnFactoryAccessor;
 import org.apache.zookeeper.server.ZKDatabase;
 import org.apache.zookeeper.server.ZooKeeperServer;
 import org.apache.zookeeper.server.persistence.FileTxnLog;
@@ -77,9 +78,9 @@ public abstract class ClientBaseWithFixes extends ZKTestCase {
     protected int maxCnxns = 0;
     protected ServerCnxnFactory serverFactory = null;
     protected File tmpDir = null;
-    
+
     long initialFdCount;
-    
+
     /**
      * In general don't use this. Only use in the special case that you
      * want to ignore results (for whatever reason) in your test. Don't
@@ -363,7 +364,7 @@ public abstract class ClientBaseWithFixes extends ZKTestCase {
             ZKDatabase zkDb;
             {
                 ZooKeeperServer zs = getServer(factory);
-        
+
                 zkDb = zs.getZKDatabase();
             }
             factory.shutdown();
@@ -436,7 +437,9 @@ public abstract class ClientBaseWithFixes extends ZKTestCase {
 
 
     protected static ZooKeeperServer getServer(ServerCnxnFactory fac) {
-        return fac.getZooKeeperServer();
+        ZooKeeperServer zs = ServerCnxnFactoryAccessor.getZkServer(fac);
+
+        return zs;
     }
 
     protected void tearDownAll() throws Exception {
