@@ -4247,18 +4247,6 @@ The switch to turn S3A auditing on or off.
   </property>
 
   <property>
-    <name>hadoop.zk.ssl.enabled</name>
-    <decription>
-      Enable SSL/TLS encryption for the ZooKeeper communication.
-      Note: this setting overrides dfs.ha.zkfc.client.ssl.enabled,
-      yarn.resourcemanager.zk-client-ssl.enabled and also
-      hadoop.kms.authentication.zk-dt-secret-manager.ssl.enabled in order to unify the SSL based
-      Zookeeper access across Hadoop. Leaving this property empty ensures that service specific
-      enablement can be done separately.
-    </decription>
-  </property>
-
-  <property>
     <name>hadoop.system.tags</name>
     <value>YARN,HDFS,NAMENODE,DATANODE,REQUIRED,SECURITY,KERBEROS,PERFORMANCE,CLIENT
       ,SERVER,DEBUG,DEPRECATED,COMMON,OPTIONAL</value>

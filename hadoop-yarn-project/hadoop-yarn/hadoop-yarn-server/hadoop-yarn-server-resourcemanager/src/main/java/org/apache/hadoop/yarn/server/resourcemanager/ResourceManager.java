@@ -19,7 +19,6 @@
 package org.apache.hadoop.yarn.server.resourcemanager;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.hadoop.fs.CommonConfigurationKeys;
 import org.apache.hadoop.thirdparty.com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.hadoop.classification.VisibleForTesting;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
@@ -428,11 +427,7 @@ public class ResourceManager extends CompositeService
       authInfos.add(authInfo);
     }
 
-    boolean isSSLEnabled =
-        config.getBoolean(CommonConfigurationKeys.ZK_CLIENT_SSL_ENABLED,
-            config.getBoolean(YarnConfiguration.RM_ZK_CLIENT_SSL_ENABLED,
-                YarnConfiguration.DEFAULT_RM_ZK_CLIENT_SSL_ENABLED));
-    manager.start(authInfos, isSSLEnabled);
+    manager.start(authInfos);
     return manager;
   }
 
@@ -598,7 +593,7 @@ public class ResourceManager extends CompositeService
   protected AMLivelinessMonitor createAMLivelinessMonitor() {
     return new AMLivelinessMonitor(this.rmDispatcher);
   }
-  
+
   protected RMNodeLabelsManager createNodeLabelManager()
       throws InstantiationException, IllegalAccessException {
     return new RMNodeLabelsManager();
@@ -619,7 +614,7 @@ public class ResourceManager extends CompositeService
     // Use the in memory Placement Constraint Manager.
     return new MemoryPlacementConstraintManager();
   }
-  
+
   protected DelegationTokenRenewer createDelegationTokenRenewer() {
     return new DelegationTokenRenewer();
   }
@@ -777,7 +772,7 @@ public class ResourceManager extends CompositeService
       AMLivelinessMonitor amFinishingMonitor = createAMLivelinessMonitor();
       addService(amFinishingMonitor);
       rmContext.setAMFinishingMonitor(amFinishingMonitor);
-      
+
       RMAppLifetimeMonitor rmAppLifetimeMonitor = createRMAppLifetimeMonitor();
       addService(rmAppLifetimeMonitor);
       rmContext.setRMAppLifetimeMonitor(rmAppLifetimeMonitor);
@@ -1609,7 +1604,7 @@ public class ResourceManager extends CompositeService
       transitionToActive();
     }
   }
-  
+
   protected void doSecureLogin() throws IOException {
 	InetSocketAddress socAddr = getBindAddress(conf);
     SecurityUtil.login(this.conf, YarnConfiguration.RM_KEYTAB,
@@ -1640,7 +1635,7 @@ public class ResourceManager extends CompositeService
     rmContext.setHAServiceState(HAServiceState.STOPPING);
     rmStatusInfoBean.unregister();
   }
-  
+
   protected ResourceTrackerService createResourceTrackerService() {
     return new ResourceTrackerService(this.rmContext, this.nodesListManager,
         this.nmLivelinessMonitor,
@@ -1848,7 +1843,7 @@ public class ResourceManager extends CompositeService
 
   /**
    * Retrieve RM bind address from configuration.
-   * 
+   *
    * @param conf Configuration.
    * @return InetSocketAddress
    */
