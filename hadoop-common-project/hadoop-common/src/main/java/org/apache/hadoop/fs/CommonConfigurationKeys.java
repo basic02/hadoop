@@ -24,7 +24,7 @@ import org.apache.hadoop.http.lib.StaticUserWebFilter;
 import org.apache.hadoop.net.DomainNameResolver;
 import org.apache.hadoop.net.DNSDomainNameResolver;
 
-/** 
+/**
  * This class contains constants for configuration keys used
  * in the common code.
  *
@@ -70,7 +70,7 @@ public class CommonConfigurationKeys extends CommonConfigurationKeysPublic {
     "ipc.server.read.threadpool.size";
   /** Default value for IPC_SERVER_RPC_READ_THREADS_KEY */
   public static final int     IPC_SERVER_RPC_READ_THREADS_DEFAULT = 1;
-  
+
   /** Number of pending connections that may be queued per socket reader */
   public static final String IPC_SERVER_RPC_READ_CONNECTION_QUEUE_SIZE_KEY =
       "ipc.server.read.connection-queue.size";
@@ -189,19 +189,19 @@ public class CommonConfigurationKeys extends CommonConfigurationKeysPublic {
   /**
    * Service Authorization
    */
-  public static final String 
-  HADOOP_SECURITY_SERVICE_AUTHORIZATION_DEFAULT_ACL = 
+  public static final String
+  HADOOP_SECURITY_SERVICE_AUTHORIZATION_DEFAULT_ACL =
       "security.service.authorization.default.acl";
-  public static final String 
+  public static final String
   HADOOP_SECURITY_SERVICE_AUTHORIZATION_DEFAULT_BLOCKED_ACL =
       "security.service.authorization.default.acl.blocked";
   public static final String
-  HADOOP_SECURITY_SERVICE_AUTHORIZATION_REFRESH_POLICY = 
+  HADOOP_SECURITY_SERVICE_AUTHORIZATION_REFRESH_POLICY =
       "security.refresh.policy.protocol.acl";
-  public static final String 
+  public static final String
   HADOOP_SECURITY_SERVICE_AUTHORIZATION_GET_USER_MAPPINGS =
       "security.get.user.mappings.protocol.acl";
-  public static final String 
+  public static final String
   HADOOP_SECURITY_SERVICE_AUTHORIZATION_REFRESH_USER_MAPPINGS =
       "security.refresh.user.mappings.protocol.acl";
   public static final String
@@ -219,9 +219,9 @@ public class CommonConfigurationKeys extends CommonConfigurationKeysPublic {
   public static final String
       HADOOP_SECURITY_SERVICE_AUTHORIZATION_RECONFIGURATION =
       "security.reconfiguration.protocol.acl";
-  public static final String 
+  public static final String
   SECURITY_HA_SERVICE_PROTOCOL_ACL = "security.ha.service.protocol.acl";
-  public static final String 
+  public static final String
   SECURITY_ZKFC_PROTOCOL_ACL = "security.zkfc.protocol.acl";
   public static final String
   SECURITY_CLIENT_PROTOCOL_ACL = "security.client.protocol.acl";
@@ -270,12 +270,12 @@ public class CommonConfigurationKeys extends CommonConfigurationKeysPublic {
   public static final String HA_HM_CONNECT_RETRY_INTERVAL_KEY =
     "ha.health-monitor.connect-retry-interval.ms";
   public static final long HA_HM_CONNECT_RETRY_INTERVAL_DEFAULT = 1000;
- 
+
   /* How often to check the service. */
   public static final String HA_HM_CHECK_INTERVAL_KEY =
-    "ha.health-monitor.check-interval.ms";  
+    "ha.health-monitor.check-interval.ms";
   public static final long HA_HM_CHECK_INTERVAL_DEFAULT = 1000;
- 
+
   /* How long to sleep after an unexpected RPC error. */
   public static final String HA_HM_SLEEP_AFTER_DISCONNECT_KEY =
     "ha.health-monitor.sleep-after-disconnect.ms";
@@ -291,17 +291,17 @@ public class CommonConfigurationKeys extends CommonConfigurationKeysPublic {
   public static final String HA_HM_RPC_TIMEOUT_KEY =
     "ha.health-monitor.rpc-timeout.ms";
   public static final int HA_HM_RPC_TIMEOUT_DEFAULT = 45000;
-  
+
   /* Timeout that the FC waits for the new active to become active */
   public static final String HA_FC_NEW_ACTIVE_TIMEOUT_KEY =
     "ha.failover-controller.new-active.rpc-timeout.ms";
   public static final int HA_FC_NEW_ACTIVE_TIMEOUT_DEFAULT = 60000;
-  
+
   /* Timeout that the FC waits for the old active to go to standby */
   public static final String HA_FC_GRACEFUL_FENCE_TIMEOUT_KEY =
     "ha.failover-controller.graceful-fence.rpc-timeout.ms";
   public static final int HA_FC_GRACEFUL_FENCE_TIMEOUT_DEFAULT = 5000;
-  
+
   /* FC connection retries for graceful fencing */
   public static final String HA_FC_GRACEFUL_FENCE_CONNECTION_RETRIES =
       "ha.failover-controller.graceful-fence.connection.retries";
@@ -328,7 +328,7 @@ public class CommonConfigurationKeys extends CommonConfigurationKeysPublic {
   /**
    * User{@literal ->}groups static mapping to override the groups lookup
    */
-  public static final String HADOOP_USER_GROUP_STATIC_OVERRIDES = 
+  public static final String HADOOP_USER_GROUP_STATIC_OVERRIDES =
       "hadoop.user.group.static.mapping.overrides";
   public static final String HADOOP_USER_GROUP_STATIC_OVERRIDES_DEFAULT =
       "dr.who=;";
@@ -351,7 +351,7 @@ public class CommonConfigurationKeys extends CommonConfigurationKeysPublic {
 
   public static final long HADOOP_SECURITY_UID_NAME_CACHE_TIMEOUT_DEFAULT =
     4*60*60; // 4 hours
-  
+
   public static final String  IPC_CLIENT_ASYNC_CALLS_MAX_KEY =
       "ipc.client.async.calls.max";
   public static final int     IPC_CLIENT_ASYNC_CALLS_MAX_DEFAULT = 100;
@@ -421,14 +421,6 @@ public class CommonConfigurationKeys extends CommonConfigurationKeysPublic {
   /** SSL enablement for all Hadoop-&gt;ZK communication. */
   //Note: except ZKSignerSecretProvider in hadoop-auth to avoid circular dependency.
   public static final String ZK_CLIENT_SSL_ENABLED = ZK_PREFIX + "ssl.enabled";
-  /** Keystore location for ZooKeeper client connection over SSL. */
-  public static final String ZK_SSL_KEYSTORE_LOCATION = ZK_PREFIX + "ssl.keystore.location";
-  /** Keystore password for ZooKeeper client connection over SSL. */
-  public static final String ZK_SSL_KEYSTORE_PASSWORD = ZK_PREFIX + "ssl.keystore.password";
-  /** Truststore location for ZooKeeper client connection over SSL. */
-  public static final String ZK_SSL_TRUSTSTORE_LOCATION = ZK_PREFIX + "ssl.truststore.location";
-  /** Truststore password for ZooKeeper client connection over SSL.  */
-  public static final String ZK_SSL_TRUSTSTORE_PASSWORD = ZK_PREFIX + "ssl.truststore.password";
 
   public static final int    ZK_RETRY_INTERVAL_MS_DEFAULT = 1000;
   /** Default domain name resolver for hadoop to use. */
