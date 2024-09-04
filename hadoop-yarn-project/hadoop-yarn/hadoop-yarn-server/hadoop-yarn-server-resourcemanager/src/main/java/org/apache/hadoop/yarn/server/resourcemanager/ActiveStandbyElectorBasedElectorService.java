@@ -18,7 +18,6 @@
 package org.apache.hadoop.yarn.server.resourcemanager;
 
 import org.apache.hadoop.classification.VisibleForTesting;
-import org.apache.hadoop.security.SecurityUtil;
 import org.apache.hadoop.thirdparty.protobuf.InvalidProtocolBufferException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,14 +104,8 @@ public class ActiveStandbyElectorBasedElectorService extends AbstractService
         conf.getInt(YarnConfiguration.RM_HA_FC_ELECTOR_ZK_RETRIES_KEY, conf
           .getInt(CommonConfigurationKeys.HA_FC_ELECTOR_ZK_OP_RETRIES_KEY,
             CommonConfigurationKeys.HA_FC_ELECTOR_ZK_OP_RETRIES_DEFAULT));
-    boolean isSSLEnabled =
-        conf.getBoolean(CommonConfigurationKeys.ZK_CLIENT_SSL_ENABLED,
-            conf.getBoolean(YarnConfiguration.RM_ZK_CLIENT_SSL_ENABLED,
-                YarnConfiguration.DEFAULT_RM_ZK_CLIENT_SSL_ENABLED));
-    SecurityUtil.TruststoreKeystore truststoreKeystore
-            = isSSLEnabled ? new SecurityUtil.TruststoreKeystore(conf) : null;
     elector = new ActiveStandbyElector(zkQuorum, (int) zkSessionTimeout,
-        electionZNode, zkAcls, zkAuths, this, maxRetryNum, false, truststoreKeystore);
+        electionZNode, zkAcls, zkAuths, this, maxRetryNum, false);
 
     elector.ensureParentZNode();
     if (!isParentZnodeSafe(clusterId)) {

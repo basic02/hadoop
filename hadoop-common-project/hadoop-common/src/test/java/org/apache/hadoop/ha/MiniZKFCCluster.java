@@ -54,12 +54,12 @@ public class MiniZKFCCluster {
   private List<DummyHAService> svcs;
   private DummyZKFCThread thrs[];
   private Configuration conf;
-  
+
   private DummySharedResource sharedResource = new DummySharedResource();
-  
+
   private static final Logger LOG = LoggerFactory.getLogger(MiniZKFCCluster
       .class);
-  
+
   public MiniZKFCCluster(Configuration conf, ZooKeeperServer zks) {
     this.conf = conf;
     // Fast check interval so tests run faster
@@ -116,7 +116,7 @@ public class MiniZKFCCluster {
     assertEquals(0, thrs[0].zkfc.run(new String[]{"-formatZK"}));
     ctx.addThread(thrs[0]);
     thrs[0].start();
-    
+
     LOG.info("Waiting for svc0 to enter active state");
     waitForHAState(0, HAServiceState.ACTIVE);
 
@@ -128,7 +128,7 @@ public class MiniZKFCCluster {
       waitForHAState(i, HAServiceState.STANDBY);
     }
   }
-  
+
   /**
    * Stop the services.
    * @throws Exception if either of the services had encountered a fatal error
@@ -154,7 +154,7 @@ public class MiniZKFCCluster {
   public TestContext getTestContext() {
     return ctx;
   }
-  
+
   public DummyHAService getService(int i) {
     return svcs.get(i);
   }
@@ -166,7 +166,7 @@ public class MiniZKFCCluster {
   public DummyZKFC getZkfc(int i) {
     return thrs[i].zkfc;
   }
-  
+
   public void setHealthy(int idx, boolean healthy) {
     svcs.get(idx).isHealthy = healthy;
   }
@@ -178,11 +178,11 @@ public class MiniZKFCCluster {
   public void setFailToBecomeStandby(int idx, boolean doFail) {
     svcs.get(idx).failToBecomeStandby = doFail;
   }
-  
+
   public void setFailToFence(int idx, boolean doFail) {
     svcs.get(idx).failToFence = doFail;
   }
-  
+
   public void setUnreachable(int idx, boolean unreachable) {
     svcs.get(idx).actUnreachable = unreachable;
   }
@@ -207,7 +207,7 @@ public class MiniZKFCCluster {
       Thread.sleep(50);
     }
   }
-  
+
   /**
    * Wait for the ZKFC to be notified of a change in health state.
    */
@@ -229,7 +229,7 @@ public class MiniZKFCCluster {
         getElector(idx), state);
   }
 
-  
+
 
   /**
    * Expire the ZK session of the given service. This requires
@@ -241,13 +241,13 @@ public class MiniZKFCCluster {
     Stat stat = new Stat();
     byte[] data = zks.getZKDatabase().getData(
         DummyZKFC.LOCK_ZNODE, stat, null);
-    
+
     assertArrayEquals(Ints.toByteArray(svcs.get(idx).index), data);
     long session = stat.getEphemeralOwner();
     LOG.info("Expiring svc " + idx + "'s zookeeper session " + session);
     zks.closeSession(session);
   }
-  
+
 
   /**
    * Wait for the given HA service to become the active lock holder.
@@ -261,7 +261,7 @@ public class MiniZKFCCluster {
         DummyZKFC.SCOPED_PARENT_ZNODE,
         (idx == null) ? null : Ints.toByteArray(svc.index));
   }
-  
+
 
   /**
    * Expires the ZK session associated with service 'fromIdx', and waits
@@ -271,11 +271,11 @@ public class MiniZKFCCluster {
   public void expireAndVerifyFailover(int fromIdx, int toIdx)
       throws Exception {
     Preconditions.checkArgument(fromIdx != toIdx);
-    
+
     getElector(fromIdx).preventSessionReestablishmentForTests();
     try {
       expireActiveLockHolder(fromIdx);
-      
+
       waitForHAState(fromIdx, HAServiceState.STANDBY);
       waitForHAState(toIdx, HAServiceState.ACTIVE);
     } finally {
@@ -304,16 +304,16 @@ public class MiniZKFCCluster {
       }
     }
   }
-  
+
   static class DummyZKFC extends ZKFailoverController {
     private static final String DUMMY_CLUSTER = "dummy-cluster";
     public static final String SCOPED_PARENT_ZNODE =
       ZKFailoverController.ZK_PARENT_ZNODE_DEFAULT + "/" +
       DUMMY_CLUSTER;
-    private static final String LOCK_ZNODE = 
+    private static final String LOCK_ZNODE =
       SCOPED_PARENT_ZNODE + "/" + ActiveStandbyElector.LOCK_FILENAME;
     private final DummyHAService localTarget;
-    
+
     public DummyZKFC(Configuration conf, DummyHAService localTarget) {
       super(conf, localTarget);
       this.localTarget = localTarget;
@@ -323,7 +323,7 @@ public class MiniZKFCCluster {
     protected byte[] targetToData(HAServiceTarget target) {
       return Ints.toByteArray(((DummyHAService)target).index);
     }
-    
+
     @Override
     protected HAServiceTarget dataToTarget(byte[] data) {
       int index = Ints.fromByteArray(data);
@@ -369,11 +369,6 @@ public class MiniZKFCCluster {
         }
       }
       return services;
-    }
-
-    @Override
-    protected boolean isSSLEnabled() {
-      return false;
     }
   }
 }
