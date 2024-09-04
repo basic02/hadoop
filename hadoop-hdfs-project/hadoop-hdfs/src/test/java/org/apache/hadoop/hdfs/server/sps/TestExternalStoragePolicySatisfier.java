@@ -230,15 +230,7 @@ public class TestExternalStoragePolicySatisfier {
   private void createCluster(boolean createMoverPath) throws IOException {
     getConf().setLong("dfs.block.size", DEFAULT_BLOCK_SIZE);
     setCluster(startCluster(getConf(), allDiskTypes, NUM_OF_DATANODES,
-        STORAGES_PER_DATANODE, CAPACITY, createMoverPath, true));
-    getFS();
-    writeContent(FILE);
-  }
-
-  private void createClusterDoNotStartSPS() throws IOException {
-    getConf().setLong("dfs.block.size", DEFAULT_BLOCK_SIZE);
-    setCluster(startCluster(getConf(), allDiskTypes, NUM_OF_DATANODES,
-        STORAGES_PER_DATANODE, CAPACITY, true, false));
+        STORAGES_PER_DATANODE, CAPACITY, createMoverPath));
     getFS();
     writeContent(FILE);
   }
@@ -247,12 +239,12 @@ public class TestExternalStoragePolicySatisfier {
       StorageType[][] storageTypes, int numberOfDatanodes, int storagesPerDn,
       long nodeCapacity) throws IOException {
     return startCluster(conf, storageTypes, numberOfDatanodes, storagesPerDn,
-        nodeCapacity, false, true);
+        nodeCapacity, false);
   }
 
   private MiniDFSCluster startCluster(final Configuration conf,
       StorageType[][] storageTypes, int numberOfDatanodes, int storagesPerDn,
-      long nodeCapacity, boolean createMoverPath, boolean startSPS) throws IOException {
+      long nodeCapacity, boolean createMoverPath) throws IOException {
     long[][] capacities = new long[numberOfDatanodes][storagesPerDn];
     for (int i = 0; i < numberOfDatanodes; i++) {
       for (int j = 0; j < storagesPerDn; j++) {
@@ -264,16 +256,14 @@ public class TestExternalStoragePolicySatisfier {
         .storageTypes(storageTypes).storageCapacities(capacities).build();
     cluster.waitActive();
 
-    if (startSPS) {
-      nnc = DFSTestUtil.getNameNodeConnector(getConf(),
-          HdfsServerConstants.MOVER_ID_PATH, 1, createMoverPath);
+    nnc = DFSTestUtil.getNameNodeConnector(getConf(),
+        HdfsServerConstants.MOVER_ID_PATH, 1, createMoverPath);
 
-      externalSps = new StoragePolicySatisfier(getConf());
-      externalCtxt = new ExternalSPSContext(externalSps, nnc);
+    externalSps = new StoragePolicySatisfier(getConf());
+    externalCtxt = new ExternalSPSContext(externalSps, nnc);
 
-      externalSps.init(externalCtxt);
-      externalSps.start(StoragePolicySatisfierMode.EXTERNAL);
-    }
+    externalSps.init(externalCtxt);
+    externalSps.start(StoragePolicySatisfierMode.EXTERNAL);
     return cluster;
   }
 
@@ -1601,20 +1591,6 @@ public class TestExternalStoragePolicySatisfier {
         DFSTestUtil.waitExpectedStorageType(filePath.toString(),
             StorageType.SSD, 2, 30000, hdfsCluster.getFileSystem());
       }
-    } finally {
-      shutdownCluster();
-    }
-  }
-
-  @Test(timeout = 300000)
-  public void testExternalSPSMetrics()
-      throws Exception {
-
-    try {
-      createClusterDoNotStartSPS();
-      dfs.satisfyStoragePolicy(new Path(FILE));
-      // Assert metrics.
-      assertEquals(1, hdfsCluster.getNamesystem().getPendingSPSPaths());
     } finally {
       shutdownCluster();
     }

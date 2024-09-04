@@ -292,11 +292,4 @@ public class StoragePolicySatisfyManager {
   public StoragePolicySatisfierMode getMode() {
     return mode;
   }
-
-  /**
-   * @return the number of paths to be processed by storage policy satisfier.
-   */
-  public int getPendingSPSPaths() {
-    return pathsToBeTraversed.size();
-  }
 }

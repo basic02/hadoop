@@ -133,10 +133,6 @@ public abstract class MembershipStats extends BaseRecord {
 
   public abstract long getHighestPriorityLowRedundancyECBlocks();
 
-  public abstract void setPendingSPSPaths(int pendingSPSPaths);
-
-  public abstract int getPendingSPSPaths();
-
   @Override
   public SortedMap<String, String> getPrimaryKeys() {
     // This record is not stored directly, no key needed

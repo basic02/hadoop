@@ -219,8 +219,6 @@ public class TestRBFMetrics extends TestMetricsBase {
           json.getLong("numOfEnteringMaintenanceDataNodes"));
       assertEquals(stats.getProvidedSpace(),
           json.getLong("providedSpace"));
-      assertEquals(stats.getPendingSPSPaths(),
-          json.getInt("pendingSPSPaths"));
       nameservicesFound++;
     }
     assertEquals(getNameservices().size(), nameservicesFound);
@@ -298,7 +296,6 @@ public class TestRBFMetrics extends TestMetricsBase {
     long highestPriorityLowRedundancyReplicatedBlocks = 0;
     long highestPriorityLowRedundancyECBlocks = 0;
     long numFiles = 0;
-    int pendingSPSPaths = 0;
     for (MembershipState mock : getActiveMemberships()) {
       MembershipStats stats = mock.getStats();
       numBlocks += stats.getNumOfBlocks();
@@ -319,7 +316,6 @@ public class TestRBFMetrics extends TestMetricsBase {
           stats.getHighestPriorityLowRedundancyReplicatedBlocks();
       highestPriorityLowRedundancyECBlocks +=
           stats.getHighestPriorityLowRedundancyECBlocks();
-      pendingSPSPaths += stats.getPendingSPSPaths();
     }
 
     assertEquals(numBlocks, bean.getNumBlocks());
@@ -346,7 +342,6 @@ public class TestRBFMetrics extends TestMetricsBase {
         bean.getHighestPriorityLowRedundancyReplicatedBlocks());
     assertEquals(highestPriorityLowRedundancyECBlocks,
         bean.getHighestPriorityLowRedundancyECBlocks());
-    assertEquals(pendingSPSPaths, bean.getPendingSPSPaths());
   }
 
   private void validateClusterStatsRouterBean(RouterMBean bean) {
