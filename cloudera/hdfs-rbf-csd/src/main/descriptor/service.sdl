@@ -1021,6 +1021,34 @@
           "required": "false"
         },
         {
+          "name": "sql_dt_secret_manager_token_max_cleanup_results",
+          "label": "Max Cleanup Number of Token",
+          "description": "Number of tokens to obtain from SQL during the cleanup process.",
+          "configName": "sql-dt-secret-manager.token.max.cleanup.results",
+          "type": "long",
+          "default": "1000",
+          "required": "false"
+        },
+        {
+          "name": "zk_dt_secret_manager_token_loading_cache_expiration",
+          "label": "Token Loading Cache Expiration",
+          "description": "Token Loading Cache Expiration",
+          "configName": "sql-dt-secret-manager.token.loading.cache.expiration",
+          "type": "long",
+          "default": "10000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "sql_dt_secret_manager_token_loading_cache_max_size",
+          "label": "Token Loading Cache Max Size",
+          "description": "Token Loading Cache Max Size",
+          "configName": "sql-dt-secret-manager.token.loading.cache.max.size",
+          "type": "long",
+          "default": "100000",
+          "required": "false"
+        },
+        {
           "name": "router_top_num_token_realowners",
           "label": "Top Number of Token Real Owner",
           "description": "The number of top real owners by tokens count to report in the JMX metrics. Real owners are the effective users whose credential are used to generate the tokens.",
@@ -1330,6 +1358,9 @@
                 "sql_dt_secret_manager_connection_username",
                 "sql_dt_secret_manager_connection_password",
                 "sql_dt_secret_manager_token_seqnum_batch_size",
+                "sql_dt_secret_manager_token_max_cleanup_results",
+                "zk_dt_secret_manager_token_loading_cache_expiration",
+                "sql_dt_secret_manager_token_loading_cache_max_size",
                 "router_top_num_token_realowners",
                 "router_fairness_policy_controller_class",
                 "router_fairness_acquire_timeout",
