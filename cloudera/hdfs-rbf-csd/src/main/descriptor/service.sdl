@@ -364,8 +364,8 @@
           "description": "Expiration time in seconds for datanodereport.",
           "configName": "dfs.federation.router.dn-report.cache-expire",
           "type": "long",
-          "default": "10",
-          "unit": "seconds",
+          "default": "10000",
+          "unit": "milliseconds",
           "required": "false"
         },
         {
@@ -374,7 +374,7 @@
           "description": "Class to monitor the RPC system in the router. It must implement the RouterRpcMonitor interface.",
           "configName": "dfs.federation.router.metrics.class",
           "type": "string_enum",
-          "validValues" : ["org.apache.hadoop.hdfs.server.federation.metrics.FederationRPCPerformanceMonitor"],
+          "validValues": ["org.apache.hadoop.hdfs.server.federation.metrics.FederationRPCPerformanceMonitor"],
           "default": "org.apache.hadoop.hdfs.server.federation.metrics.FederationRPCPerformanceMonitor",
           "required": "true"
         },
@@ -394,7 +394,10 @@
           "description": "Class to resolve files to subclusters. To enable multiple subclusters for a mount point, set to org.apache.hadoop.hdfs.server.federation.resolver.MultipleDestinationMountTableResolver.",
           "configName": "dfs.federation.router.file.resolver.client.class",
           "type": "string_enum",
-          "validValues" : ["org.apache.hadoop.hdfs.server.federation.resolver.MountTableResolver", "org.apache.hadoop.hdfs.server.federation.resolver.MultipleDestinationMountTableResolver"],
+          "validValues": [
+            "org.apache.hadoop.hdfs.server.federation.resolver.MountTableResolver",
+            "org.apache.hadoop.hdfs.server.federation.resolver.MultipleDestinationMountTableResolver"
+          ],
           "default": "org.apache.hadoop.hdfs.server.federation.resolver.MountTableResolver",
           "required": "true"
         },
@@ -404,7 +407,7 @@
           "description": "Class to resolve the namenode for a subcluster.",
           "configName": "dfs.federation.router.namenode.resolver.client.class",
           "type": "string_enum",
-          "validValues" : ["org.apache.hadoop.hdfs.server.federation.resolver.MembershipNamenodeResolver"],
+          "validValues": ["org.apache.hadoop.hdfs.server.federation.resolver.MembershipNamenodeResolver"],
           "default": "org.apache.hadoop.hdfs.server.federation.resolver.MembershipNamenodeResolver",
           "required": "true"
         },
@@ -424,7 +427,7 @@
           "description": "Class to serialize State Store records.",
           "configName": "dfs.federation.router.store.serializer",
           "type": "string_enum",
-          "validValues" : ["org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreSerializerPBImpl"],
+          "validValues": ["org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreSerializerPBImpl"],
           "default": "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreSerializerPBImpl",
           "required": "true"
         },
@@ -434,7 +437,11 @@
           "description": "Class to implement the State Store. Implementation classes can use the local file, filesystem and ZooKeeper as a backend respectively. By default it uses the ZooKeeper as the default State Store.",
           "configName": "dfs.federation.router.store.driver.class",
           "type": "string_enum",
-          "validValues" : ["org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreFileImpl", "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreFileSystemImpl", "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreZooKeeperImpl"],
+          "validValues": [
+            "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreFileImpl",
+            "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreFileSystemImpl",
+            "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreZooKeeperImpl"
+          ],
           "default": "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreZooKeeperImpl",
           "required": "true"
         },
@@ -757,7 +764,10 @@
           "configName": "dfs.federation.router.secret.manager.class",
           "configurableInWizard": "true",
           "type": "string_enum",
-          "validValues" : ["org.apache.hadoop.hdfs.server.federation.router.security.token.ZKDelegationTokenSecretManagerImpl", "org.apache.hadoop.hdfs.server.federation.router.security.token.SQLDelegationTokenSecretManagerImpl"],
+          "validValues": [
+            "org.apache.hadoop.hdfs.server.federation.router.security.token.ZKDelegationTokenSecretManagerImpl",
+            "org.apache.hadoop.hdfs.server.federation.router.security.token.SQLDelegationTokenSecretManagerImpl"
+          ],
           "default": "org.apache.hadoop.hdfs.server.federation.router.security.token.ZKDelegationTokenSecretManagerImpl",
           "required": "true"
         },
@@ -816,7 +826,7 @@
           "configName": "zk-dt-secret-manager.zkAuthType",
           "configurableInWizard": "true",
           "type": "string_enum",
-          "validValues" : ["none", "sasl"],
+          "validValues": ["none", "sasl"],
           "default": "none",
           "required": "true"
         },
