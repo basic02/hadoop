@@ -29,24 +29,6 @@
       "required": "true"
     }
   ],
-  "commands": [
-    {
-      "name": "CreateSQLTokenStoreTablesServiceCommand",
-      "label": "Create SQL Token Store Database Tables",
-      "description": "Create SQL Token Store database tables",
-      "roleName": "HDFS_RBF_ROUTER",
-      "roleCommand": "CreateSQLTokenStoreTablesCommand",
-      "runMode": "single"
-    },
-    {
-      "name": "UpgradeSQLTokenStoreTablesServiceCommand",
-      "label": "Upgrade SQL Token Store Database Schema",
-      "description": "Upgrade SQL Token Store database to it's latest schema if needed",
-      "roleName": "HDFS_RBF_ROUTER",
-      "roleCommand": "UpgradeSQLTokenStoreTablesCommand",
-      "runMode": "single"
-    }
-  ],
   "serviceInit": {
     "preStartSteps": [
     ]
@@ -112,40 +94,6 @@
         "percentGreenForGreen": 99.0,
         "percentYellowGreenForYellow": 51.0
       },
-      "commands": [
-        {
-          "name": "CreateSQLTokenStoreTablesCommand",
-          "label": "Create SQL Token Store Database Tables",
-          "description": "Create SQL Token Store database tables",
-          "expectedExitCodes": [
-            0
-          ],
-          "commandRunner": {
-            "program": "scripts/control.sh",
-            "args": [
-              "create_sql_token_store_tables"
-            ],
-            "environmentVariables": {
-            }
-          }
-        },
-        {
-          "name": "UpgradeSQLTokenStoreTablesCommand",
-          "label": "Upgrade SQL Token Store Database Schema",
-          "description": "Upgrade SQL Token Store database to it's latest schema if needed",
-          "expectedExitCodes": [
-            0
-          ],
-          "commandRunner": {
-            "program": "scripts/control.sh",
-            "args": [
-              "upgrade_sql_token_store_tables"
-            ],
-            "environmentVariables": {
-            }
-          }
-        }
-      ],
       "parameters": [
         {
           "name": "router_java_heapsize",

@@ -95,14 +95,6 @@ function start_router {
   exec  $(cd $(dirname $0) && pwd)/hdfs.sh dfsrouter
 }
 
-function create_sql_token_store_tables {
-  echo "Create SQL token store tables"
-}
-
-function upgrade_sql_token_store_tables {
-  echo "Upgrade SQL token store tables"
-}
-
 ####################################################################################
 
 set -ex
