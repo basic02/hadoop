@@ -45,6 +45,13 @@ function generate_configuration_files {
   fi
 
   if [[ $HDFS_RBF_ROLE_TYPE == "router" ]]; then
+    if [[ "${ROUTER_STORE_DRIVER_CLASS}" == "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreMySQLImpl" ]]; then
+      MYSQL_CONNECTION_DRIVER=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "state-store-mysql.connection.driver" ${HDFS_RBF_SITE})
+      if [[ -z "${MYSQL_CONNECTION_DRIVER}" || "${MYSQL_CONNECTION_DRIVER}" == "None" ]]; then
+        change_xml_value "state-store-mysql.connection.driver" "com.mysql.jdbc.Driver" ${HDFS_RBF_SITE}
+      fi
+    fi
+
     if [[ "${ROUTER_SECRET_MANAGER_CLASS}" == "org.apache.hadoop.hdfs.server.federation.router.security.token.SQLDelegationTokenSecretManagerImpl" ]]; then
       CONNECTION_DRIVER=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "sql-dt-secret-manager.connection.driver" ${HDFS_RBF_SITE})
       if [[ -z "${CONNECTION_DRIVER}" || "${CONNECTION_DRIVER}" == "None" ]]; then

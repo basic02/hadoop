@@ -76,6 +76,7 @@
         "environmentVariables": {
           "ROUTER_JAVA_HEAPSIZE": "${router_java_heapsize}",
           "ROUTER_JAVA_EXTRA_OPTS": "${router_java_opts}",
+          "ROUTER_STORE_DRIVER_CLASS": "${router_store_driver_class}",
           "ROUTER_SECRET_MANAGER_CLASS": "${router_secret_manager_class}",
           "SECRET_MANAGER_DATABASE_TYPE": "${sql_dt_secret_manager_database_type}",
           "GENERATE_JCEKS_PASSWORD": "${generate_jceks_password}",
@@ -482,6 +483,7 @@
           "label": "Router State Store Implementation Class",
           "description": "Class to implement the State Store. Implementation classes can use the local file, filesystem, MySQL and ZooKeeper as a backend respectively. By default it uses the ZooKeeper as the default State Store.",
           "configName": "dfs.federation.router.store.driver.class",
+          "configurableInWizard": "true",
           "type": "string_enum",
           "validValues": [
             "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreFileImpl",
@@ -497,6 +499,7 @@
           "label": "Zookeeper Address",
           "description": "Zookeeper address",
           "configName": "hadoop.zk.address",
+          "configurableInWizard": "true",
           "type": "string",
           "default": "{{ZOOKEEPER_QUORUM}}",
           "required": "false"
@@ -516,6 +519,7 @@
           "label": "Zookeeper Parent Path for State Store",
           "description": "The parent path of zookeeper for StateStoreZooKeeperImpl.",
           "configName": "dfs.federation.router.store.driver.zk.parent-path",
+          "configurableInWizard": "true",
           "type": "string",
           "default": "/hdfs-federation",
           "required": "true"
@@ -528,6 +532,36 @@
           "type": "long",
           "default": "-1",
           "required": "true"
+        },
+        {
+          "name": "state_store_mysql_connection_url",
+          "label": "MySQL State Store Database URL",
+          "description": "Database connection URL of MySQL based state store, e.g., jdbc:mysql://DB_HOST:DB_PORT/DB_SCHEMA_NAME).",
+          "configName": "state-store-mysql.connection.url",
+          "configurableInWizard": "true",
+          "type": "string",
+          "default": "jdbc:mysql://<DB_HOST>:<DB_PORT>/<DB_SCHEMA_NAME>",
+          "required": "false"
+        },
+        {
+          "name": "state_store_mysql_connection_username",
+          "label": "MySQL State Store Database User",
+          "description": "Database user of MySQL based state store",
+          "configName": "state-store-mysql.connection.username",
+          "configurableInWizard": "true",
+          "type": "string",
+          "required": "false"
+        },
+        {
+          "name": "state_store_mysql_connection_password",
+          "label": "MySQL State Store Database Password",
+          "description": "Database password of MySQL based state store",
+          "configName": "state-store-mysql.connection.password",
+          "configurableInWizard": "true",
+          "type": "password",
+          "default": "",
+          "sensitive": "true",
+          "required": "false"
         },
         {
           "name": "router_cache_ttl",
@@ -1030,7 +1064,7 @@
           "required": "false"
         },
         {
-          "name": "zk_dt_secret_manager_token_loading_cache_expiration",
+          "name": "sql_dt_secret_manager_token_loading_cache_expiration",
           "label": "Token Loading Cache Expiration",
           "description": "Token Loading Cache Expiration",
           "configName": "sql-dt-secret-manager.token.loading.cache.expiration",
@@ -1308,6 +1342,9 @@
                 "router_store_connection_test",
                 "router_store_driver_zk_parent_path",
                 "router_store_driver_zk_async_max_threads",
+                "state_store_mysql_connection_url",
+                "state_store_mysql_connection_username",
+                "state_store_mysql_connection_password",
                 "router_cache_ttl",
                 "router_store_membership_expiration",
                 "router_store_membership_expiration_deletion",
@@ -1359,7 +1396,7 @@
                 "sql_dt_secret_manager_connection_password",
                 "sql_dt_secret_manager_token_seqnum_batch_size",
                 "sql_dt_secret_manager_token_max_cleanup_results",
-                "zk_dt_secret_manager_token_loading_cache_expiration",
+                "sql_dt_secret_manager_token_loading_cache_expiration",
                 "sql_dt_secret_manager_token_loading_cache_max_size",
                 "router_top_num_token_realowners",
                 "router_fairness_policy_controller_class",
