@@ -59,7 +59,6 @@
           "ROUTER_JAVA_HEAPSIZE": "${router_java_heapsize}",
           "ROUTER_JAVA_EXTRA_OPTS": "${router_java_opts}",
           "ROUTER_SECRET_MANAGER_CLASS": "${router_secret_manager_class}",
-          "SECRET_MANAGER_DATABASE_TYPE": "${sql_dt_secret_manager_database_type}",
           "GENERATE_JCEKS_PASSWORD": "${generate_jceks_password}",
           "SECRET_MANAGER_CONNECTION_PASSWORD": "${sql_dt_secret_manager_connection_password}",
           "ROUTER_RPC_PORT": "${router_rpc_port}",
@@ -716,8 +715,7 @@
           "configurableInWizard": "true",
           "type": "string_enum",
           "validValues": [
-            "org.apache.hadoop.hdfs.server.federation.router.security.token.ZKDelegationTokenSecretManagerImpl",
-            "org.apache.hadoop.hdfs.server.federation.router.security.token.SQLDelegationTokenSecretManagerImpl"
+            "org.apache.hadoop.hdfs.server.federation.router.security.token.ZKDelegationTokenSecretManagerImpl"
           ],
           "default": "org.apache.hadoop.hdfs.server.federation.router.security.token.ZKDelegationTokenSecretManagerImpl",
           "required": "true"
@@ -817,55 +815,6 @@
           "type": "long",
           "default": "5",
           "unit": "seconds",
-          "required": "false"
-        },
-        {
-          "name": "sql_dt_secret_manager_database_type",
-          "label": "SQL Token Store Database Type",
-          "description": "Database type of SQL based delegation token store",
-          "configurableInWizard": "true",
-          "type": "string_enum",
-          "validValues": ["mysql"],
-          "default": "mysql",
-          "required": "false"
-        },
-        {
-          "name": "sql_dt_secret_manager_connection_url",
-          "label": "SQL Token Store Database URL",
-          "description": "Database connection URL of SQL based delegation token store. Only MySQL is supported at the moment (e.g. jdbc:mysql://DB_HOST:DB_PORT/DB_SCHEMA_NAME).",
-          "configName": "sql-dt-secret-manager.connection.url",
-          "configurableInWizard": "true",
-          "type": "string",
-          "default": "jdbc:mysql://<DB_HOST>:<DB_PORT>/<DB_SCHEMA_NAME>",
-          "required": "false"
-        },
-        {
-          "name": "sql_dt_secret_manager_connection_username",
-          "label": "SQL Token Store Database User",
-          "description": "Database user of SQL based delegation token store",
-          "configName": "sql-dt-secret-manager.connection.username",
-          "configurableInWizard": "true",
-          "type": "string",
-          "required": "false"
-        },
-        {
-          "name": "sql_dt_secret_manager_connection_password",
-          "label": "SQL Token Store Database Password",
-          "description": "Database password of SQL based delegation token store",
-          "configName": "sql-dt-secret-manager.connection.password",
-          "configurableInWizard": "true",
-          "type": "password",
-          "default": "",
-          "sensitive": "true",
-          "required": "false"
-        },
-        {
-          "name": "sql_dt_secret_manager_token_seqnum_batch_size",
-          "label": "Seq Number Batch Size of SQL Token Store",
-          "description": "Sequence number batch size of SQL based delegation token store",
-          "configName": "sql-dt-secret-manager.token.seqnum.batch.size",
-          "type": "long",
-          "default": "10",
           "required": "false"
         },
         {
@@ -1010,10 +959,6 @@
                 "zk_dt_secret_manager_token_seqnum_batch_size",
                 "zk_dt_secret_manager_token_watcher_enabled",
                 "zk_dt_secret_manager_router_token_sync_interval",
-                "sql_dt_secret_manager_connection_url",
-                "sql_dt_secret_manager_connection_username",
-                "sql_dt_secret_manager_connection_password",
-                "sql_dt_secret_manager_token_seqnum_batch_size",
                 "hadoop_security_cred_provider_path"
             ],
             "additionalConfigs": [

@@ -45,30 +45,6 @@ function generate_configuration_files {
   fi
 
   if [[ $HDFS_RBF_ROLE_TYPE == "router" ]]; then
-    if [[ "${ROUTER_SECRET_MANAGER_CLASS}" == "org.apache.hadoop.hdfs.server.federation.router.security.token.SQLDelegationTokenSecretManagerImpl" ]]; then
-      CONNECTION_DRIVER=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "sql-dt-secret-manager.connection.driver" ${HDFS_RBF_SITE})
-      if [[ -z "${CONNECTION_DRIVER}" || "${CONNECTION_DRIVER}" == "None" ]]; then
-        if [[ "${SECRET_MANAGER_DATABASE_TYPE}" == "mysql" ]]; then
-          CONNECTION_DRIVER="com.mysql.jdbc.Driver"
-        elif [[ "${SECRET_MANAGER_DATABASE_TYPE}" == "postgresql" ]]; then
-          CONNECTION_DRIVER="org.postgresql.Driver"
-        elif [[ "${SECRET_MANAGER_DATABASE_TYPE}" == "oracle" ]]; then
-          CONNECTION_DRIVER="oracle.jdbc.driver.OracleDriver"
-        fi
-        change_xml_value "sql-dt-secret-manager.connection.driver" "${CONNECTION_DRIVER}" ${HDFS_RBF_SITE}
-      fi
-
-      if [ -f ${CONF_DIR}/creds.localjceks ]; then
-        rm -f ${CONF_DIR}/creds.localjceks
-      fi
-      if [[ "${GENERATE_JCEKS_PASSWORD}" == "true" ]]; then
-        export HADOOP_CREDSTORE_PASSWORD=${SECRET_MANAGER_CONNECTION_PASSWORD}
-      fi
-      hadoop credential create sql-dt-secret-manager.connection.password -value ${SECRET_MANAGER_CONNECTION_PASSWORD} -provider localjceks://file/${CONF_DIR}/creds.localjceks
-      replace "\{\{CMF_CONF_DIR}}" "${CONF_DIR}" ${HDFS_RBF_SITE}
-      change_xml_value "sql-dt-secret-manager.connection.password" "********" ${HDFS_RBF_SITE}
-    fi
-
     KERBEROS_PRINCIPAL=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.kerberos.principal" ${HDFS_RBF_SITE})
     if [[ -n "${KERBEROS_PRINCIPAL}" ]]; then
       KERBEROS_PRIMARY=$(echo $KERBEROS_PRINCIPAL | cut -d "/" -f 1)
