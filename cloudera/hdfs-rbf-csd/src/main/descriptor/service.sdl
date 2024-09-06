@@ -1392,6 +1392,10 @@
                 "value": ""
               },
               {
+                "key": "state-store-mysql.connection.driver",
+                "value": ""
+              },
+              {
                 "key": "dfs.federation.router.keytab.file",
                 "value": "hdfs_rbf.keytab"
               },
