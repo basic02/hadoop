@@ -58,11 +58,11 @@
         "environmentVariables": {
           "ROUTER_JAVA_HEAPSIZE": "${router_java_heapsize}",
           "ROUTER_JAVA_EXTRA_OPTS": "${router_java_opts}",
+          "DB_CONNECTOR_JAR_DIR": "${db_connector_jar_dir}",
           "ROUTER_STORE_DRIVER_CLASS": "${router_store_driver_class}",
           "ROUTER_SECRET_MANAGER_CLASS": "${router_secret_manager_class}",
           "SECRET_MANAGER_DATABASE_TYPE": "${sql_dt_secret_manager_database_type}",
           "GENERATE_JCEKS_PASSWORD": "${generate_jceks_password}",
-          "SECRET_MANAGER_CONNECTION_PASSWORD": "${sql_dt_secret_manager_connection_password}",
           "ROUTER_RPC_PORT": "${router_rpc_port}",
           "ROUTER_ADMIN_PORT": "${router_admin_port}",
           "ROUTER_HTTP_PORT": "${router_http_port}",
@@ -113,6 +113,14 @@
           "type": "string",
           "default": "{{JAVA_GC_ARGS}}",
           "required": "false"
+        },
+        {
+          "name" : "db_connector_jar_dir",
+          "label" : "DB Connector Jar Directory",
+          "description" : "Directory that contains the db connector jars (must be present on all Router hosts!). The connector jars within are expected to be called '(postgresql|mysql|oracle)-connector-java.jar.'",
+          "type" : "string",
+          "default" : "/usr/share/java",
+          "required" : "false"
         },
         {
           "name": "router_default_nameservice_enable",
@@ -507,7 +515,6 @@
           "configName": "state-store-mysql.connection.password",
           "configurableInWizard": "true",
           "type": "password",
-          "default": "",
           "sensitive": "true",
           "required": "false"
         },
@@ -989,7 +996,6 @@
           "configName": "sql-dt-secret-manager.connection.password",
           "configurableInWizard": "true",
           "type": "password",
-          "default": "",
           "sensitive": "true",
           "required": "false"
         },
