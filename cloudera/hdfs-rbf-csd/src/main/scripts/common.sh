@@ -26,6 +26,7 @@ function log {
 
 function generate_configuration_files {
   replace "\{\{ZOOKEEPER_QUORUM}}" "${ZK_QUORUM}" ${HDFS_RBF_SITE}
+  replace "\{\{CMF_CONF_DIR}}" "${CONF_DIR}" ${HDFS_RBF_SITE}
 
   ROUTER_RPC_ADDRESS=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.rpc-address" ${HDFS_RBF_SITE})
   if [[ -z "${ROUTER_RPC_ADDRESS}" || "${ROUTER_RPC_ADDRESS}" == "None" ]]; then
@@ -57,16 +58,6 @@ function generate_configuration_files {
         fi
         change_xml_value "sql-dt-secret-manager.connection.driver" "${CONNECTION_DRIVER}" ${HDFS_RBF_SITE}
       fi
-
-      if [ -f ${CONF_DIR}/creds.localjceks ]; then
-        rm -f ${CONF_DIR}/creds.localjceks
-      fi
-      if [[ "${GENERATE_JCEKS_PASSWORD}" == "true" ]]; then
-        export HADOOP_CREDSTORE_PASSWORD=${SECRET_MANAGER_CONNECTION_PASSWORD}
-      fi
-      hadoop credential create sql-dt-secret-manager.connection.password -value ${SECRET_MANAGER_CONNECTION_PASSWORD} -provider localjceks://file/${CONF_DIR}/creds.localjceks
-      replace "\{\{CMF_CONF_DIR}}" "${CONF_DIR}" ${HDFS_RBF_SITE}
-      change_xml_value "sql-dt-secret-manager.connection.password" "********" ${HDFS_RBF_SITE}
     fi
 
     KERBEROS_PRINCIPAL=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.kerberos.principal" ${HDFS_RBF_SITE})
@@ -125,6 +116,10 @@ export HADOOP_LIBEXEC_DIR=$HADOOP_HOME/libexec
 export JAVA_LIBRARY_PATH=$HADOOP_HOME/lib/native
 export HADOOP_CLASSPATH=$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
 export HADOOP_LOGFILE=hadoop-cmf-hdfs-ROUTER-${HOST}.log.out
+
+if [[ -n "${DB_CONNECTOR_JAR_DIR}" ]]; then
+  export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:$DB_CONNECTOR_JAR_DIR/*.jar
+fi
 
 # HDFS RBF site xml file
 export HDFS_RBF_SITE="${CONF_DIR}/hdfs-rbf-site.xml"
