@@ -24,25 +24,61 @@ function log {
   echo "$timestamp: $1" 1>&2; #stderr
 }
 
+function update_router_address {
+  ROUTER_RPC_ADDRESS=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.rpc-address" ${HDFS_RBF_SITE})
+  ROUTER_ADMIN_ADDRESS=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.admin-address" ${HDFS_RBF_SITE})
+  ROUTER_HTTP_ADDRESS=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.http-address" ${HDFS_RBF_SITE})
+  ROUTER_HTTPS_ADDRESS=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.https-address" ${HDFS_RBF_SITE})
+
+  if [[ $HDFS_RBF_ROLE_TYPE == "router" ]]; then
+    if [[ -z "${ROUTER_RPC_ADDRESS}" || "${ROUTER_RPC_ADDRESS}" == "None" ]]; then
+      change_xml_value "dfs.federation.router.rpc-address" "${HOST}:${ROUTER_RPC_PORT}" ${HDFS_RBF_SITE}
+    fi
+    if [[ -z "${ROUTER_ADMIN_ADDRESS}" || "${ROUTER_ADMIN_ADDRESS}" == "None" ]]; then
+      change_xml_value "dfs.federation.router.admin-address" "${HOST}:${ROUTER_ADMIN_PORT}" ${HDFS_RBF_SITE}
+    fi
+    if [[ -z "${ROUTER_HTTP_ADDRESS}" || "${ROUTER_HTTP_ADDRESS}" == "None" ]]; then
+      change_xml_value "dfs.federation.router.http-address" "${HOST}:${ROUTER_HTTP_PORT}" ${HDFS_RBF_SITE}
+    fi
+    if [[ -z "${ROUTER_HTTPS_ADDRESS}" || "${ROUTER_HTTPS_ADDRESS}" == "None" ]]; then
+      change_xml_value "dfs.federation.router.https-address" "${HOST}:${ROUTER_HTTPS_PORT}" ${HDFS_RBF_SITE}
+    fi
+  elif [[ $HDFS_RBF_ROLE_TYPE == "client" ]]; then
+    PROPERTY_FILE=${HDFS_RBF_CONF_DIR}/routers.properties
+    if [[ -f $PROPERTY_FILE ]]; then
+      for PROPERTY_HOST in $(cat ${PROPERTY_FILE} | awk -F: '{print $1}'); do
+        if [[ ${PROPERTY_HOST} == $(hostname -f) ]]; then
+          ROUTER_HOST=${PROPERTY_HOST}
+        fi
+      done;
+      if [[ -z "${ROUTER_HOST}" ]]; then
+        ROUTER_HOST=`cat ${PROPERTY_FILE} | cut -d: -f1 | head -n 1`
+      fi
+      if [[ -n "${ROUTER_HOST}" ]]; then
+        if [[ -z "${ROUTER_RPC_ADDRESS}" || "${ROUTER_RPC_ADDRESS}" == "None" ]]; then
+          change_xml_value "dfs.federation.router.rpc-address" "${ROUTER_HOST}:${ROUTER_RPC_PORT}" ${HDFS_RBF_SITE}
+        fi
+        if [[ -z "${ROUTER_ADMIN_ADDRESS}" || "${ROUTER_ADMIN_ADDRESS}" == "None" ]]; then
+          change_xml_value "dfs.federation.router.admin-address" "${ROUTER_HOST}:${ROUTER_ADMIN_PORT}" ${HDFS_RBF_SITE}
+        fi
+        if [[ -z "${ROUTER_HTTP_ADDRESS}" || "${ROUTER_HTTP_ADDRESS}" == "None" ]]; then
+          change_xml_value "dfs.federation.router.http-address" "${ROUTER_HOST}:${ROUTER_HTTP_PORT}" ${HDFS_RBF_SITE}
+        fi
+        if [[ -z "${ROUTER_HTTPS_ADDRESS}" || "${ROUTER_HTTPS_ADDRESS}" == "None" ]]; then
+          change_xml_value "dfs.federation.router.https-address" "${ROUTER_HOST}:${ROUTER_HTTPS_PORT}" ${HDFS_RBF_SITE}
+        fi
+      fi
+    else
+      echo "The file routers.properties doesn't exist. Ignore"
+    fi
+  fi
+}
+
 function generate_configuration_files {
   replace "\{\{ZOOKEEPER_QUORUM}}" "${ZK_QUORUM}" ${HDFS_RBF_SITE}
+  replace "\{\{CMF_CONF_DIR}}" "${CONF_DIR}" ${HDFS_RBF_SITE}
 
-  ROUTER_RPC_ADDRESS=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.rpc-address" ${HDFS_RBF_SITE})
-  if [[ -z "${ROUTER_RPC_ADDRESS}" || "${ROUTER_RPC_ADDRESS}" == "None" ]]; then
-    change_xml_value "dfs.federation.router.rpc-address" "${HOST}:${ROUTER_RPC_PORT}" ${HDFS_RBF_SITE}
-  fi
-  ROUTER_ADMIN_ADDRESS=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.admin-address" ${HDFS_RBF_SITE})
-  if [[ -z "${ROUTER_ADMIN_ADDRESS}" || "${ROUTER_ADMIN_ADDRESS}" == "None" ]]; then
-    change_xml_value "dfs.federation.router.admin-address" "${HOST}:${ROUTER_ADMIN_PORT}" ${HDFS_RBF_SITE}
-  fi
-  ROUTER_HTTP_ADDRESS=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.http-address" ${HDFS_RBF_SITE})
-  if [[ -z "${ROUTER_HTTP_ADDRESS}" || "${ROUTER_HTTP_ADDRESS}" == "None" ]]; then
-    change_xml_value "dfs.federation.router.http-address" "${HOST}:${ROUTER_HTTP_PORT}" ${HDFS_RBF_SITE}
-  fi
-  ROUTER_HTTPS_ADDRESS=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.https-address" ${HDFS_RBF_SITE})
-  if [[ -z "${ROUTER_HTTPS_ADDRESS}" || "${ROUTER_HTTPS_ADDRESS}" == "None" ]]; then
-    change_xml_value "dfs.federation.router.https-address" "${HOST}:${ROUTER_HTTPS_PORT}" ${HDFS_RBF_SITE}
-  fi
+  update_router_address
 
   if [[ $HDFS_RBF_ROLE_TYPE == "router" ]]; then
     KERBEROS_PRINCIPAL=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.kerberos.principal" ${HDFS_RBF_SITE})
@@ -69,6 +105,10 @@ function start_router {
 
   echo "Start router command: hdfs.sh [\"dfsrouter\"]"
   exec  $(cd $(dirname $0) && pwd)/hdfs.sh dfsrouter
+}
+
+function deploy_client_config {
+  echo "Deploy done"
 }
 
 ####################################################################################
@@ -101,8 +141,14 @@ export JAVA_LIBRARY_PATH=$HADOOP_HOME/lib/native
 export HADOOP_CLASSPATH=$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
 export HADOOP_LOGFILE=hadoop-cmf-hdfs-ROUTER-${HOST}.log.out
 
+if [[ $HDFS_RBF_ROLE_TYPE = "client" ]]; then
+  export HDFS_RBF_CONF_DIR="${CONF_DIR}/hdfs-rbf-conf"
+else
+  export HDFS_RBF_CONF_DIR="${CONF_DIR}"
+fi
+
 # HDFS RBF site xml file
-export HDFS_RBF_SITE="${CONF_DIR}/hdfs-rbf-site.xml"
+export HDFS_RBF_SITE="${HDFS_RBF_CONF_DIR}/hdfs-rbf-site.xml"
 
 # Make sure PARCELS_ROOT is in the format we expect, canonicalized and without a trailing slash.
 export PARCELS_ROOT=$(readlink -m "$PARCELS_ROOT")
