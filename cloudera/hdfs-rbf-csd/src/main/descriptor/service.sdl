@@ -34,6 +34,117 @@
     ]
   },
   "parameters": [
+    {
+      "name": "router_rpc_enable",
+      "label": "Enable Router RPC Service",
+      "description": "If true, the RPC service to handle client requests in the router is enabled.",
+      "configName": "dfs.federation.router.rpc.enable",
+      "configurableInWizard": "true",
+      "type": "boolean",
+      "default": "true",
+      "required": "true"
+    },
+    {
+      "name": "router_rpc_port",
+      "label": "Router RPC Port",
+      "description": "RPC port that handles all clients requests.",
+      "configurableInWizard": "true",
+      "type": "port",
+      "default": "8888",
+      "required": "true"
+    },
+    {
+      "name": "router_rpc_address",
+      "label": "Router RPC Address",
+      "description": "RPC address that handles all clients requests. The value of this property will take the form of router-host:rpc-port.",
+      "configName": "dfs.federation.router.rpc-address",
+      "type": "string",
+      "default": "",
+      "required": "false"
+    },
+    {
+      "name": "router_admin_enable",
+      "label": "Enable Router RPC Admin Service",
+      "description": "If true, the RPC admin service to handle client requests in the router is enabled.",
+      "configName": "dfs.federation.router.admin.enable",
+      "configurableInWizard": "true",
+      "type": "boolean",
+      "default": "true",
+      "required": "true"
+    },
+    {
+      "name": "router_admin_port",
+      "label": "Router RPC Admin Port",
+      "description": "RPC port that handles the admin requests.",
+      "configurableInWizard": "true",
+      "type": "port",
+      "default": "8111",
+      "required": "true"
+    },
+    {
+      "name": "router_admin_address",
+      "label": "Router Admin Address",
+      "description": "RPC address that handles the admin requests. The value of this property will take the form of router-host:rpc-port.",
+      "configName": "dfs.federation.router.admin-address",
+      "type": "string",
+      "default": "",
+      "required": "false"
+    },
+    {
+      "name": "router_http_enable",
+      "label": "Enable Router HTTP Service",
+      "description": "If the HTTP service to handle client requests in the router is enabled.",
+      "configName": "dfs.federation.router.http.enable",
+      "configurableInWizard": "true",
+      "type": "boolean",
+      "default": "true",
+      "required": "true"
+    },
+    {
+      "name": "router_http_port",
+      "label": "Router HTTP Port",
+      "description": "HTTP port that handles the web requests to the Router.",
+      "configurableInWizard": "true",
+      "type": "port",
+      "default": "50071",
+      "required": "true"
+    },
+    {
+      "name": "router_http_address",
+      "label": "Router HTTP Address",
+      "description": "HTTP address that handles the web requests to the Router. The value of this property will take the form of router-host:http-port.",
+      "configName": "dfs.federation.router.http-address",
+      "type": "string",
+      "default": "",
+      "required": "false"
+    },
+    {
+      "name": "router_https_port",
+      "label": "Router HTTPS Port",
+      "description": "HTTPS port that handles the web requests to the Router.",
+      "configurableInWizard": "true",
+      "type": "port",
+      "default": "50072",
+      "required": "true"
+    },
+    {
+      "name": "router_https_address",
+      "label": "Router HTTPS Address",
+      "description": "HTTPS address that handles the web requests to the Router. The value of this property will take the form of router-host:https-port.",
+      "configName": "dfs.federation.router.https-address",
+      "type": "string",
+      "default": "",
+      "required": "false"
+    },
+    {
+      "name": "router_client_kerberos_princ_name",
+      "label" : "Kerberos Principal Name for Router Clients",
+      "description" : "Fully qualified kerberos principal name for router command line interfaces",
+      "configurableInWizard": "true",
+      "type" : "string",
+      "default" : "hdfs/_HOST@EXAMPLE.COM",
+      "required" : "false"
+    }
   ],
   "rolesWithExternalLinks": [
     "HDFS_RBF_ROUTER"
@@ -67,7 +178,6 @@
           "ROUTER_ADMIN_PORT": "${router_admin_port}",
           "ROUTER_HTTP_PORT": "${router_http_port}",
           "ROUTER_HTTPS_PORT": "${router_https_port}",
-          "USER": "${user}",
           "HOST": "${host}",
           "HADOOP_LOG_DIR": "${log_dir}",
           "HADOOP_ROOT_LOGGER": "${hadoop_root_logger}",
@@ -140,72 +250,6 @@
           "configurableInWizard": "true",
           "type": "string",
           "required": "false"
-        },
-        {
-          "name": "router_rpc_enable",
-          "label": "Enable Router RPC Service",
-          "description": "If true, the RPC service to handle client requests in the router is enabled.",
-          "configName": "dfs.federation.router.rpc.enable",
-          "configurableInWizard": "true",
-          "type": "boolean",
-          "default": "true",
-          "required": "true"
-        },
-        {
-          "name": "router_rpc_port",
-          "label": "Router RPC Port",
-          "description": "RPC port that handles all clients requests.",
-          "configurableInWizard": "true",
-          "type": "port",
-          "default": "8888",
-          "required": "true"
-        },
-        {
-          "name": "router_admin_enable",
-          "label": "Enable Router RPC Admin Service",
-          "description": "If true, the RPC admin service to handle client requests in the router is enabled.",
-          "configName": "dfs.federation.router.admin.enable",
-          "configurableInWizard": "true",
-          "type": "boolean",
-          "default": "true",
-          "required": "true"
-        },
-        {
-          "name": "router_admin_port",
-          "label": "Router RPC Admin Port",
-          "description": "RPC port that handles the admin requests.",
-          "configurableInWizard": "true",
-          "type": "port",
-          "default": "8111",
-          "required": "true"
-        },
-        {
-          "name": "router_http_enable",
-          "label": "Enable Router HTTP Service",
-          "description": "If the HTTP service to handle client requests in the router is enabled.",
-          "configName": "dfs.federation.router.http.enable",
-          "configurableInWizard": "true",
-          "type": "boolean",
-          "default": "true",
-          "required": "true"
-        },
-        {
-          "name": "router_http_port",
-          "label": "Router HTTP Port",
-          "description": "HTTP port that handles the web requests to the Router.",
-          "configurableInWizard": "true",
-          "type": "port",
-          "default": "50071",
-          "required": "true"
-        },
-        {
-          "name": "router_https_port",
-          "label": "Router HTTPS Port",
-          "description": "HTTPS port that handles the web requests to the Router.",
-          "configurableInWizard": "true",
-          "type": "port",
-          "default": "50072",
-          "required": "true"
         },
         {
           "name": "router_handler_count",
@@ -1373,19 +1417,19 @@
             "additionalConfigs": [
               {
                 "key": "dfs.federation.router.rpc-address",
-                "value": ""
+                "value": "${router_rpc_address}"
               },
               {
                 "key": "dfs.federation.router.admin-address",
-                "value": ""
+                "value": "${router_admin_address}"
               },
               {
                 "key": "dfs.federation.router.http-address",
-                "value": ""
+                "value": "${router_http_address}"
               },
               {
                 "key": "dfs.federation.router.https-address",
-                "value": ""
+                "value": "${router_https_address}"
               },
               {
                 "key": "sql-dt-secret-manager.connection.driver",
@@ -1452,6 +1496,75 @@
       }
     }
   ],
+  "gateway": {
+    "alternatives": {
+      "name": "hdfs-rbf-conf",
+      "priority": 100,
+      "linkRoot": "/etc/hdfs-rbf"
+    },
+    "scriptRunner": {
+      "program": "scripts/control.sh",
+      "args": [
+        "client"
+      ],
+      "environmentVariables": {
+        "ROUTER_RPC_PORT": "${router_rpc_port}",
+        "ROUTER_ADMIN_PORT": "${router_admin_port}",
+        "ROUTER_HTTP_PORT": "${router_http_port}",
+        "ROUTER_HTTPS_PORT": "${router_https_port}"
+      }
+    },
+    "parameters": [
+    ],
+    "configWriter": {
+      "generators": [
+        {
+          "filename": "hdfs-rbf-conf/hdfs-rbf-site.xml",
+          "configFormat": "hadoop_xml",
+          "excludedParams": [
+          ],
+          "includedParams" :[
+          ],
+          "additionalConfigs": [
+            {
+              "key": "dfs.federation.router.rpc-address",
+              "value": "${router_rpc_address}"
+            },
+            {
+              "key": "dfs.federation.router.admin-address",
+              "value": "${router_admin_address}"
+            },
+            {
+              "key": "dfs.federation.router.http-address",
+              "value": "${router_http_address}"
+            },
+            {
+              "key": "dfs.federation.router.https-address",
+              "value": "${router_https_address}"
+            },
+            {
+              "key": "dfs.federation.router.kerberos.principal",
+              "value": "${router_client_kerberos_princ_name}"
+            }
+          ]
+        }
+      ],
+      "auxConfigGenerators": [
+      ],
+      "peerConfigGenerators": [
+        {
+          "filename": "hdfs-rbf-conf/routers.properties",
+          "refreshable": false,
+          "params": ["router_rpc_port"],
+          "roleName": "HDFS_RBF_ROUTER"
+        }
+      ]
+    },
+    "logging": {
+      "configFilename": "hdfs-rbf-conf/log4j.properties",
+      "loggingType": "log4j"
+    }
+  },
   "rollingRestart": {
     "nonWorkerSteps": [
       {
