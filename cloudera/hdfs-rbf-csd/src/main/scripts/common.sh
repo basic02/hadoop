@@ -49,6 +49,7 @@ function update_router_address {
       for PROPERTY_HOST in $(cat ${PROPERTY_FILE} | awk -F: '{print $1}'); do
         if [[ ${PROPERTY_HOST} == $(hostname -f) ]]; then
           ROUTER_HOST=${PROPERTY_HOST}
+          break
         fi
       done;
       if [[ -z "${ROUTER_HOST}" ]]; then
