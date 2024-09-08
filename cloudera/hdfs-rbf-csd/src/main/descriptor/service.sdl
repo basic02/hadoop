@@ -1510,7 +1510,7 @@
         "name": "router_client_kerberos_princ_name",
         "label" : "Kerberos Principal Name for Router Clients",
         "description" : "Fully qualified kerberos principal name for router command line interfaces",
-        "configurableInWizard": "true",
+        "configName": "dfs.federation.router.kerberos.principal",
         "type" : "string",
         "default" : "hdfs/_HOST@EXAMPLE.COM",
         "required" : "false"
@@ -1524,28 +1524,13 @@
           "excludedParams": [
           ],
           "includedParams" :[
+            "router_rpc_address",
+            "router_admin_address",
+            "router_http_address",
+            "router_https_address",
+            "router_client_kerberos_princ_name"
           ],
           "additionalConfigs": [
-            {
-              "key": "dfs.federation.router.rpc-address",
-              "value": "${router_rpc_address}"
-            },
-            {
-              "key": "dfs.federation.router.admin-address",
-              "value": "${router_admin_address}"
-            },
-            {
-              "key": "dfs.federation.router.http-address",
-              "value": "${router_http_address}"
-            },
-            {
-              "key": "dfs.federation.router.https-address",
-              "value": "${router_https_address}"
-            },
-            {
-              "key": "dfs.federation.router.kerberos.principal",
-              "value": "${router_client_kerberos_princ_name}"
-            }
           ]
         }
       ],
