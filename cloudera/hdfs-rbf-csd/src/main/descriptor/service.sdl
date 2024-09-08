@@ -54,15 +54,6 @@
       "required": "true"
     },
     {
-      "name": "router_rpc_address",
-      "label": "Router RPC Address",
-      "description": "RPC address that handles all clients requests. The value of this property will take the form of router-host:rpc-port.",
-      "configName": "dfs.federation.router.rpc-address",
-      "type": "string",
-      "default": "",
-      "required": "false"
-    },
-    {
       "name": "router_admin_enable",
       "label": "Enable Router RPC Admin Service",
       "description": "If true, the RPC admin service to handle client requests in the router is enabled.",
@@ -80,15 +71,6 @@
       "type": "port",
       "default": "8111",
       "required": "true"
-    },
-    {
-      "name": "router_admin_address",
-      "label": "Router Admin Address",
-      "description": "RPC address that handles the admin requests. The value of this property will take the form of router-host:rpc-port.",
-      "configName": "dfs.federation.router.admin-address",
-      "type": "string",
-      "default": "",
-      "required": "false"
     },
     {
       "name": "router_http_enable",
@@ -110,15 +92,6 @@
       "required": "true"
     },
     {
-      "name": "router_http_address",
-      "label": "Router HTTP Address",
-      "description": "HTTP address that handles the web requests to the Router. The value of this property will take the form of router-host:http-port.",
-      "configName": "dfs.federation.router.http-address",
-      "type": "string",
-      "default": "",
-      "required": "false"
-    },
-    {
       "name": "router_https_port",
       "label": "Router HTTPS Port",
       "description": "HTTPS port that handles the web requests to the Router.",
@@ -126,24 +99,6 @@
       "type": "port",
       "default": "50072",
       "required": "true"
-    },
-    {
-      "name": "router_https_address",
-      "label": "Router HTTPS Address",
-      "description": "HTTPS address that handles the web requests to the Router. The value of this property will take the form of router-host:https-port.",
-      "configName": "dfs.federation.router.https-address",
-      "type": "string",
-      "default": "",
-      "required": "false"
-    },
-    {
-      "name": "router_client_kerberos_princ_name",
-      "label" : "Kerberos Principal Name for Router Clients",
-      "description" : "Fully qualified kerberos principal name for router command line interfaces",
-      "configurableInWizard": "true",
-      "type" : "string",
-      "default" : "hdfs/_HOST@EXAMPLE.COM",
-      "required" : "false"
     }
   ],
   "rolesWithExternalLinks": [
@@ -1070,19 +1025,19 @@
             "additionalConfigs": [
               {
                 "key": "dfs.federation.router.rpc-address",
-                "value": "${router_rpc_address}"
+                "value": ""
               },
               {
                 "key": "dfs.federation.router.admin-address",
-                "value": "${router_admin_address}"
+                "value": ""
               },
               {
                 "key": "dfs.federation.router.http-address",
-                "value": "${router_http_address}"
+                "value": ""
               },
               {
                 "key": "dfs.federation.router.https-address",
-                "value": "${router_https_address}"
+                "value": ""
               },
               {
                 "key": "sql-dt-secret-manager.connection.driver",
@@ -1164,6 +1119,51 @@
       }
     },
     "parameters": [
+      {
+        "name": "router_rpc_address",
+        "label": "Router RPC Address",
+        "description": "RPC address that handles all clients requests. The value of this property will take the form of router-host:rpc-port.",
+        "configName": "dfs.federation.router.rpc-address",
+        "type": "string",
+        "default": "",
+        "required": "false"
+      },
+      {
+        "name": "router_admin_address",
+        "label": "Router Admin Address",
+        "description": "RPC address that handles the admin requests. The value of this property will take the form of router-host:rpc-port.",
+        "configName": "dfs.federation.router.admin-address",
+        "type": "string",
+        "default": "",
+        "required": "false"
+      },
+      {
+        "name": "router_http_address",
+        "label": "Router HTTP Address",
+        "description": "HTTP address that handles the web requests to the Router. The value of this property will take the form of router-host:http-port.",
+        "configName": "dfs.federation.router.http-address",
+        "type": "string",
+        "default": "",
+        "required": "false"
+      },
+      {
+        "name": "router_https_address",
+        "label": "Router HTTPS Address",
+        "description": "HTTPS address that handles the web requests to the Router. The value of this property will take the form of router-host:https-port.",
+        "configName": "dfs.federation.router.https-address",
+        "type": "string",
+        "default": "",
+        "required": "false"
+      },
+      {
+        "name": "router_client_kerberos_princ_name",
+        "label" : "Kerberos Principal Name for Router Clients",
+        "description" : "Fully qualified kerberos principal name for router command line interfaces",
+        "configName": "dfs.federation.router.kerberos.principal",
+        "type" : "string",
+        "default" : "hdfs/_HOST@EXAMPLE.COM",
+        "required" : "false"
+      }
     ],
     "configWriter": {
       "generators": [
@@ -1173,28 +1173,13 @@
           "excludedParams": [
           ],
           "includedParams" :[
+            "router_rpc_address",
+            "router_admin_address",
+            "router_http_address",
+            "router_https_address",
+            "router_client_kerberos_princ_name"
           ],
           "additionalConfigs": [
-            {
-              "key": "dfs.federation.router.rpc-address",
-              "value": "${router_rpc_address}"
-            },
-            {
-              "key": "dfs.federation.router.admin-address",
-              "value": "${router_admin_address}"
-            },
-            {
-              "key": "dfs.federation.router.http-address",
-              "value": "${router_http_address}"
-            },
-            {
-              "key": "dfs.federation.router.https-address",
-              "value": "${router_https_address}"
-            },
-            {
-              "key": "dfs.federation.router.kerberos.principal",
-              "value": "${router_client_kerberos_princ_name}"
-            }
           ]
         }
       ],
