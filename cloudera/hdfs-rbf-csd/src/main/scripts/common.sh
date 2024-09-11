@@ -114,11 +114,11 @@ function deploy_client_config {
 
 ####################################################################################
 
-set -ex
-
 echo "Running HDFS RBF CSD control script..."
 echo "Detected CDH_VERSION of [$CDH_VERSION]"
 echo "Role type: ${HDFS_RBF_ROLE_TYPE}"
+
+set -ex
 
 # Set this to not source defaults
 export BIGTOP_DEFAULTS_DIR=""
