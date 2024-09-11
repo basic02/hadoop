@@ -128,11 +128,11 @@ function deploy_client_config {
 
 ####################################################################################
 
-set -ex
-
 echo "Running HDFS RBF CSD control script..."
 echo "Detected CDH_VERSION of [$CDH_VERSION]"
 echo "Role type: ${HDFS_RBF_ROLE_TYPE}"
+
+set -ex
 
 # Set this to not source defaults
 export BIGTOP_DEFAULTS_DIR=""
@@ -156,7 +156,7 @@ export JAVA_LIBRARY_PATH=$HADOOP_HOME/lib/native
 export HADOOP_CLASSPATH=$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
 export HADOOP_LOGFILE=hadoop-cmf-hdfs-ROUTER-${HOST}.log.out
 
-if [[ -n "${DB_CONNECTOR_JAR_DIR}" ]]; then
+if [[ -d "${DB_CONNECTOR_JAR_DIR}" ]]; then
   export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:$DB_CONNECTOR_JAR_DIR/*.jar
 fi
 
