@@ -23,6 +23,8 @@ export HADOOP_YARN_HOME=$HADOOP_HOME
 export HADOOP_MAPRED_HOME=$HADOOP_HOME
 export HADOOP_LIBEXEC_DIR=$HADOOP_HOME/libexec
 export JAVA_LIBRARY_PATH=$HADOOP_HOME/lib/native
-export HADOOP_CLASSPATH=/etc/hdfs-rbf/conf:/etc/hadoop/conf:$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
+export HADOOP_CONF_DIR=${HADOOP_CONF_DIR:-"/etc/hadoop/conf"}
+export HDFS_RBF_CONF_DIR=${HDFS_RBF_CONF_DIR:-"/etc/hdfs-rbf/conf"}
+export HADOOP_CLASSPATH=$HDFS_RBF_CONF_DIR:$HADOOP_CONF_DIR:$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
 
 exec $HADOOP_HOME/bin/hdfs "$@"
