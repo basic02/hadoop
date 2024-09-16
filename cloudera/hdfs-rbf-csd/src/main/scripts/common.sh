@@ -159,7 +159,8 @@ export HADOOP_YARN_HOME=$HADOOP_HOME
 export HADOOP_MAPRED_HOME=$HADOOP_HOME
 export HADOOP_LIBEXEC_DIR=$HADOOP_HOME/libexec
 export JAVA_LIBRARY_PATH=$HADOOP_HOME/lib/native
-export HADOOP_CLASSPATH=/etc/hadoop/conf:$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
+export HADOOP_CONF_DIR=${HADOOP_CONF_DIR:-"/etc/hadoop/conf"}
+export HADOOP_CLASSPATH=$HADOOP_CONF_DIR:$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
 export HADOOP_LOGFILE=hadoop-cmf-hdfs-ROUTER-${HOST}.log.out
 
 if [[ -d "${DB_CONNECTOR_JAR_DIR}" ]]; then
