@@ -76,7 +76,9 @@ function update_router_address {
 }
 
 function generate_configuration_files {
-  replace "\{\{ZOOKEEPER_QUORUM}}" "${ZK_QUORUM}" ${HDFS_RBF_SITE}
+  if [[ -n "${ZOOKEEPER_SERVICE}" && "${ZOOKEEPER_SERVICE}" != "none" ]]; then
+    replace "\{\{ZOOKEEPER_QUORUM}}" "${ZK_QUORUM}" ${HDFS_RBF_SITE}
+  fi
   replace "\{\{CMF_CONF_DIR}}" "${CONF_DIR}" ${HDFS_RBF_SITE}
 
   update_router_address
@@ -89,8 +91,12 @@ function generate_configuration_files {
       export SCM_KERBEROS_PRINCIPAL="${KERBEROS_PRIMARY}/${HOST}@${KERBEROS_REALM}"
     fi
 
-    cp -f ${CONF_DIR}/hadoop-conf/core-site.xml ${CONF_DIR}/
-    cp -f ${CONF_DIR}/hadoop-conf/hdfs-site.xml ${CONF_DIR}/
+    if [[ -f ${CONF_DIR}/hadoop-conf/core-site.xml ]]; then
+      cp -f ${CONF_DIR}/hadoop-conf/core-site.xml ${CONF_DIR}/
+    fi
+    if [[ -f ${CONF_DIR}/hadoop-conf/hdfs-site.xml ]]; then
+      cp -f ${CONF_DIR}/hadoop-conf/hdfs-site.xml ${CONF_DIR}/
+    fi
   fi
 }
 
@@ -139,7 +145,7 @@ export HADOOP_YARN_HOME=$HADOOP_HOME
 export HADOOP_MAPRED_HOME=$HADOOP_HOME
 export HADOOP_LIBEXEC_DIR=$HADOOP_HOME/libexec
 export JAVA_LIBRARY_PATH=$HADOOP_HOME/lib/native
-export HADOOP_CLASSPATH=$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
+export HADOOP_CLASSPATH=/etc/hadoop/conf:$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
 export HADOOP_LOGFILE=hadoop-cmf-hdfs-ROUTER-${HOST}.log.out
 
 if [[ $HDFS_RBF_ROLE_TYPE = "client" ]]; then

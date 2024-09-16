@@ -22,11 +22,11 @@
   "serviceDependencies": [
     {
       "name": "HDFS",
-      "required": "true"
+      "required": "false"
     },
     {
       "name": "ZOOKEEPER",
-      "required": "true"
+      "required": "false"
     }
   ],
   "serviceInit": {
@@ -134,7 +134,9 @@
           "HADOOP_LOG_DIR": "${log_dir}",
           "HADOOP_ROOT_LOGGER": "${hadoop_root_logger}",
           "HADOOP_SECURITY_LOGGER": "${hadoop_security_logger}",
-          "HADOOP_AUDIT_LOGGER": "${hadoop_audit_logger}"
+          "HADOOP_AUDIT_LOGGER": "${hadoop_audit_logger}",
+          "HDFS_SERVICE": "${dependency:HDFS}",
+          "ZOOKEEPER_SERVICE": "${dependency:ZOOKEEPER}"
         }
       },
       "kerberosPrincipals": [
