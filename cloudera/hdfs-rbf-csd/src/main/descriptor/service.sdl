@@ -1411,6 +1411,18 @@
             ]
           },
           {
+            "filename": "hadoop-conf/core-site.xml",
+            "configFormat": "hadoop_xml",
+            "includedParams": [
+            ]
+          },
+          {
+            "filename": "hadoop-conf/hdfs-site.xml",
+            "configFormat": "hadoop_xml",
+            "includedParams": [
+            ]
+          },
+          {
             "filename": "hadoop-policy.xml",
             "configFormat": "hadoop_xml",
             "includedParams" : [
