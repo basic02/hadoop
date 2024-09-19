@@ -33,7 +33,17 @@
     "preStartSteps": [
     ]
   },
+  "kerberos": "${kerberos_auth_enabled}",
   "parameters": [
+    {
+      "name": "kerberos_auth_enabled",
+      "label": "Enable Kerberos Authentication",
+      "description": "When checked, kerberos authentication is enabled.",
+      "configurableInWizard": "true",
+      "type": "boolean",
+      "default": "false",
+      "required": "true"
+    },
     {
       "name": "router_rpc_enable",
       "label": "Enable Router RPC Service",
@@ -138,7 +148,8 @@
           "HADOOP_SECURITY_LOGGER": "${hadoop_security_logger}",
           "HADOOP_AUDIT_LOGGER": "${hadoop_audit_logger}",
           "HDFS_SERVICE": "${dependency:HDFS}",
-          "ZOOKEEPER_SERVICE": "${dependency:ZOOKEEPER}"
+          "ZOOKEEPER_SERVICE": "${dependency:ZOOKEEPER}",
+          "KERBEROS_AUTH_ENABLED": "${kerberos_auth_enabled}"
         }
       },
       "kerberosPrincipals": [
