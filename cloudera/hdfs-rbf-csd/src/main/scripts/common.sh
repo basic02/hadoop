@@ -76,6 +76,12 @@ function update_router_address {
 }
 
 function generate_configuration_files {
+  if [ "${KERBEROS_AUTH_ENABLED}" == "true" ]; then
+    echo "Kerberos is enabled for router"
+    echo "Router principal: ${ROUTER_PRINCIPAL}"
+    echo "Spnego principal: ${SPNEGO_PRINCIPAL}"
+  fi
+
   if [[ -n "${ZOOKEEPER_SERVICE}" && "${ZOOKEEPER_SERVICE}" != "none" ]]; then
     replace "\{\{ZOOKEEPER_QUORUM}}" "${ZK_QUORUM}" ${HDFS_RBF_SITE}
   fi
