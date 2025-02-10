@@ -28,6 +28,7 @@ import org.apache.hadoop.fs.ContentSummary;
 import org.apache.hadoop.fs.CreateFlag;
 import org.apache.hadoop.fs.FsServerDefaults;
 import org.apache.hadoop.fs.Options.Rename;
+import org.apache.hadoop.hdfs.AddBlockFlag;
 import org.apache.hadoop.hdfs.protocol.BlockStoragePolicy;
 import org.apache.hadoop.hdfs.protocol.CacheDirectiveEntry;
 import org.apache.hadoop.hdfs.protocol.CacheDirectiveInfo;
@@ -489,6 +490,8 @@ public class ClientNamenodeProtocolServerSideTranslatorPB implements
     try {
       List<DatanodeInfoProto> excl = req.getExcludeNodesList();
       List<String> favor = req.getFavoredNodesList();
+      EnumSet<AddBlockFlag> flags =
+          PBHelper.convertAddBlockFlags(req.getFlagsList());
       LocatedBlock result = server.addBlock(
           req.getSrc(),
           req.getClientName(),
@@ -496,7 +499,8 @@ public class ClientNamenodeProtocolServerSideTranslatorPB implements
           (excl == null || excl.size() == 0) ? null : PBHelper.convert(excl
               .toArray(new DatanodeInfoProto[excl.size()])), req.getFileId(),
           (favor == null || favor.size() == 0) ? null : favor
-              .toArray(new String[favor.size()]));
+              .toArray(new String[favor.size()]),
+          flags);
       return AddBlockResponseProto.newBuilder()
           .setBlock(PBHelper.convert(result)).build();
     } catch (IOException e) {

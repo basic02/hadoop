@@ -44,6 +44,7 @@ import java.net.URI;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -94,6 +95,7 @@ import org.apache.hadoop.util.Time;
 import org.apache.log4j.Level;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.junit.Before;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.ThrowsException;
@@ -251,7 +253,9 @@ public class TestDFSClientRetries {
                          anyString(),
                          any(ExtendedBlock.class),
                          any(DatanodeInfo[].class),
-                         anyLong(), any(String[].class))).thenAnswer(answer);
+                         anyLong(), any(String[].class),
+                         Matchers.<EnumSet<AddBlockFlag>>any()))
+        .thenAnswer(answer);
     
     Mockito.doReturn(
             new HdfsFileStatus(0, false, 1, 1024, 0, 0, new FsPermission(
@@ -400,7 +404,8 @@ public class TestDFSClientRetries {
         }
       }).when(spyNN).addBlock(Mockito.anyString(), Mockito.anyString(),
           Mockito.<ExtendedBlock> any(), Mockito.<DatanodeInfo[]> any(),
-          Mockito.anyLong(), Mockito.<String[]> any());
+          Mockito.anyLong(), Mockito.<String[]> any(),
+          Mockito.<EnumSet<AddBlockFlag>> any());
 
       doAnswer(new Answer<Boolean>() {
 
@@ -442,7 +447,8 @@ public class TestDFSClientRetries {
       Mockito.verify(spyNN, Mockito.atLeastOnce()).addBlock(
           Mockito.anyString(), Mockito.anyString(),
           Mockito.<ExtendedBlock> any(), Mockito.<DatanodeInfo[]> any(),
-          Mockito.anyLong(), Mockito.<String[]> any());
+          Mockito.anyLong(), Mockito.<String[]> any(),
+          Mockito.<EnumSet<AddBlockFlag>> any());
       Mockito.verify(spyNN, Mockito.atLeastOnce()).complete(
           Mockito.anyString(), Mockito.anyString(),
           Mockito.<ExtendedBlock>any(), anyLong());

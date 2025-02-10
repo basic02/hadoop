@@ -167,13 +167,8 @@ import org.apache.hadoop.fs.permission.PermissionStatus;
 import org.apache.hadoop.fs.StorageType;
 import org.apache.hadoop.ha.HAServiceProtocol.HAServiceState;
 import org.apache.hadoop.ha.ServiceFailedException;
+import org.apache.hadoop.hdfs.*;
 import org.apache.hadoop.hdfs.protocol.BlockStoragePolicy;
-import org.apache.hadoop.hdfs.DFSConfigKeys;
-import org.apache.hadoop.hdfs.DFSUtil;
-import org.apache.hadoop.hdfs.HAUtil;
-import org.apache.hadoop.hdfs.HdfsConfiguration;
-import org.apache.hadoop.hdfs.UnknownCryptoProtocolVersionException;
-import org.apache.hadoop.hdfs.XAttrHelper;
 import org.apache.hadoop.hdfs.protocol.AlreadyBeingCreatedException;
 import org.apache.hadoop.hdfs.protocol.Block;
 import org.apache.hadoop.hdfs.protocol.CacheDirectiveEntry;
@@ -3029,10 +3024,10 @@ public class FSNamesystem implements Namesystem, FSNamesystemMBean,
    */
   LocatedBlock getAdditionalBlock(String src, long fileId, String clientName,
       ExtendedBlock previous, Set<Node> excludedNodes, 
-      List<String> favoredNodes) throws IOException {
+      List<String> favoredNodes, EnumSet<AddBlockFlag> flags) throws IOException {
     LocatedBlock[] onRetryBlock = new LocatedBlock[1];
     DatanodeStorageInfo targets[] = getNewBlockTargets(src, fileId,
-        clientName, previous, excludedNodes, favoredNodes, onRetryBlock);
+        clientName, previous, excludedNodes, favoredNodes, onRetryBlock, flags);
     if (targets == null) {
       assert onRetryBlock[0] != null : "Retry block is null";
       // This is a retry. Just return the last block.
@@ -3054,7 +3049,7 @@ public class FSNamesystem implements Namesystem, FSNamesystemMBean,
    */
   DatanodeStorageInfo[] getNewBlockTargets(String src, long fileId,
       String clientName, ExtendedBlock previous, Set<Node> excludedNodes,
-      List<String> favoredNodes, LocatedBlock[] onRetryBlock) throws IOException {
+      List<String> favoredNodes, LocatedBlock[] onRetryBlock, EnumSet<AddBlockFlag> flags) throws IOException {
     final long blockSize;
     final int replication;
     final byte storagePolicyID;
@@ -3109,7 +3104,7 @@ public class FSNamesystem implements Namesystem, FSNamesystemMBean,
     // choose targets for the new block to be allocated.
     return getBlockManager().chooseTarget4NewBlock( 
         src, replication, clientNode, excludedNodes, blockSize, favoredNodes,
-        storagePolicyID);
+        storagePolicyID, flags);
   }
 
   /**
