@@ -799,4 +799,8 @@ public class DFSConfigKeys extends CommonConfigurationKeys {
     "dfs.datanode.block-pinning.enabled";
   public static final boolean DFS_DATANODE_BLOCK_PINNING_ENABLED_DEFAULT =
     false;
+
+  public static final String DFS_ADD_BLOCK_NO_LOCAL_WRITE_KEY =
+      "dfs.add.block.no.local.write";
+  public static final boolean DFS_ADD_BLOCK_NO_LOCAL_WRITE_DEFAULT = false;
 }

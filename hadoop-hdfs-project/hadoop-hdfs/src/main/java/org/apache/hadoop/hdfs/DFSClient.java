@@ -1692,6 +1692,11 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
                              int buffersize,
                              ChecksumOpt checksumOpt,
                              InetSocketAddress[] favoredNodes) throws IOException {
+    if (conf.getBoolean(
+        DFSConfigKeys.DFS_ADD_BLOCK_NO_LOCAL_WRITE_KEY,
+        DFSConfigKeys.DFS_ADD_BLOCK_NO_LOCAL_WRITE_DEFAULT)) {
+      flag.add(CreateFlag.NO_LOCAL_WRITE);
+    }
     checkOpen();
     if (permission == null) {
       permission = FsPermission.getFileDefault();
@@ -1756,6 +1761,11 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
                              int buffersize,
                              ChecksumOpt checksumOpt)
       throws IOException, UnresolvedLinkException {
+    if (conf.getBoolean(
+        DFSConfigKeys.DFS_ADD_BLOCK_NO_LOCAL_WRITE_KEY,
+        DFSConfigKeys.DFS_ADD_BLOCK_NO_LOCAL_WRITE_DEFAULT)) {
+      flag.add(CreateFlag.NO_LOCAL_WRITE);
+    }
     checkOpen();
     CreateFlag.validate(flag);
     DFSOutputStream result = primitiveAppend(src, flag, buffersize, progress);
@@ -1817,6 +1827,11 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
   private DFSOutputStream callAppend(String src, int buffersize,
       EnumSet<CreateFlag> flag, Progressable progress, String[] favoredNodes)
       throws IOException {
+    if (conf.getBoolean(
+        DFSConfigKeys.DFS_ADD_BLOCK_NO_LOCAL_WRITE_KEY,
+        DFSConfigKeys.DFS_ADD_BLOCK_NO_LOCAL_WRITE_DEFAULT)) {
+      flag.add(CreateFlag.NO_LOCAL_WRITE);
+    }
     CreateFlag.validateForAppend(flag);
     try {
       LastBlockWithStatus blkWithStatus = namenode.append(src, clientName,
