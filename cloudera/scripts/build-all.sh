@@ -18,6 +18,7 @@ help ()  {
 
   Optional parameters:
     -dc|--distrib-codename           - Distribution codename: el7, el8, ubuntu18, ubuntu20, sles12 (default: el7)
+    -pa|--processor-arch             - Processor architecture: x86_64, aarch64 (default: x86_64)
     --gbn                            - GBN
     --official                       - Run build in releng/official environment
     --snapshot                       - Snapshot Build
@@ -40,7 +41,10 @@ set_gbn () {
 
 set_mvn () {
   MVN_FLAG="nsu"
-  MVN_CMD="-Pdist -Pnative -Dtar -DskipTests -DcreateChecksum=true -Drat.consoleOutput=true -Dhadoop.downstream.gbn=${GBN} -Dmaven.repo.local=${MVN_REPO}"
+  MVN_CMD="-Pdist,native,src -Pyarn-ui -Dtar -DskipTests -Drequire.snappy -Dbundle.snappy -Dsnappy.lib=/usr/lib64 -Drequire.zstd -Dbundle.zstd -Dzstd.lib=/usr/lib64 -Drequire.fuse=true -Dhbase.profile=2.0 -Dhadoop.downstream.gbn=${GBN} -Dmaven.repo.local=${MVN_REPO}"
+  if [[ "${PROCESSOR_ARCH}" == "aarch64"]]; then
+    MVN_CMD="-Paarch64 ${MVN_CMD}"
+  fi;
   MVN="${MVN_HOME}/bin/mvn -B -${MVN_FLAG} ${MVN_CMD}"
 }
 
@@ -79,6 +83,7 @@ fi
 SNAPSHOT='false';
 OFFICIAL='false';
 DISTRIB_CODENAME='el7';
+PROCESSOR_ARCH='x86_64';
 GBN=
 
 while [[ $# -gt 0 ]];
@@ -112,6 +117,9 @@ do
       -dc|--distrib-codename)
         shift
         DISTRIB_CODENAME=$1;;
+      -pa|--processor-arch)
+        shift
+        PROCESSOR_ARCH=$1;;
       --gbn)
         shift
         export GBN=$1;;
