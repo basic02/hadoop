@@ -41,7 +41,7 @@ set_gbn () {
 
 set_mvn () {
   MVN_FLAG="nsu"
-  MVN_CMD="-Pdist,native,src -Pyarn-ui -Dtar -DskipTests -Drequire.snappy -Dbundle.snappy -Dsnappy.lib=/usr/lib64 -Drequire.zstd -Dbundle.zstd -Dzstd.lib=/usr/lib64 -Drequire.isal -Dbundle.isal -Disal.lib=/usr/lib -Drequire.fuse=true -Dhbase.profile=2.0 -Dhadoop.downstream.gbn=${GBN} -Dmaven.repo.local=${MVN_REPO}"
+  MVN_CMD="-Pdist,native,src -Pyarn-ui -Dtar -DskipTests -Drequire.snappy -Dbundle.snappy -Dsnappy.lib=/usr/lib64 -Drequire.zstd -Dbundle.zstd -Dzstd.lib=/usr/lib64 -Drequire.isal -Dbundle.isal -Disal.lib=/usr/lib -Drequire.fuse=true -Dhadoop.downstream.gbn=${GBN} -Dmaven.repo.local=${MVN_REPO}"
   if [[ "${PROCESSOR_ARCH}" == "aarch64" ]]; then
     MVN_CMD="-Paarch64 ${MVN_CMD}"
   fi;
