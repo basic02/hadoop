@@ -548,17 +548,7 @@ public final class ZKCuratorManager {
     public ZooKeeper newZooKeeper(String connectString, int sessionTimeout,
         Watcher watcher, boolean canBeReadOnly
     ) throws Exception {
-      return this.newZooKeeper(connectString, sessionTimeout,
-      watcher, canBeReadOnly, new ZKClientConfig());
-    }
-
-    @Override
-    public ZooKeeper newZooKeeper(String connectString, int sessionTimeout,
-        Watcher watcher, boolean canBeReadOnly, ZKClientConfig zkClientConfig
-    ) throws Exception {
-      if (zkClientConfig == null) {
-        zkClientConfig = new ZKClientConfig();
-      }
+      ZKClientConfig zkClientConfig = new ZKClientConfig();
       if (zkPrincipal != null) {
         LOG.info("Configuring zookeeper to use {} as the server principal",
             zkPrincipal);
