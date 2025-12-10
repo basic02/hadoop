@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "name": "HDFS_RBF",
+  "version": "${hadoop.full.version}",
+  "extraVersionInfo": {
+    "fullVersion": "${hadoop.full.version}",
+    "baseVersion": "${hadoop.full.version}",
+    "patchCount": "0"
+  },
+  "depends": "CDH (>= 7.0)",
+  "setActiveSymlink": true,
+  "scripts": {
+    "defines": "hdfs_rbf_env.sh"
+  },
+  "packages": [
+    {
+      "name": "hdfs_rbf",
+      "version": "${hadoop.full.version}"
+    }
+  ],
+  "components": [
+    {
+      "name": "hdfs_rbf",
+      "version": "${hadoop.full.version}",
+      "pkg_version": "${hadoop.full.version}"
+    }
+  ],
+  "provides": [
+    "hdfs_rbf"
+  ],
+  "users": {
+    "hdfs": {
+      "longname": "Hadoop HDFS",
+      "home": "/var/lib/hadoop-hdfs",
+      "shell": "/bin/bash",
+      "extra_groups": []
+    }
+  },
+  "groups": [
+    "hdfs"
+  ]
+}

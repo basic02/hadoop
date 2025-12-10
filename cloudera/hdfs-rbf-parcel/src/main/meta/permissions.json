@@ -1,0 +1,12 @@
+{
+  "bin/hdfs": {
+    "user":  "root",
+    "group": "root",
+    "permissions": "0755"
+  },
+  "lib/hdfs_rbf/bin/hdfs": {
+    "user":  "root",
+    "group": "root",
+    "permissions": "0755"
+  }
+}

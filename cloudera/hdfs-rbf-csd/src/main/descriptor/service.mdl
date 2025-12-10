@@ -1,0 +1,82 @@
+{
+  "version": "1.0",
+  "name": "HDFS_RBF",
+  "nameForCrossEntityAggregateMetrics": "hdfs_rbf",
+  "compatibility": {
+    "cdhVersion": {
+      "min": "7.1.7"
+    }
+  },
+  "roles": [
+    {
+      "name": "HDFS_RBF_ROUTER",
+      "nameForCrossEntityAggregateMetrics": "hdfs_rbf_router",
+      "metricDefinitions": [
+        {
+          "context": "data::jvm::memory::heapCommitted",
+          "counter": false,
+          "description": "JVM heap committed.",
+          "label": "JVM Heap committed",
+          "name": "hdfs_rbf_router_memory_heap_committed",
+          "numeratorUnit": "bytes"
+        },
+        {
+          "context": "data::jvm::memory::heapInit",
+          "counter": false,
+          "description": "JVM heap initial memory.",
+          "label": "JVM Heap Initial Memory",
+          "name": "hdfs_rbf_router_memory_heap_init",
+          "numeratorUnit": "bytes"
+        },
+        {
+          "context": "data::jvm::memory::heapMax",
+          "counter": false,
+          "description": "JVM heap max used memory.",
+          "label": "JVM Heap Max Used Memory",
+          "name": "hdfs_rbf_router_memory_heap_max",
+          "numeratorUnit": "bytes"
+        },
+        {
+          "context": "data::jvm::memory::heapUsed",
+          "counter": false,
+          "description": "JVM heap used memory.",
+          "label": "JVM Heap Used Memory",
+          "name": "hdfs_rbf_router_memory_heap_used",
+          "numeratorUnit": "bytes"
+        },
+        {
+          "context": "data::jvm::memory::nonHeapCommitted",
+          "counter": false,
+          "description": "JVM non heap committed memory.",
+          "label": "JVM Non-Heap Committed Memory",
+          "name": "hdfs_rbf_router_memory_non_heap_committed",
+          "numeratorUnit": "bytes"
+        },
+        {
+          "context": "data::jvm::memory::nonHeapInit",
+          "counter": false,
+          "description": "JVM non heap initial memory.",
+          "label": "JVM Non-Heap Initial Memory",
+          "name": "hdfs_rbf_router_memory_non_heap_init",
+          "numeratorUnit": "bytes"
+        },
+        {
+          "context": "data::jvm::memory::nonHeapMax",
+          "counter": false,
+          "description": "JVM non heap max used memory.",
+          "label": "JVM Non-Heap Max Used Memory",
+          "name": "hdfs_rbf_router_memory_non_heap_max",
+          "numeratorUnit": "bytes"
+        },
+        {
+          "context": "data::jvm::memory::nonHeapUsed",
+          "counter": false,
+          "description": "JVM non heap used memory.",
+          "label": "JVM Non-Heap Used Memory",
+          "name": "hdfs_rbf_router_memory_non_heap_used",
+          "numeratorUnit": "bytes"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1591 @@
+{
+  "name": "HDFS_RBF",
+  "label": "HDFS RBF",
+  "description": "HDFS Router-based Federation",
+  "version": "1.0",
+  "compatibility": {
+    "cdhVersion": {
+      "min": "7.1.7"
+    }
+  },
+  "runAs": {
+    "user": "hdfs",
+    "group": "hdfs",
+    "principal": "hdfs"
+  },
+  "inExpressWizard": true,
+  "icon": "images/hdfs.svg",
+  "parcel": {
+    "repoUrl": "",
+    "requiredTags": ["cdh"]
+  },
+  "serviceDependencies": [
+    {
+      "name": "HDFS",
+      "required": "false"
+    },
+    {
+      "name": "ZOOKEEPER",
+      "required": "false"
+    }
+  ],
+  "serviceInit": {
+    "preStartSteps": [
+    ]
+  },
+  "kerberos": "${kerberos_auth_enabled}",
+  "parameters": [
+    {
+      "name": "kerberos_auth_enabled",
+      "label": "Enable Kerberos Authentication",
+      "description": "When checked, kerberos authentication is enabled.",
+      "configurableInWizard": "true",
+      "type": "boolean",
+      "default": "false",
+      "required": "true"
+    },
+    {
+      "name": "router_rpc_enable",
+      "label": "Enable Router RPC Service",
+      "description": "If true, the RPC service to handle client requests in the router is enabled.",
+      "configName": "dfs.federation.router.rpc.enable",
+      "configurableInWizard": "true",
+      "type": "boolean",
+      "default": "true",
+      "required": "true"
+    },
+    {
+      "name": "router_rpc_port",
+      "label": "Router RPC Port",
+      "description": "RPC port that handles all clients requests.",
+      "configurableInWizard": "true",
+      "type": "port",
+      "default": "8888",
+      "required": "true"
+    },
+    {
+      "name": "router_admin_enable",
+      "label": "Enable Router RPC Admin Service",
+      "description": "If true, the RPC admin service to handle client requests in the router is enabled.",
+      "configName": "dfs.federation.router.admin.enable",
+      "configurableInWizard": "true",
+      "type": "boolean",
+      "default": "true",
+      "required": "true"
+    },
+    {
+      "name": "router_admin_port",
+      "label": "Router RPC Admin Port",
+      "description": "RPC port that handles the admin requests.",
+      "configurableInWizard": "true",
+      "type": "port",
+      "default": "8111",
+      "required": "true"
+    },
+    {
+      "name": "router_http_enable",
+      "label": "Enable Router HTTP Service",
+      "description": "If the HTTP service to handle client requests in the router is enabled.",
+      "configName": "dfs.federation.router.http.enable",
+      "configurableInWizard": "true",
+      "type": "boolean",
+      "default": "true",
+      "required": "true"
+    },
+    {
+      "name": "router_http_port",
+      "label": "Router HTTP Port",
+      "description": "HTTP port that handles the web requests to the Router.",
+      "configurableInWizard": "true",
+      "type": "port",
+      "default": "50071",
+      "required": "true"
+    },
+    {
+      "name": "router_https_port",
+      "label": "Router HTTPS Port",
+      "description": "HTTPS port that handles the web requests to the Router.",
+      "configurableInWizard": "true",
+      "type": "port",
+      "default": "50072",
+      "required": "true"
+    }
+  ],
+  "rolesWithExternalLinks": [
+    "HDFS_RBF_ROUTER"
+  ],
+  "roles": [
+    {
+      "name": "HDFS_RBF_ROUTER",
+      "label": "Router",
+      "pluralLabel": "Routers",
+      "jvmBased": true,
+      "externalLink": {
+        "name": "router_web_ui",
+        "label": "Router Web UI",
+        "url": "http://${host}:${router_http_port}",
+        "secureUrl": "https://${host}:${router_https_port}"
+      },
+      "startRunner": {
+        "program": "scripts/control.sh",
+        "args": [
+          "start_router"
+        ],
+        "environmentVariables": {
+          "ROUTER_JAVA_HEAPSIZE": "${router_java_heapsize}",
+          "ROUTER_JAVA_EXTRA_OPTS": "${router_java_opts}",
+          "DB_CONNECTOR_JAR_DIR": "${db_connector_jar_dir}",
+          "ROUTER_STORE_DRIVER_CLASS": "${router_store_driver_class}",
+          "ROUTER_SECRET_MANAGER_CLASS": "${router_secret_manager_class}",
+          "SECRET_MANAGER_DATABASE_TYPE": "${sql_dt_secret_manager_database_type}",
+          "GENERATE_JCEKS_PASSWORD": "${generate_jceks_password}",
+          "ROUTER_RPC_PORT": "${router_rpc_port}",
+          "ROUTER_ADMIN_PORT": "${router_admin_port}",
+          "ROUTER_HTTP_PORT": "${router_http_port}",
+          "ROUTER_HTTPS_PORT": "${router_https_port}",
+          "HOST": "${host}",
+          "HADOOP_LOG_DIR": "${log_dir}",
+          "HADOOP_ROOT_LOGGER": "${hadoop_root_logger}",
+          "HADOOP_SECURITY_LOGGER": "${hadoop_security_logger}",
+          "HADOOP_AUDIT_LOGGER": "${hadoop_audit_logger}",
+          "HDFS_SERVICE": "${dependency:HDFS}",
+          "ZOOKEEPER_SERVICE": "${dependency:ZOOKEEPER}",
+          "KERBEROS_AUTH_ENABLED": "${kerberos_auth_enabled}"
+        }
+      },
+      "kerberosPrincipals": [
+        {
+          "name": "ROUTER_PRINCIPAL",
+          "primary": "${principal}",
+          "instance": "${host}"
+        },
+        {
+          "name": "SPNEGO_PRINCIPAL",
+          "primary": "HTTP",
+          "instance": "${host}"
+        }
+      ],
+      "topology": {
+        "minInstances": 1
+      },
+      "healthAggregation": {
+        "type": "nonSingleton",
+        "percentGreenForGreen": 99.0,
+        "percentYellowGreenForYellow": 51.0
+      },
+      "parameters": [
+        {
+          "name": "router_java_heapsize",
+          "label": "Java Heap Size of Router in Bytes",
+          "description": "Maximum size for the Java Process heap. Passed to Java -Xmx. Measured in megabytes.",
+          "type": "memory",
+          "unit": "megabytes",
+          "default": 4096,
+          "min": 512,
+          "required": "true"
+        },
+        {
+          "name": "router_java_opts",
+          "label": "Java Configuration Options for Router",
+          "description": "These arguments will be passed as part of the Java command line. Commonly, garbage collection flags, PermGen, or extra debugging flags would be passed here. Note: When CM version is 6.3.0 or greater, {{JAVA_GC_ARGS}} will be replaced by JVM Garbage Collection arguments based on the runtime Java JVM version.",
+          "type": "string",
+          "default": "{{JAVA_GC_ARGS}}",
+          "required": "false"
+        },
+        {
+          "name" : "db_connector_jar_dir",
+          "label" : "DB Connector Jar Directory",
+          "description" : "Directory that contains the db connector jars (must be present on all Router hosts!). The connector jars within are expected to be called '(postgresql|mysql|oracle)-connector-java.jar.'",
+          "type" : "string",
+          "default" : "/usr/share/java",
+          "required" : "false"
+        },
+        {
+          "name": "router_default_nameservice_enable",
+          "label": "Enable Router Default Nameservice",
+          "description": "The default subcluster is enabled to read and write files.",
+          "configName": "dfs.federation.router.default.nameservice.enable",
+          "configurableInWizard": "true",
+          "type": "boolean",
+          "default": "true",
+          "required": "true"
+        },
+        {
+          "name": "router_default_nameserviceId",
+          "label": "Router Default Nameservice ID",
+          "description": "Nameservice identifier of the default subcluster to monitor.",
+          "configName": "dfs.federation.router.default.nameserviceId",
+          "configurableInWizard": "true",
+          "type": "string",
+          "required": "false"
+        },
+        {
+          "name": "router_handler_count",
+          "label": "Router Handler Count",
+          "description": "The number of server threads for the router to handle RPC requests from clients.",
+          "configName": "dfs.federation.router.handler.count",
+          "type": "long",
+          "default": "30",
+          "min": "10",
+          "required": "true"
+        },
+        {
+          "name": "router_handler_queue_size",
+          "label": "Router Handler Queue Size",
+          "description": "The size of the queue for the number of handlers to handle RPC client requests.",
+          "configName": "dfs.federation.router.handler.queue.size",
+          "type": "long",
+          "default": "10000",
+          "min": "100",
+          "required": "true"
+        },
+        {
+          "name": "router_reader_count",
+          "label": "Router Reader Count",
+          "description": "The number of readers for the router to handle RPC client requests.",
+          "configName": "dfs.federation.router.reader.count",
+          "type": "long",
+          "default": "10",
+          "min": "1",
+          "required": "true"
+        },
+        {
+          "name": "router_reader_queue_size",
+          "label": "Router Reader Queue Size",
+          "description": "The size of the queue for the number of readers for the router to handle RPC client requests.",
+          "configName": "dfs.federation.router.reader.queue.size",
+          "type": "long",
+          "default": "10000",
+          "min": "100",
+          "required": "true"
+        },
+        {
+          "name": "router_connection_creator_queue_size",
+          "label": "Router Connection Creator Queue Size",
+          "description": "Size of async connection creator queue.",
+          "configName": "dfs.federation.router.connection.creator.queue-size",
+          "type": "long",
+          "default": "10000",
+          "min": "100",
+          "required": "true"
+        },
+        {
+          "name": "router_connection_pool_size",
+          "label": "Router Connection Pool Size",
+          "description": "Size of the pool of connections from the router to namenodes.",
+          "configName": "dfs.federation.router.connection.pool-size",
+          "type": "long",
+          "default": "5",
+          "min": "1",
+          "required": "true"
+        },
+        {
+          "name": "router_connection_min_active_ratio",
+          "label": "Minimum Active Ratio of Connections",
+          "description": "Minimum active ratio of connections from the router to namenodes.",
+          "configName": "dfs.federation.router.connection.min-active-ratio",
+          "type": "double",
+          "default": "0.5",
+          "required": "true"
+        },
+        {
+          "name": "router_connection_clean_ms",
+          "label": "Router Connection Clean Interval",
+          "description": "Time interval, in milliseconds, to check if the connection pool should remove unused connections.",
+          "configName": "dfs.federation.router.connection.clean.ms",
+          "type": "long",
+          "default": "10000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_enable_multiple_socket",
+          "label": "Enable Multiple Downstream Socket",
+          "description": "If enable multiple downstream socket or not. If true, ConnectionPool will use a new socket when creating a new connection for the same user, and RouterRPCClient will get a better throughput. It's best used with dfs.federation.router.max.concurrency.per.connection together to get a better throughput with fewer sockets. Such as enable dfs.federation.router.enable.multiple.socket and set dfs.federation.router.max.concurrency.per.connection = 20.",
+          "configName": "dfs.federation.router.enable.multiple.socket",
+          "type": "boolean",
+          "default": "false",
+          "required": "true"
+        },
+        {
+          "name": "router_max_concurrency_per_connection",
+          "label": "Max Requests That Connection Can Handle Concurrently",
+          "description": "The maximum number of requests that a connection can handle concurrently. When the number of requests being processed by a socket is less than this value, new request will be processed by this socket. When enable dfs.federation.router.enable.multiple.socket, it's best set this value greater than 1, such as 20, to avoid frequent creation and idle sockets in the case of a NS with jitter requests.",
+          "configName": "dfs.federation.router.max.concurrency.per.connection",
+          "type": "long",
+          "default": "1",
+          "min": "1",
+          "required": "false"
+        },
+        {
+          "name": "router_connection_pool_clean_ms",
+          "label": "Router Connection Pool Clean Interval",
+          "description": "Time interval, in milliseconds, to check if the connection manager should remove unused connection pools.",
+          "configName": "dfs.federation.router.connection.pool.clean.ms",
+          "type": "long",
+          "default": "60000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_metrics_enable",
+          "label": "Enable Router Metrics",
+          "description": "If the metrics in the router are enabled.",
+          "configName": "dfs.federation.router.metrics.enable",
+          "type": "boolean",
+          "default": "true",
+          "required": "true"
+        },
+        {
+          "name": "router_dn_report_time_out",
+          "label": "Timeout for Getting DN Report",
+          "description": "Time out, in milliseconds for getDatanodeReport.",
+          "configName": "dfs.federation.router.dn-report.time-out",
+          "type": "long",
+          "default": "5000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_dn_report_cache_expire",
+          "label": "Cache Expiration Time for DN Report",
+          "description": "Expiration time in seconds for datanodereport.",
+          "configName": "dfs.federation.router.dn-report.cache-expire",
+          "type": "long",
+          "default": "10000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_enable_get_dn_usage",
+          "label": "Enable Getting DataNode Usage",
+          "description": "If true, the getNodeUsage method in RBFMetrics will return an up-to-date result collecting from downstream nameservices. But it will take a long time and take up thread resources. If false, it will return a mock result with all 0.",
+          "configName": "dfs.federation.router.enable.get.dn.usage",
+          "type": "boolean",
+          "default": "true",
+          "required": "true"
+        },
+        {
+          "name": "router_metrics_class",
+          "label": "Router Metrics Implementation Class",
+          "description": "Class to monitor the RPC system in the router. It must implement the RouterRpcMonitor interface.",
+          "configName": "dfs.federation.router.metrics.class",
+          "type": "string_enum",
+          "validValues": ["org.apache.hadoop.hdfs.server.federation.metrics.FederationRPCPerformanceMonitor"],
+          "default": "org.apache.hadoop.hdfs.server.federation.metrics.FederationRPCPerformanceMonitor",
+          "required": "true"
+        },
+        {
+          "name": "router_admin_handler_count",
+          "label": "Router RPC Admin Handler Count",
+          "description": "The number of server threads for the router to handle RPC requests from admin.",
+          "configName": "dfs.federation.router.admin.handler.count",
+          "type": "long",
+          "default": "1",
+          "min": "1",
+          "required": "true"
+        },
+        {
+          "name": "router_admin_mount_check_enable",
+          "label": "Enable Mount Destination Check",
+          "description": "If true, add/update mount table will include a destination check to make sure the file exists in downstream namenodes, and changes to mount table will fail if the file doesn't exist in any of the destination namenode.",
+          "configName": "fs.federation.router.admin.mount.check.enable",
+          "type": "boolean",
+          "default": "false",
+          "required": "true"
+        },
+        {
+          "name": "router_fs_limits_max_component_length",
+          "label": "Max Number of Bytes for a Path in Router",
+          "description": "Defines the maximum number of bytes in UTF-8 encoding in each component of a path at Router side. A value of 0 will disable the check. Support multiple size unit suffix(case insensitive). It is act as configuration dfs.namenode.fs-limits.max-component-length at NameNode side.",
+          "configName": "dfs.federation.router.fs-limits.max-component-length",
+          "type": "long",
+          "default": "0",
+          "required": "true"
+        },
+        {
+          "name": "router_file_resolver_client_class",
+          "label": "Router File Resolver Client Class",
+          "description": "Class to resolve files to subclusters. To enable multiple subclusters for a mount point, set to org.apache.hadoop.hdfs.server.federation.resolver.MultipleDestinationMountTableResolver.",
+          "configName": "dfs.federation.router.file.resolver.client.class",
+          "type": "string_enum",
+          "validValues": [
+            "org.apache.hadoop.hdfs.server.federation.resolver.MountTableResolver",
+            "org.apache.hadoop.hdfs.server.federation.resolver.MultipleDestinationMountTableResolver"
+          ],
+          "default": "org.apache.hadoop.hdfs.server.federation.resolver.MountTableResolver",
+          "required": "true"
+        },
+        {
+          "name": "router_namenode_resolver_client_class",
+          "label": "Router NameNode Resolver Client Class",
+          "description": "Class to resolve the namenode for a subcluster.",
+          "configName": "dfs.federation.router.namenode.resolver.client.class",
+          "type": "string_enum",
+          "validValues": ["org.apache.hadoop.hdfs.server.federation.resolver.MembershipNamenodeResolver"],
+          "default": "org.apache.hadoop.hdfs.server.federation.resolver.MembershipNamenodeResolver",
+          "required": "true"
+        },
+        {
+          "name": "router_store_enable",
+          "label": "Enable Router State Store",
+          "description": "If true, the Router connects to the State Store.",
+          "configName": "dfs.federation.router.store.enable",
+          "configurableInWizard": "true",
+          "type": "boolean",
+          "default": "true",
+          "required": "true"
+        },
+        {
+          "name": "router_store_serializer",
+          "label": "Router State Store Serializer Class",
+          "description": "Class to serialize State Store records.",
+          "configName": "dfs.federation.router.store.serializer",
+          "type": "string_enum",
+          "validValues": ["org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreSerializerPBImpl"],
+          "default": "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreSerializerPBImpl",
+          "required": "true"
+        },
+        {
+          "name": "router_store_driver_class",
+          "label": "Router State Store Implementation Class",
+          "description": "Class to implement the State Store. Implementation classes can use the local file, filesystem, MySQL and ZooKeeper as a backend respectively. By default it uses the ZooKeeper as the default State Store.",
+          "configName": "dfs.federation.router.store.driver.class",
+          "configurableInWizard": "true",
+          "type": "string_enum",
+          "validValues": [
+            "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreFileImpl",
+            "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreFileSystemImpl",
+            "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreMySQLImpl",
+            "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreZooKeeperImpl"
+          ],
+          "default": "org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreZooKeeperImpl",
+          "required": "true"
+        },
+        {
+          "name": "hadoop_zk_address",
+          "label": "Zookeeper Address",
+          "description": "Zookeeper address",
+          "configName": "hadoop.zk.address",
+          "configurableInWizard": "true",
+          "type": "string",
+          "default": "{{ZOOKEEPER_QUORUM}}",
+          "required": "false"
+        },
+        {
+          "name": "router_store_connection_test",
+          "label": "Interval to Check Connection to State Store",
+          "description": "How often to check for the connection to the State Store in milliseconds.",
+          "configName": "dfs.federation.router.store.connection.test",
+          "type": "long",
+          "default": "60000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_store_driver_zk_parent_path",
+          "label": "Zookeeper Parent Path for State Store",
+          "description": "The parent path of zookeeper for StateStoreZooKeeperImpl.",
+          "configName": "dfs.federation.router.store.driver.zk.parent-path",
+          "configurableInWizard": "true",
+          "type": "string",
+          "default": "/hdfs-federation",
+          "required": "true"
+        },
+        {
+          "name": "router_store_driver_zk_async_max_threads",
+          "label": "Max Threads of StateStoreZooKeeperImpl in Async Mode",
+          "description": "Max threads number of StateStoreZooKeeperImpl in async mode. Default value is -1, which means StateStoreZooKeeperImpl is working in sync mode. Use positive integer value to enable async mode.",
+          "configName": "dfs.federation.router.store.driver.zk.async.max.threads",
+          "type": "long",
+          "default": "-1",
+          "required": "true"
+        },
+        {
+          "name": "state_store_mysql_connection_url",
+          "label": "MySQL State Store Database URL",
+          "description": "Database connection URL of MySQL based state store, e.g., jdbc:mysql://DB_HOST:DB_PORT/DB_SCHEMA_NAME).",
+          "configName": "state-store-mysql.connection.url",
+          "configurableInWizard": "true",
+          "type": "string",
+          "default": "jdbc:mysql://<DB_HOST>:<DB_PORT>/<DB_SCHEMA_NAME>",
+          "required": "false"
+        },
+        {
+          "name": "state_store_mysql_connection_username",
+          "label": "MySQL State Store Database User",
+          "description": "Database user of MySQL based state store",
+          "configName": "state-store-mysql.connection.username",
+          "configurableInWizard": "true",
+          "type": "string",
+          "required": "false"
+        },
+        {
+          "name": "state_store_mysql_connection_password",
+          "label": "MySQL State Store Database Password",
+          "description": "Database password of MySQL based state store",
+          "configName": "state-store-mysql.connection.password",
+          "configurableInWizard": "true",
+          "type": "password",
+          "sensitive": "true",
+          "required": "false"
+        },
+        {
+          "name": "router_cache_ttl",
+          "label": "Interval to Refresh State Store Caches",
+          "description": "How often to refresh the State Store caches in milliseconds. This setting supports multiple time unit suffixes. If no suffix is specified then milliseconds is assumed.",
+          "configName": "dfs.federation.router.cache.ttl",
+          "type": "long",
+          "default": "60000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_store_membership_expiration",
+          "label": "Expiration Time of Membership Record",
+          "description": "Expiration time in milliseconds for a membership record.",
+          "configName": "dfs.federation.router.store.membership.expiration",
+          "type": "long",
+          "default": "300000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_store_membership_expiration_deletion",
+          "label": "Deletion Time of Membership Record",
+          "description": "Deletion time in milliseconds for a membership record. If an expired membership record exists beyond this time, it will be deleted. If this value is negative, the deletion is disabled.",
+          "configName": "dfs.federation.router.store.membership.expiration.deletion",
+          "type": "long",
+          "default": "300000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_heartbeat_enable",
+          "label": "Enable Router Heartbeat to State Store",
+          "description": "If true, the Router heartbeats into the State Store.",
+          "configName": "dfs.federation.router.heartbeat.enable",
+          "type": "boolean",
+          "default": "true",
+          "required": "true"
+        },
+        {
+          "name": "router_heartbeat_interval",
+          "label": "Interval of Router Heartbeat to State Store",
+          "description": "How often the Router should heartbeat into the State Store in milliseconds.",
+          "configName": "dfs.federation.router.heartbeat.interval",
+          "type": "long",
+          "default": "5000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_heartbeat_state_interval",
+          "label": "Interval of Router Heartbeat State to State Store",
+          "description": "How often the Router should heartbeat its state into the State Store in milliseconds. This setting supports multiple time unit suffixes.",
+          "configName": "dfs.federation.router.heartbeat-state.interval",
+          "type": "long",
+          "default": "5000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_namenode_heartbeat_enable",
+          "label": "Enable Getting NameNode Heartbeat",
+          "description": "If true, get namenode heartbeats and send into the State Store. If not explicitly specified takes the same value as for dfs.federation.router.heartbeat.enable.",
+          "configName": "dfs.federation.router.namenode.heartbeat.enable",
+          "type": "boolean",
+          "default": "true",
+          "required": "true"
+        },
+        {
+          "name": "router_namenode_heartbeat_jmx_interval",
+          "label": "Interval of Router Requesting JMX Reports from NameNode",
+          "description": "How often the Router should request JMX reports from the Namenode in milliseconds. If this value is 0, it will request JMX reports every time a Namenode report is requested. If this value is negative, it will disable JMX reports from the Namenode.",
+          "configName": "dfs.federation.router.namenode.heartbeat.jmx.interval",
+          "type": "long",
+          "default": "0",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_health_monitor_timeout",
+          "label": "Timeout to Obtain HAServiceStatus from NameNode",
+          "description": "Time out for Router to obtain HAServiceStatus from NameNode.",
+          "configName": "dfs.federation.router.health.monitor.timeout",
+          "type": "long",
+          "default": "30000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_store_router_expiration",
+          "label": "Expiration Time of State Record",
+          "description": "Expiration time in milliseconds for a router state record. This setting supports multiple time unit suffixes.",
+          "configName": "dfs.federation.router.store.router.expiration",
+          "type": "long",
+          "default": "300000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_store_router_expiration_deletion",
+          "label": "Deletion Time of State Record",
+          "description": "Deletion time in milliseconds for a router state record. If an expired router state record exists beyond this time, it will be deleted. If this value is negative, the deletion is disabled.",
+          "configName": "dfs.federation.router.store.router.expiration.deletion",
+          "type": "long",
+          "default": "300000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_safemode_enable",
+          "label": "Enable Router Safe Mode",
+          "description": "If true, enable router safemode.",
+          "configName": "dfs.federation.router.safemode.enable",
+          "type": "boolean",
+          "default": "true",
+          "required": "true"
+        },
+        {
+          "name": "router_safemode_extension",
+          "label": "Extension Time of Router in Safe Mode",
+          "description": "Time after startup that the Router is in safe mode. This setting supports multiple time unit suffixes. If no suffix is specified then milliseconds is assumed.",
+          "configName": "dfs.federation.router.safemode.extension",
+          "type": "long",
+          "default": "30000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_safemode_expiration",
+          "label": "Time to Enter Safe Mode When Losing Connection",
+          "description": "Time without being able to reach the State Store to enter safe mode. This setting supports multiple time unit suffixes. If no suffix is specified then milliseconds is assumed.",
+          "configName": "dfs.federation.router.safemode.expiration",
+          "type": "long",
+          "default": "180000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_safemode_checkperiod",
+          "label": "Safe Mode Check Period of Router",
+          "description": "How often the Router should check safe mode. This setting supports multiple time unit suffixes. If no suffix is specified then milliseconds is assumed.",
+          "configName": "dfs.federation.router.safemode.checkperiod",
+          "type": "long",
+          "default": "5000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_monitor_namenode",
+          "label": "Identifies of NameNode to Monitor",
+          "description": "The identifier of the namenodes to monitor and heartbeat.",
+          "configName": "dfs.federation.router.monitor.namenode",
+          "configurableInWizard": "true",
+          "type": "string",
+          "required": "false"
+        },
+        {
+          "name": "router_monitor_namenode_nameservice_resolution_enabled",
+          "label": "Enable NameNode Address Domain Name Resolution",
+          "description": "Determines if the given monitored namenode address is a domain name which needs to be resolved. This is used by router to resolve namenodes.",
+          "configName": "dfs.federation.router.monitor.namenode.nameservice.resolution-enabled",
+          "type": "boolean",
+          "default": "false",
+          "required": "true"
+        },
+        {
+          "name": "router_monitor_namenode_nameservice_resolver_impl",
+          "label": "NameNode Resolver Implementation",
+          "description": "Nameservice resolver implementation used by router. Effective with dfs.federation.router.monitor.namenode.nameservices.resolution-enabled on.",
+          "configName": "dfs.federation.router.monitor.namenode.nameservice.resolver.impl",
+          "type": "string",
+          "required": "false"
+        },
+        {
+          "name": "router_monitor_localnamenode_enable",
+          "label": "Enable Monitoring Local NameNode",
+          "description": "If true, the Router should monitor the namenode in the local machine.",
+          "configName": "dfs.federation.router.monitor.localnamenode.enable",
+          "configurableInWizard": "true",
+          "type": "boolean",
+          "default": "false",
+          "required": "true"
+        },
+        {
+          "name": "dfs_nameservice_id",
+          "label": "DFS Nameservice ID",
+          "description": "DFS Nameservice ID",
+          "configName": "dfs.nameservice.id",
+          "type": "string",
+          "required": "false"
+        },
+        {
+          "name": "dfs_ha_namenode_id",
+          "label": "DFS HA NameNode ID",
+          "description": "DFS HA NameNode ID",
+          "configName": "dfs.ha.namenode.id",
+          "type": "string",
+          "required": "false"
+        },
+        {
+          "name": "router_mount_table_cache_enable",
+          "label": "Enable Mount Table Cache",
+          "description": "Set to true to enable mount table cache (Path to Remote Location cache). Disabling the cache is recommended when a large amount of unique paths are queried.",
+          "configName": "dfs.federation.router.mount-table.cache.enable",
+          "type": "boolean",
+          "default": "true",
+          "required": "true"
+        },
+        {
+          "name": "router_mount_table_max_cache_size",
+          "label": "Max Number of Mount Table Cache Entries",
+          "description": "Maximum number of mount table cache entries to have. By default, remove cache entries if we have more than 10k.",
+          "configName": "dfs.federation.router.mount-table.max-cache-size",
+          "type": "long",
+          "default": "10000",
+          "required": "false"
+        },
+        {
+          "name": "router_mount_table_cache_update",
+          "label": "Enable Mount Table Cache Update Service",
+          "description": "Set true to enable MountTableRefreshService. This service updates mount table cache immediately after adding, modifying or deleting the mount table entries. If this service is not enabled mount table cache are refreshed periodically by StateStoreCacheUpdateService",
+          "configName": "dfs.federation.router.mount-table.cache.update",
+          "type": "boolean",
+          "default": "false",
+          "required": "true"
+        },
+        {
+          "name": "router_mount_table_cache_update_timeout",
+          "label": "Timeout for Mount Table Cache Update",
+          "description": "Max time to wait for all the routers to finish their mount table cache update.",
+          "configName": "dfs.federation.router.mount-table.cache.update.timeout",
+          "type": "long",
+          "default": "60000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_mount_table_cache_update_client_max_time",
+          "label": "Max Cache Time of RouterClient Connection",
+          "description": "Remote router mount table cache is updated through RouterClient(RPC call). To improve performance, RouterClient connections are cached but it should not be kept in cache forever. This property defines the max time a connection can be cached. This setting supports multiple time unit suffixes.",
+          "configName": "dfs.federation.router.mount-table.cache.update.client.max.time",
+          "type": "long",
+          "default": "300000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_quota_enable",
+          "label": "Enable Quota System in Router",
+          "description": "Set to true to enable quota system in Router. When it's enabled, setting or clearing sub-cluster's quota directly is not recommended since Router Admin server will override sub-cluster's quota with global quota.",
+          "configName": "dfs.federation.router.quota.enable",
+          "configurableInWizard": "true",
+          "type": "boolean",
+          "default": "false",
+          "required": "true"
+        },
+        {
+          "name": "router_quota_cache_update_interval",
+          "label": "Update Interval of Router Quota Cache",
+          "description": "Interval time for updating quota usage cache in Router. This property is used only if the value of dfs.federation.router.quota.enable is true. This setting supports multiple time unit suffixes. If no suffix is specified then milliseconds is assumed.",
+          "configName": "dfs.federation.router.quota-cache.update.interval",
+          "type": "long",
+          "default": "60000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_client_thread_size",
+          "label": "Router Client Thread Size",
+          "description": "Max threads size for the RouterClient to execute concurrent requests.",
+          "configName": "dfs.federation.router.client.thread-size",
+          "type": "long",
+          "default": "32",
+          "required": "false"
+        },
+        {
+          "name": "router_client_retry_max_attempts",
+          "label": "Max Retry Attempts of Router Client",
+          "description": "Max retry attempts for the RouterClient talking to the Router.",
+          "configName": "dfs.federation.router.client.retry.max.attempts",
+          "type": "long",
+          "default": "3",
+          "required": "false"
+        },
+        {
+          "name": "router_client_reject_overload",
+          "label": "Reject Overload for Router Client",
+          "description": "Set to true to reject client requests when we run out of RPC client threads.",
+          "configName": "dfs.federation.router.client.reject.overload",
+          "type": "boolean",
+          "default": "false",
+          "required": "true"
+        },
+        {
+          "name": "router_client_allow_partial_listing",
+          "label": "Allow Partial Listing for Router Client",
+          "description": "If the Router can return a partial list of files in a multi-destination mount point when one of the subclusters is unavailable. True may return a partial list of files if a subcluster is down. False will fail the request if one is unavailable.",
+          "configName": "dfs.federation.router.client.allow-partial-listing",
+          "type": "boolean",
+          "default": "true",
+          "required": "true"
+        },
+        {
+          "name": "router_client_mount_status_time_out",
+          "label": "Timeout when Listing Mount Points",
+          "description": "Set a timeout for the Router when listing folders containing mount points. In this process, the Router checks the mount table and then it checks permissions in the subcluster. After the time out, we return the default values.",
+          "configName": "dfs.federation.router.client.mount-status.time-out",
+          "type": "long",
+          "default": "1000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_connect_timeout",
+          "label": "Timeout for Connecting to Subclusters",
+          "description": "Time out for the IPC client connecting to the subclusters. This should be short as the Router has knowledge of the state of the Routers.",
+          "configName": "dfs.federation.router.connect.timeout",
+          "type": "long",
+          "default": "2000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_connect_max_retries_on_timeouts",
+          "label": "Max Retries for Connecting to Subclusters",
+          "description": "Maximum number of retries for the IPC Client when connecting to the subclusters. By default, it doesn't let the IPC retry and the Router handles it.",
+          "configName": "dfs.federation.router.connect.max.retries.on.timeouts",
+          "type": "long",
+          "default": "0",
+          "required": "false"
+        },
+        {
+          "name": "router_secret_manager_class",
+          "label": "Secret Manager Implementation Class",
+          "description": "Class to implement state store to delegation tokens. Default implementation uses zookeeper as the backend to store delegation tokens.",
+          "configName": "dfs.federation.router.secret.manager.class",
+          "configurableInWizard": "true",
+          "type": "string_enum",
+          "validValues": [
+            "org.apache.hadoop.hdfs.server.federation.router.security.token.ZKDelegationTokenSecretManagerImpl",
+            "org.apache.hadoop.hdfs.server.federation.router.security.token.SQLDelegationTokenSecretManagerImpl"
+          ],
+          "default": "org.apache.hadoop.hdfs.server.federation.router.security.token.ZKDelegationTokenSecretManagerImpl",
+          "required": "true"
+        },
+        {
+          "name": "zk_dt_secret_manager_zkNumRetries",
+          "label": "Max Retries for Connecting Zookeeper",
+          "description": "Maximum number of retries for the Router to connect to the Zookeeper to store delegation token.",
+          "configName": "zk-dt-secret-manager.zkNumRetries",
+          "type": "long",
+          "default": "3",
+          "required": "false"
+        },
+        {
+          "name": "zk_dt_secret_manager_zkSessionTimeout",
+          "label": "Session Timeout of Zookeeper Token Store",
+          "description": "Zookeeper session timeout of Zookeeper based delegation token store",
+          "configName": "zk-dt-secret-manager.zkSessionTimeout",
+          "type": "long",
+          "default": "60000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "zk_dt_secret_manager_zkConnectionTimeout",
+          "label": "Connection Timeout of Zookeeper Token Store",
+          "description": "Zookeeper connection timeout of Zookeeper based delegation token store",
+          "configName": "zk-dt-secret-manager.zkConnectionTimeout",
+          "type": "long",
+          "default": "60000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "zk_dt_secret_manager_zkShutdownTimeout",
+          "label": "Shutdown Timeout of Zookeeper Token Store",
+          "description": "Zookeeper shutdown timeout of Zookeeper based delegation token store",
+          "configName": "zk-dt-secret-manager.zkShutdownTimeout",
+          "type": "long",
+          "default": "10000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "zk_dt_secret_manager_znodeWorkingPath",
+          "label": "Znode Path of Zookeeper Token Store",
+          "description": "Zookeeper znode working path of Zookeeper based delegation token store",
+          "configName": "zk-dt-secret-manager.znodeWorkingPath",
+          "type": "string",
+          "default": "zkdtsm",
+          "required": "false"
+        },
+        {
+          "name": "zk_dt_secret_manager_zkAuthType",
+          "label": "Authentication Type of Zookeeper Token Store",
+          "description": "Zookeeper authentication type of Zookeeper based delegation token store",
+          "configName": "zk-dt-secret-manager.zkAuthType",
+          "configurableInWizard": "true",
+          "type": "string_enum",
+          "validValues": ["none", "sasl"],
+          "default": "none",
+          "required": "true"
+        },
+        {
+          "name": "zk_dt_secret_manager_zkConnectionString",
+          "label": "Connection String of Zookeeper Token Store",
+          "description": "Zookeeper connection string of Zookeeper based delegation token store",
+          "configName": "zk-dt-secret-manager.zkConnectionString",
+          "configurableInWizard": "true",
+          "type": "string",
+          "default": "{{ZOOKEEPER_QUORUM}}",
+          "required": "false"
+        },
+        {
+          "name": "zk_dt_secret_manager_token_seqnum_batch_size",
+          "label": "Seq Number Batch Size of Zookeeper Token Store",
+          "description": "Sequence number batch size of Zookeeper based delegation token store",
+          "configName": "zk-dt-secret-manager.token.seqnum.batch.size",
+          "type": "long",
+          "default": "1",
+          "required": "false"
+        },
+        {
+          "name": "zk_dt_secret_manager_token_watcher_enabled",
+          "label": "Enable Zookeeper Delegation Token Watcher",
+          "description": "Enable Zookeeper delegation token watcher",
+          "configName": "zk-dt-secret-manager.token.watcher.enabled",
+          "type": "boolean",
+          "default": "true",
+          "required": "false"
+        },
+        {
+          "name": "zk_dt_secret_manager_router_token_sync_interval",
+          "label": "Zookeeper Delegation Token Sync Interval",
+          "description": "Zookeeper delegation token sync interval among Routers",
+          "configName": "zk-dt-secret-manager.router.token.sync.interval",
+          "type": "long",
+          "default": "5",
+          "unit": "seconds",
+          "required": "false"
+        },
+        {
+          "name": "sql_dt_secret_manager_database_type",
+          "label": "SQL Token Store Database Type",
+          "description": "Database type of SQL based delegation token store",
+          "configurableInWizard": "true",
+          "type": "string_enum",
+          "validValues": ["mysql"],
+          "default": "mysql",
+          "required": "false"
+        },
+        {
+          "name": "sql_dt_secret_manager_connection_url",
+          "label": "SQL Token Store Database URL",
+          "description": "Database connection URL of SQL based delegation token store. Only MySQL is supported at the moment (e.g. jdbc:mysql://DB_HOST:DB_PORT/DB_SCHEMA_NAME).",
+          "configName": "sql-dt-secret-manager.connection.url",
+          "configurableInWizard": "true",
+          "type": "string",
+          "default": "jdbc:mysql://<DB_HOST>:<DB_PORT>/<DB_SCHEMA_NAME>",
+          "required": "false"
+        },
+        {
+          "name": "sql_dt_secret_manager_connection_username",
+          "label": "SQL Token Store Database User",
+          "description": "Database user of SQL based delegation token store",
+          "configName": "sql-dt-secret-manager.connection.username",
+          "configurableInWizard": "true",
+          "type": "string",
+          "required": "false"
+        },
+        {
+          "name": "sql_dt_secret_manager_connection_password",
+          "label": "SQL Token Store Database Password",
+          "description": "Database password of SQL based delegation token store",
+          "configName": "sql-dt-secret-manager.connection.password",
+          "configurableInWizard": "true",
+          "type": "password",
+          "sensitive": "true",
+          "required": "false"
+        },
+        {
+          "name": "sql_dt_secret_manager_token_seqnum_batch_size",
+          "label": "Seq Number Batch Size of SQL Token Store",
+          "description": "Sequence number batch size of SQL based delegation token store",
+          "configName": "sql-dt-secret-manager.token.seqnum.batch.size",
+          "type": "long",
+          "default": "10",
+          "required": "false"
+        },
+        {
+          "name": "sql_dt_secret_manager_token_max_cleanup_results",
+          "label": "Max Cleanup Number of Token",
+          "description": "Number of tokens to obtain from SQL during the cleanup process.",
+          "configName": "sql-dt-secret-manager.token.max.cleanup.results",
+          "type": "long",
+          "default": "1000",
+          "required": "false"
+        },
+        {
+          "name": "sql_dt_secret_manager_token_loading_cache_expiration",
+          "label": "Token Loading Cache Expiration",
+          "description": "Token Loading Cache Expiration",
+          "configName": "sql-dt-secret-manager.token.loading.cache.expiration",
+          "type": "long",
+          "default": "10000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "sql_dt_secret_manager_token_loading_cache_max_size",
+          "label": "Token Loading Cache Max Size",
+          "description": "Token Loading Cache Max Size",
+          "configName": "sql-dt-secret-manager.token.loading.cache.max.size",
+          "type": "long",
+          "default": "100000",
+          "required": "false"
+        },
+        {
+          "name": "router_top_num_token_realowners",
+          "label": "Top Number of Token Real Owner",
+          "description": "The number of top real owners by tokens count to report in the JMX metrics. Real owners are the effective users whose credential are used to generate the tokens.",
+          "configName": "dfs.federation.router.top.num.token.realowners",
+          "type": "long",
+          "default": "10",
+          "required": "false"
+        },
+        {
+          "name": "router_fairness_policy_controller_class",
+          "label": "Fairness Policy Controller Class",
+          "description": "No fairness policy handler by default, for fairness StaticFairnessPolicyController should be configured.",
+          "configName": "dfs.federation.router.fairness.policy.controller.class",
+          "type": "string_enum",
+          "validValues": [
+            "org.apache.hadoop.hdfs.server.federation.fairness.NoRouterRpcFairnessPolicyController",
+            "org.apache.hadoop.hdfs.server.federation.fairness.StaticRouterRpcFairnessPolicyController"
+          ],
+          "default": "org.apache.hadoop.hdfs.server.federation.fairness.NoRouterRpcFairnessPolicyController",
+          "required": "false"
+        },
+        {
+          "name": "router_fairness_acquire_timeout",
+          "label": "Max Time to Wait for a Permit",
+          "description": "The maximum time to wait for a permit.",
+          "configName": "dfs.federation.router.fairness.acquire.timeout",
+          "type": "long",
+          "default": "1000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_federation_rename_bandwidth",
+          "label": "Specify Bandwidth Per Map for Rename Operation",
+          "description": "Specify bandwidth per map in MB.",
+          "configName": "dfs.federation.router.federation.rename.bandwidth",
+          "type": "memory",
+          "unit": "megabytes",
+          "default": 10,
+          "required": "false"
+        },
+        {
+          "name": "router_federation_rename_map",
+          "label": "Max Number of Maps for Rename Operation",
+          "description": "Max number of concurrent maps to use for copy.",
+          "configName": "dfs.federation.router.federation.rename.map",
+          "type": "long",
+          "default": "10",
+          "required": "false"
+        },
+        {
+          "name": "router_federation_rename_delay",
+          "label": "Retry Delay for Rename Operation",
+          "description": "Specify the delayed duration(milliseconds) when the job needs to retry.",
+          "configName": "dfs.federation.router.federation.rename.delay",
+          "type": "long",
+          "default": "1000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_federation_rename_diff",
+          "label": "Threshold of Diff Entries for Rename Operation",
+          "description": "Specify the threshold of the diff entries that used in incremental copy stage.",
+          "configName": "dfs.federation.router.federation.rename.diff",
+          "type": "long",
+          "default": "0",
+          "required": "false"
+        },
+        {
+          "name": "router_federation_rename_option",
+          "label": "Specify Action for Rename across Namespaces",
+          "description": "Specify the action when rename across namespaces. The option can be NONE and DISTCP.",
+          "configName": "dfs.federation.router.federation.rename.option",
+          "type": "string_enum",
+          "validValues": ["NONE", "DISTCP"],
+          "default": "NONE",
+          "required": "false"
+        },
+        {
+          "name": "router_federation_rename_force_close_open_file",
+          "label": "Closing Open Files for Rename Operation",
+          "description": "Force close all open files when there is no diff in the DIFF_DISTCP stage.",
+          "configName": "dfs.federation.router.federation.rename.force.close.open.file",
+          "type": "boolean",
+          "default": "true",
+          "required": "true"
+        },
+        {
+          "name": "router_federation_rename_trash",
+          "label": "Specify Action for Source Path",
+          "description": "This options has 3 values: trash (move the source path to trash), delete (delete the source path directly) and skip (skip both trash and deletion).",
+          "configName": "dfs.federation.router.federation.rename.trash",
+          "type": "string_enum",
+          "validValues": ["trash", "delete", "skip"],
+          "default": "trash",
+          "required": "false"
+        },
+        {
+          "name": "router_observer_read_default",
+          "label": "Enable Observer Reads",
+          "description": "Whether observer reads are enabled. This is a default for all nameservices. The default can be inverted for individual namespace by adding them to dfs.federation.router.observer.read.overrides.",
+          "configName": "dfs.federation.router.observer.read.default",
+          "type": "boolean",
+          "default": "false",
+          "required": "true"
+        },
+        {
+          "name": "router_observer_read_overrides",
+          "label": "Overrides of Enabling Observer Reads",
+          "description": "Commas separated list of namespaces for which to invert the default configuration, dfs.federation.router.observer.read.default, for whether to enable observer reads.",
+          "configName": "dfs.federation.router.observer.read.overrides",
+          "type": "string",
+          "required": "false"
+        },
+        {
+          "name": "router_observer_federated_state_propagation_maxsize",
+          "label": "Max Federated States to Send in RPC Header",
+          "description": "The maximum size of the federated state to send in the RPC header. Sending the federated state removes the need to msync on every read call, but at the expense of having a larger header. The cost tradeoff between the larger header and always msync'ing depends on the number of namespaces in use and the latency of the msync requests.",
+          "configName": "dfs.federation.router.observer.federated.state.propagation.maxsize",
+          "type": "long",
+          "default": "5",
+          "required": "false"
+        },
+        {
+          "name": "router_observer_state_id_refresh_period",
+          "label": "Period to Refresh Namespace State ID",
+          "description": "Period to refresh namespace stateID using active namenode. This ensures the namespace stateID is refresh even when an observer is trailing behind. If this is below 0, the auto-refresh is disabled.",
+          "configName": "dfs.federation.router.observer.state.id.refresh.period",
+          "type": "long",
+          "default": "15000",
+          "unit": "milliseconds",
+          "required": "false"
+        },
+        {
+          "name": "router_store_driver_file_async_threads",
+          "label": "Max Threads to Access State Store Files",
+          "description": "Max threads used by StateStoreFileImpl to access state store files concurrently. The only class currently being supported: org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreFileImpl. Default value is 0, which means StateStoreFileImpl would work in sync mode, meaning it would access one file at a time. Use positive integer value to enable concurrent files access.",
+          "configName": "dfs.federation.router.store.driver.file.async.threads",
+          "type": "long",
+          "default": "0",
+          "required": "false"
+        },
+        {
+          "name": "router_store_driver_fs_async_threads",
+          "label": "Max Threads to Access State Store Files From FileSystem",
+          "description": "Max threads used by StateStoreFileSystemImpl to access state store files from the given filesystem concurrently. The only class currently being supported: org.apache.hadoop.hdfs.server.federation.store.driver.impl.StateStoreFileSystemImpl. Default value is 0, which means StateStoreFileSystemImpl would work in sync mode, meaning it would access one file from the filesystem at a time. Use positive integer value to enable concurrent files access from the given filesystem.",
+          "configName": "dfs.federation.router.store.driver.fs.async.threads",
+          "type": "long",
+          "default": "0",
+          "required": "false"
+        },
+        {
+          "name": "generate_jceks_password",
+          "label": "Generate HADOOP_CREDSTORE_PASSWORD",
+          "description": "Flag to enable or disable the generation of HADOOP_CREDSTORE_PASSWORD.",
+          "type": "boolean",
+          "default": "true",
+          "required": "true"
+        },
+        {
+          "name": "hadoop_security_cred_provider_path",
+          "label": "Hadoop Security Credential Provider Path",
+          "description": "Hadoop security credential provider path",
+          "configName": "hadoop.security.credential.provider.path",
+          "type": "string",
+          "default": "localjceks://file/{{CMF_CONF_DIR}}/creds.localjceks",
+          "required": "false"
+        },
+        {
+          "name": "hadoop_root_logger",
+          "label": "Hadoop Root Logger",
+          "description": "Hadoop root logger",
+          "type": "string",
+          "default": "INFO,RFA",
+          "required": "true"
+        },
+        {
+          "name": "hadoop_security_logger",
+          "label": "Hadoop Security Logger",
+          "description": "Hadoop security logger",
+          "type": "string",
+          "default": "INFO,RFAS",
+          "required": "true"
+        },
+        {
+          "name": "hadoop_audit_logger",
+          "label": "Hadoop Audit Logger",
+          "description": "Hadoop audit logger",
+          "type": "string",
+          "default": "INFO,RFAAUDIT",
+          "required": "true"
+        }
+      ],
+      "configWriter": {
+        "generators": [
+          {
+            "filename": "hdfs-rbf-site.xml",
+            "configFormat": "hadoop_xml",
+            "kerberosPrincipals": [
+              {
+                "principalName": "ROUTER_PRINCIPAL",
+                "propertyName": "dfs.federation.router.kerberos.principal",
+                "instanceWildcard": "_HOST"
+              },
+              {
+                "principalName": "SPNEGO_PRINCIPAL",
+                "propertyName": "dfs.federation.router.kerberos.internal.spnego.principal",
+                "instanceWildcard": "_HOST"
+              },
+              {
+                "principalName": "SPNEGO_PRINCIPAL",
+                "propertyName": "dfs.web.authentication.kerberos.principal",
+                "instanceWildcard": "_HOST"
+              },
+              {
+                "principalName": "ROUTER_PRINCIPAL",
+                "propertyName": "zk-dt-secret-manager.kerberos.principal",
+                "instanceWildcard": "_HOST"
+              }
+            ],
+            "excludedParams": [
+              "router_java_heapsize",
+              "router_java_opts"
+            ],
+            "includedParams" : [
+                "router_default_nameservice_enable",
+                "router_default_nameserviceId",
+                "router_rpc_enable",
+                "router_admin_enable",
+                "router_http_enable",
+                "router_handler_count",
+                "router_handler_queue_size",
+                "router_reader_count",
+                "router_reader_queue_size",
+                "router_connection_creator_queue_size",
+                "router_connection_pool_size",
+                "router_connection_min_active_ratio",
+                "router_connection_clean_ms",
+                "router_enable_multiple_socket",
+                "router_max_concurrency_per_connection",
+                "router_connection_pool_clean_ms",
+                "router_metrics_enable",
+                "router_dn_report_time_out",
+                "router_dn_report_cache_expire",
+                "router_enable_get_dn_usage",
+                "router_metrics_class",
+                "router_admin_handler_count",
+                "router_admin_mount_check_enable",
+                "router_fs_limits_max_component_length",
+                "router_file_resolver_client_class",
+                "router_namenode_resolver_client_class",
+                "router_store_enable",
+                "router_store_serializer",
+                "router_store_driver_class",
+                "hadoop_zk_address",
+                "router_store_connection_test",
+                "router_store_driver_zk_parent_path",
+                "router_store_driver_zk_async_max_threads",
+                "state_store_mysql_connection_url",
+                "state_store_mysql_connection_username",
+                "state_store_mysql_connection_password",
+                "router_cache_ttl",
+                "router_store_membership_expiration",
+                "router_store_membership_expiration_deletion",
+                "router_heartbeat_enable",
+                "router_heartbeat_interval",
+                "router_heartbeat_state_interval",
+                "router_namenode_heartbeat_enable",
+                "router_namenode_heartbeat_jmx_interval",
+                "router_health_monitor_timeout",
+                "router_store_router_expiration",
+                "router_store_router_expiration_deletion",
+                "router_safemode_enable",
+                "router_safemode_extension",
+                "router_safemode_expiration",
+                "router_safemode_checkperiod",
+                "router_monitor_namenode",
+                "router_monitor_namenode_nameservice_resolution_enabled",
+                "router_monitor_namenode_nameservice_resolver_impl",
+                "router_monitor_localnamenode_enable",
+                "dfs_nameservice_id",
+                "dfs_ha_namenode_id",
+                "router_mount_table_cache_enable",
+                "router_mount_table_max_cache_size",
+                "router_mount_table_cache_update",
+                "router_mount_table_cache_update_timeout",
+                "router_mount_table_cache_update_client_max_time",
+                "router_quota_enable",
+                "router_quota_cache_update_interval",
+                "router_client_thread_size",
+                "router_client_retry_max_attempts",
+                "router_client_reject_overload",
+                "router_client_allow_partial_listing",
+                "router_client_mount_status_time_out",
+                "router_connect_timeout",
+                "router_connect_max_retries_on_timeouts",
+                "router_secret_manager_class",
+                "zk_dt_secret_manager_zkNumRetries",
+                "zk_dt_secret_manager_zkSessionTimeout",
+                "zk_dt_secret_manager_zkConnectionTimeout",
+                "zk_dt_secret_manager_zkShutdownTimeout",
+                "zk_dt_secret_manager_znodeWorkingPath",
+                "zk_dt_secret_manager_zkAuthType",
+                "zk_dt_secret_manager_zkConnectionString",
+                "zk_dt_secret_manager_token_seqnum_batch_size",
+                "zk_dt_secret_manager_token_watcher_enabled",
+                "zk_dt_secret_manager_router_token_sync_interval",
+                "sql_dt_secret_manager_connection_url",
+                "sql_dt_secret_manager_connection_username",
+                "sql_dt_secret_manager_connection_password",
+                "sql_dt_secret_manager_token_seqnum_batch_size",
+                "sql_dt_secret_manager_token_max_cleanup_results",
+                "sql_dt_secret_manager_token_loading_cache_expiration",
+                "sql_dt_secret_manager_token_loading_cache_max_size",
+                "router_top_num_token_realowners",
+                "router_fairness_policy_controller_class",
+                "router_fairness_acquire_timeout",
+                "router_federation_rename_bandwidth",
+                "router_federation_rename_map",
+                "router_federation_rename_delay",
+                "router_federation_rename_diff",
+                "router_federation_rename_option",
+                "router_federation_rename_force_close_open_file",
+                "router_federation_rename_trash",
+                "router_observer_read_default",
+                "router_observer_read_overrides",
+                "router_observer_federated_state_propagation_maxsize",
+                "router_observer_state_id_refresh_period",
+                "router_store_driver_file_async_threads",
+                "router_store_driver_fs_async_threads",
+                "hadoop_security_cred_provider_path"
+            ],
+            "additionalConfigs": [
+              {
+                "key": "dfs.federation.router.rpc-address",
+                "value": ""
+              },
+              {
+                "key": "dfs.federation.router.admin-address",
+                "value": ""
+              },
+              {
+                "key": "dfs.federation.router.http-address",
+                "value": ""
+              },
+              {
+                "key": "dfs.federation.router.https-address",
+                "value": ""
+              },
+              {
+                "key": "sql-dt-secret-manager.connection.driver",
+                "value": ""
+              },
+              {
+                "key": "state-store-mysql.connection.driver",
+                "value": ""
+              },
+              {
+                "key": "dfs.federation.router.keytab.file",
+                "value": "hdfs_rbf.keytab"
+              },
+              {
+                "key": "dfs.web.authentication.kerberos.keytab",
+                "value": "hdfs_rbf.keytab"
+              },
+              {
+                "key": "zk-dt-secret-manager.kerberos.keytab",
+                "value": "hdfs_rbf.keytab"
+              }
+            ]
+          },
+          {
+            "filename": "hadoop-conf/core-site.xml",
+            "configFormat": "hadoop_xml",
+            "includedParams": [
+            ]
+          },
+          {
+            "filename": "hadoop-conf/hdfs-site.xml",
+            "configFormat": "hadoop_xml",
+            "includedParams": [
+            ]
+          },
+          {
+            "filename": "hadoop-policy.xml",
+            "configFormat": "hadoop_xml",
+            "includedParams" : [
+            ],
+            "additionalConfigs": [
+              {
+                "key": "security.client.protocol.acl",
+                "value": "* "
+              },
+              {
+                "key": "security.client.datanode.protocol.acl",
+                "value": "* "
+              },
+              {
+                "key": "security.refresh.policy.protocol.acl",
+                "value": "* "
+              },
+              {
+                "key": "security.ha.service.protocol.acl",
+                "value": "* "
+              }
+            ]
+          }
+        ],
+        "auxConfigGenerators": [
+          {
+            "filename": "redaction-rules.json",
+            "sourceFilename": "aux/defaults/redaction-rules.json"
+          }
+        ],
+        "peerConfigGenerators": [
+        ]
+      },
+      "logging": {
+        "configFilename": "log4j.properties",
+        "loggingType": "log4j",
+        "dir": "/var/log/hdfs-rbf",
+        "filename": "hadoop-cmf-hdfs-ROUTER-${host}.log.out",
+        "modifiable": true
+      }
+    }
+  ],
+  "gateway": {
+    "alternatives": {
+      "name": "hdfs-rbf-conf",
+      "priority": 100,
+      "linkRoot": "/etc/hdfs-rbf"
+    },
+    "scriptRunner": {
+      "program": "scripts/control.sh",
+      "args": [
+        "client"
+      ],
+      "environmentVariables": {
+        "ROUTER_RPC_PORT": "${router_rpc_port}",
+        "ROUTER_ADMIN_PORT": "${router_admin_port}",
+        "ROUTER_HTTP_PORT": "${router_http_port}",
+        "ROUTER_HTTPS_PORT": "${router_https_port}"
+      }
+    },
+    "parameters": [
+      {
+        "name": "router_rpc_address",
+        "label": "Router RPC Address",
+        "description": "RPC address that handles all clients requests. The value of this property will take the form of router-host:rpc-port.",
+        "configName": "dfs.federation.router.rpc-address",
+        "type": "string",
+        "default": "",
+        "required": "false"
+      },
+      {
+        "name": "router_admin_address",
+        "label": "Router Admin Address",
+        "description": "RPC address that handles the admin requests. The value of this property will take the form of router-host:rpc-port.",
+        "configName": "dfs.federation.router.admin-address",
+        "type": "string",
+        "default": "",
+        "required": "false"
+      },
+      {
+        "name": "router_http_address",
+        "label": "Router HTTP Address",
+        "description": "HTTP address that handles the web requests to the Router. The value of this property will take the form of router-host:http-port.",
+        "configName": "dfs.federation.router.http-address",
+        "type": "string",
+        "default": "",
+        "required": "false"
+      },
+      {
+        "name": "router_https_address",
+        "label": "Router HTTPS Address",
+        "description": "HTTPS address that handles the web requests to the Router. The value of this property will take the form of router-host:https-port.",
+        "configName": "dfs.federation.router.https-address",
+        "type": "string",
+        "default": "",
+        "required": "false"
+      },
+      {
+        "name": "router_client_kerberos_princ_name",
+        "label" : "Kerberos Principal Name for Router Clients",
+        "description" : "Fully qualified kerberos principal name for router command line interfaces",
+        "configName": "dfs.federation.router.kerberos.principal",
+        "type" : "string",
+        "default" : "hdfs/_HOST@EXAMPLE.COM",
+        "required" : "false"
+      }
+    ],
+    "configWriter": {
+      "generators": [
+        {
+          "filename": "hdfs-rbf-conf/hdfs-rbf-site.xml",
+          "configFormat": "hadoop_xml",
+          "excludedParams": [
+          ],
+          "includedParams" :[
+            "router_rpc_address",
+            "router_admin_address",
+            "router_http_address",
+            "router_https_address",
+            "router_client_kerberos_princ_name"
+          ],
+          "additionalConfigs": [
+          ]
+        }
+      ],
+      "auxConfigGenerators": [
+      ],
+      "peerConfigGenerators": [
+        {
+          "filename": "hdfs-rbf-conf/routers.properties",
+          "refreshable": false,
+          "params": ["router_rpc_port"],
+          "roleName": "HDFS_RBF_ROUTER"
+        }
+      ]
+    },
+    "logging": {
+      "configFilename": "hdfs-rbf-conf/log4j.properties",
+      "loggingType": "log4j"
+    }
+  },
+  "rollingRestart": {
+    "nonWorkerSteps": [
+      {
+        "roleName": "HDFS_RBF_ROUTER",
+        "bringUpCommands": [
+          "Start"
+        ],
+        "bringDownCommands": [
+          "Stop"
+        ]
+      }
+    ]
+  }
+}
