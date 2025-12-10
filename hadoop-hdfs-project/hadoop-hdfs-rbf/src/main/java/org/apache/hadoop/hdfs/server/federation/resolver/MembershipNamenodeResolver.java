@@ -367,7 +367,6 @@ public class MembershipNamenodeResolver
           report.getHighestPriorityLowRedundancyReplicatedBlocks());
       stats.setHighestPriorityLowRedundancyECBlocks(
           report.getHighestPriorityLowRedundancyECBlocks());
-      stats.setPendingSPSPaths(report.getPendingSPSPaths());
       record.setStats(stats);
     }
 

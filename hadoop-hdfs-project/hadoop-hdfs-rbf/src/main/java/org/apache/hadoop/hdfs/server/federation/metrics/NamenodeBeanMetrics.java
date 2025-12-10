@@ -875,16 +875,6 @@ public class NamenodeBeanMetrics
   }
 
   @Override
-  public int getPendingSPSPaths() {
-    try {
-      return getRBFMetrics().getPendingSPSPaths();
-    } catch (IOException e) {
-      LOG.debug("Failed to get number of paths to be processed by sps", e);
-    }
-    return 0;
-  }
-
-  @Override
   public float getReconstructionQueuesInitProgress() {
     return 0;
   }
