@@ -45,11 +45,11 @@ import org.slf4j.event.Level;
  */
 public class TestActiveStandbyElectorRealZK extends ClientBaseWithFixes {
   static final int NUM_ELECTORS = 2;
-  
+
   static {
     GenericTestUtils.setLogLevel(ActiveStandbyElector.LOG, Level.TRACE);
   }
-  
+
   static final String PARENT_DIR = "/" + UUID.randomUUID();
 
   ActiveStandbyElector[] electors = new ActiveStandbyElector[NUM_ELECTORS];
@@ -58,11 +58,11 @@ public class TestActiveStandbyElectorRealZK extends ClientBaseWithFixes {
       new ActiveStandbyElectorCallback[NUM_ELECTORS];
   private ZooKeeperServer zkServer;
 
-  
+
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    
+
     zkServer = getServer(serverFactory);
 
     for (int i = 0; i < NUM_ELECTORS; i++) {
@@ -70,10 +70,10 @@ public class TestActiveStandbyElectorRealZK extends ClientBaseWithFixes {
       appDatas[i] = Ints.toByteArray(i);
       electors[i] = new ActiveStandbyElector(hostPort, 5000, PARENT_DIR,
           Ids.OPEN_ACL_UNSAFE, Collections.<ZKAuthInfo> emptyList(), cbs[i],
-          CommonConfigurationKeys.HA_FC_ELECTOR_ZK_OP_RETRIES_DEFAULT, null);
+          CommonConfigurationKeys.HA_FC_ELECTOR_ZK_OP_RETRIES_DEFAULT);
     }
   }
-  
+
   private void checkFatalsAndReset() throws Exception {
     for (int i = 0; i < NUM_ELECTORS; i++) {
       Mockito.verify(cbs[i], Mockito.never()).notifyFatalError(
@@ -107,24 +107,24 @@ public class TestActiveStandbyElectorRealZK extends ClientBaseWithFixes {
     electors[1].joinElection(appDatas[1]);
     Mockito.verify(cbs[1], Mockito.timeout(1000)).becomeStandby();
     checkFatalsAndReset();
-    
+
     // First elector quits, second one should become active
     electors[0].quitElection(true);
     ActiveStandbyElectorTestUtil.waitForActiveLockData(null,
         zkServer, PARENT_DIR, appDatas[1]);
     Mockito.verify(cbs[1], Mockito.timeout(1000)).becomeActive();
     checkFatalsAndReset();
-    
+
     // First one rejoins, becomes standby, second one stays active
     electors[0].joinElection(appDatas[0]);
     Mockito.verify(cbs[0], Mockito.timeout(1000)).becomeStandby();
     checkFatalsAndReset();
-    
+
     // Second one expires, first one becomes active
     electors[1].preventSessionReestablishmentForTests();
     try {
       zkServer.closeSession(electors[1].getZKSessionIdForTests());
-      
+
       ActiveStandbyElectorTestUtil.waitForActiveLockData(null,
           zkServer, PARENT_DIR, appDatas[0]);
       Mockito.verify(cbs[1], Mockito.timeout(1000)).enterNeutralMode();
@@ -134,16 +134,16 @@ public class TestActiveStandbyElectorRealZK extends ClientBaseWithFixes {
     } finally {
       electors[1].allowSessionReestablishmentForTests();
     }
-    
+
     // Second one eventually reconnects and becomes standby
     Mockito.verify(cbs[1], Mockito.timeout(5000)).becomeStandby();
     checkFatalsAndReset();
-    
+
     // First one expires, second one should become active
     electors[0].preventSessionReestablishmentForTests();
     try {
       zkServer.closeSession(electors[0].getZKSessionIdForTests());
-      
+
       ActiveStandbyElectorTestUtil.waitForActiveLockData(null,
           zkServer, PARENT_DIR, appDatas[1]);
       Mockito.verify(cbs[0], Mockito.timeout(1000)).enterNeutralMode();
@@ -153,16 +153,16 @@ public class TestActiveStandbyElectorRealZK extends ClientBaseWithFixes {
     } finally {
       electors[0].allowSessionReestablishmentForTests();
     }
-    
+
     checkFatalsAndReset();
   }
-  
+
   @Test(timeout=15000)
   public void testHandleSessionExpiration() throws Exception {
     ActiveStandbyElectorCallback cb = cbs[0];
     byte[] appData = appDatas[0];
     ActiveStandbyElector elector = electors[0];
-    
+
     // Let the first elector become active
     elector.ensureParentZNode();
     elector.joinElection(appData);
@@ -171,7 +171,7 @@ public class TestActiveStandbyElectorRealZK extends ClientBaseWithFixes {
         zks, PARENT_DIR, appData);
     Mockito.verify(cb, Mockito.timeout(1000)).becomeActive();
     checkFatalsAndReset();
-    
+
     LOG.info("========================== Expiring session");
     zks.closeSession(elector.getZKSessionIdForTests());
 
@@ -183,7 +183,7 @@ public class TestActiveStandbyElectorRealZK extends ClientBaseWithFixes {
         zks, PARENT_DIR, appData);
     Mockito.verify(cb, Mockito.timeout(1000)).becomeActive();
     checkFatalsAndReset();
-    
+
     LOG.info("========================== Quitting election");
     elector.quitElection(false);
     ActiveStandbyElectorTestUtil.waitForActiveLockData(null,
@@ -198,7 +198,7 @@ public class TestActiveStandbyElectorRealZK extends ClientBaseWithFixes {
 
     checkFatalsAndReset();
   }
-  
+
   @Test(timeout=15000)
   public void testHandleSessionExpirationOfStandby() throws Exception {
     // Let elector 0 be active
@@ -209,12 +209,12 @@ public class TestActiveStandbyElectorRealZK extends ClientBaseWithFixes {
         zks, PARENT_DIR, appDatas[0]);
     Mockito.verify(cbs[0], Mockito.timeout(1000)).becomeActive();
     checkFatalsAndReset();
-    
+
     // Let elector 1 be standby
     electors[1].joinElection(appDatas[1]);
     ActiveStandbyElectorTestUtil.waitForElectorState(null, electors[1],
         State.STANDBY);
-    
+
     LOG.info("========================== Expiring standby's session");
     zks.closeSession(electors[1].getZKSessionIdForTests());
 
@@ -225,14 +225,14 @@ public class TestActiveStandbyElectorRealZK extends ClientBaseWithFixes {
     ActiveStandbyElectorTestUtil.waitForElectorState(null, electors[1],
         State.STANDBY);
     checkFatalsAndReset();
-    
+
     LOG.info("========================== Quitting election");
     electors[1].quitElection(false);
 
     // Double check that we don't accidentally re-join the election
     // by quitting elector 0 and ensuring elector 1 doesn't become active
     electors[0].quitElection(false);
-    
+
     // due to receiving the "expired" event.
     Thread.sleep(1000);
     Mockito.verify(cbs[1], Mockito.never()).becomeActive();
@@ -270,7 +270,7 @@ public class TestActiveStandbyElectorRealZK extends ClientBaseWithFixes {
     ActiveStandbyElector elector =
         new ActiveStandbyElector(hostPort, 5000, PARENT_DIR,
             Ids.READ_ACL_UNSAFE, Collections.<ZKAuthInfo>emptyList(), cb,
-            CommonConfigurationKeys.HA_FC_ELECTOR_ZK_OP_RETRIES_DEFAULT, null);
+            CommonConfigurationKeys.HA_FC_ELECTOR_ZK_OP_RETRIES_DEFAULT);
 
     // Simulate the case by pre-creating znode 'parentZnodeName'. Then updates
     // znode's data so that data version will be increased to 1. Here znode's

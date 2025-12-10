@@ -494,7 +494,7 @@
   <value>${dfs.namenode.name.dir}</value>
   <description>Determines where on the local filesystem the DFS name node
       should store the transaction (edits) file. If this is a comma-delimited list
-      of directories then the transaction file is replicated in all of the 
+      of directories then the transaction file is replicated in all of the
       directories, for redundancy. Default value is same as dfs.namenode.name.dir
   </description>
 </property>
@@ -687,7 +687,7 @@
 <property>
   <name>dfs.replication</name>
   <value>3</value>
-  <description>Default block replication. 
+  <description>Default block replication.
   The actual number of replications can be specified when the file is created.
   The default is used if replication is not specified in create time.
   </description>
@@ -696,14 +696,14 @@
 <property>
   <name>dfs.replication.max</name>
   <value>512</value>
-  <description>Maximal block replication. 
+  <description>Maximal block replication.
   </description>
 </property>
 
 <property>
   <name>dfs.namenode.replication.min</name>
   <value>1</value>
-  <description>Minimal block replication. 
+  <description>Minimal block replication.
   </description>
 </property>
 
@@ -749,7 +749,7 @@
 <property>
   <name>dfs.client.block.write.retries</name>
   <value>3</value>
-  <description>The number of retries for writing blocks to the data nodes, 
+  <description>The number of retries for writing blocks to the data nodes,
   before we signal failure to the application.
   </description>
 </property>
@@ -784,10 +784,10 @@
     dfs.client.block.write.replace-datanode-on-failure.enable is true.
 
     ALWAYS: always add a new datanode when an existing datanode is removed.
-    
+
     NEVER: never add a new datanode.
 
-    DEFAULT: 
+    DEFAULT:
       Let r be the replication number.
       Let n be the number of existing datanodes.
       Add a new datanode only if r is greater than or equal to 3 and either
@@ -804,14 +804,14 @@
     dfs.client.block.write.replace-datanode-on-failure.enable is true.
 
     Best effort means that the client will try to replace a failed datanode
-    in write pipeline (provided that the policy is satisfied), however, it 
+    in write pipeline (provided that the policy is satisfied), however, it
     continues the write operation in case that the datanode replacement also
     fails.
 
     Suppose the datanode replacement fails.
     false: An exception should be thrown so that the write will fail.
     true : The write should be resumed with the remaining datandoes.
-  
+
     Note that setting this property to true allows writing to a pipeline
     with a smaller number of datanodes.  As a result, it increases the
     probability of data loss.
@@ -1022,7 +1022,7 @@
   <name>dfs.namenode.safemode.threshold-pct</name>
   <value>0.999f</value>
   <description>
-    Specifies the percentage of blocks that should satisfy 
+    Specifies the percentage of blocks that should satisfy
     the minimal replication requirement defined by dfs.namenode.replication.min.
     Values less than or equal to 0 mean not to wait for any particular
     percentage of blocks before exiting safemode.
@@ -1131,7 +1131,7 @@
   not permitted to connect to the namenode.  The full pathname of the
   file must be specified.  If the value is empty, no hosts are
   excluded.</description>
-</property> 
+</property>
 
 <property>
   <name>dfs.namenode.max.objects</name>
@@ -1186,7 +1186,7 @@
     proportional to the number of blocks on the datnode. Having a conservative
     limit reduces the potential impact of decommissioning or maintenance of
     a large number of nodes at once.
-      
+
     A value of 0 means no limit will be enforced.
   </description>
 </property>
@@ -1229,7 +1229,7 @@
 <property>
   <name>dfs.namenode.redundancy.interval.seconds</name>
   <value>3</value>
-  <description>The periodicity in seconds with which the namenode computes 
+  <description>The periodicity in seconds with which the namenode computes
   low redundancy work for datanodes. Support multiple time unit suffix(case insensitive),
   as described in dfs.heartbeat.interval.
   </description>
@@ -1256,7 +1256,7 @@
 <property>
   <name>dfs.namenode.accesstime.precision</name>
   <value>3600000</value>
-  <description>The access time for HDFS file is precise upto this value. 
+  <description>The access time for HDFS file is precise upto this value.
                The default value is 1 hour. Setting a value of 0 disables
                access times for HDFS.
   </description>
@@ -1384,9 +1384,9 @@
 <property>
   <name>dfs.namenode.checkpoint.max-retries</name>
   <value>3</value>
-  <description>The SecondaryNameNode retries failed checkpointing. If the 
+  <description>The SecondaryNameNode retries failed checkpointing. If the
   failure occurs while loading fsimage or replaying edits, the number of
-  retries is limited by this variable. 
+  retries is limited by this variable.
   </description>
 </property>
 
@@ -1449,7 +1449,7 @@
 <property>
   <name>dfs.namenode.delegation.key.update-interval</name>
   <value>86400000</value>
-  <description>The update interval for master key for delegation tokens 
+  <description>The update interval for master key for delegation tokens
        in the namenode in milliseconds.
   </description>
 </property>
@@ -1457,7 +1457,7 @@
 <property>
   <name>dfs.namenode.delegation.token.max-lifetime</name>
   <value>604800000</value>
-  <description>The maximum lifetime in milliseconds for which a delegation 
+  <description>The maximum lifetime in milliseconds for which a delegation
       token is valid.
   </description>
 </property>
@@ -1802,7 +1802,7 @@
     Expert only. The time to wait, in milliseconds, between failover
     attempts increases exponentially as a function of the number of
     attempts made so far, with a random factor of +/- 50%. This option
-    specifies the maximum value to wait between failovers. 
+    specifies the maximum value to wait between failovers.
     Specifically, the time between two failover attempts will not
     exceed +/- 50% of dfs.client.failover.sleep.max.millis
     milliseconds.
@@ -2163,7 +2163,7 @@
   <value>false</value>
   <description>
     Indicate whether or not to avoid reading from &quot;stale&quot; datanodes whose
-    heartbeat messages have not been received by the namenode 
+    heartbeat messages have not been received by the namenode
     for more than a specified time interval. Stale datanodes will be
     moved to the end of the node list returned for reading. See
     dfs.namenode.avoid.write.stale.datanode for a similar setting for writes.
@@ -2184,11 +2184,11 @@
   <name>dfs.namenode.avoid.write.stale.datanode</name>
   <value>false</value>
   <description>
-    Indicate whether or not to avoid writing to &quot;stale&quot; datanodes whose 
-    heartbeat messages have not been received by the namenode 
-    for more than a specified time interval. Writes will avoid using 
-    stale datanodes unless more than a configured ratio 
-    (dfs.namenode.write.stale.datanode.ratio) of datanodes are marked as 
+    Indicate whether or not to avoid writing to &quot;stale&quot; datanodes whose
+    heartbeat messages have not been received by the namenode
+    for more than a specified time interval. Writes will avoid using
+    stale datanodes unless more than a configured ratio
+    (dfs.namenode.write.stale.datanode.ratio) of datanodes are marked as
     stale. See dfs.namenode.avoid.read.stale.datanode for a similar setting
     for reads.
   </description>
@@ -2208,10 +2208,10 @@
   <description>
     Default time interval in milliseconds for marking a datanode as "stale",
     i.e., if the namenode has not received heartbeat msg from a datanode for
-    more than this time interval, the datanode will be marked and treated 
-    as "stale" by default. The stale interval cannot be too small since 
-    otherwise this may cause too frequent change of stale states. 
-    We thus set a minimum stale interval value (the default value is 3 times 
+    more than this time interval, the datanode will be marked and treated
+    as "stale" by default. The stale interval cannot be too small since
+    otherwise this may cause too frequent change of stale states.
+    We thus set a minimum stale interval value (the default value is 3 times
     of heartbeat interval) and guarantee that the stale interval cannot be less
     than the minimum value. A stale data node is avoided during lease/block
     recovery. It can be conditionally avoided for reads (see
@@ -2277,13 +2277,13 @@
   </description>
 </property>
 
-<property>    
+<property>
   <name>nfs.dump.dir</name>
   <value>/tmp/.hdfs-nfs</value>
   <description>
     This directory is used to temporarily save out-of-order writes before
     writing to HDFS. For each file, the out-of-order writes are dumped after
-    they are accumulated to exceed certain threshold (e.g., 1MB) in memory. 
+    they are accumulated to exceed certain threshold (e.g., 1MB) in memory.
     One needs to make sure the directory has enough space.
   </description>
 </property>
@@ -2293,7 +2293,7 @@
   <value>1048576</value>
   <description>This is the maximum size in bytes of a READ request
     supported by the NFS gateway. If you change this, make sure you
-    also update the nfs mount's rsize(add rsize= # of bytes to the 
+    also update the nfs mount's rsize(add rsize= # of bytes to the
     mount directive).
   </description>
 </property>
@@ -2303,7 +2303,7 @@
   <value>1048576</value>
   <description>This is the maximum size in bytes of a WRITE request
     supported by the NFS gateway. If you change this, make sure you
-    also update the nfs mount's wsize(add wsize= # of bytes to the 
+    also update the nfs mount's wsize(add wsize= # of bytes to the
     mount directive).
   </description>
 </property>
@@ -2389,7 +2389,7 @@
   <name>dfs.metrics.percentiles.intervals</name>
   <value></value>
   <description>
-    Comma-delimited set of integers denoting the desired rollover intervals 
+    Comma-delimited set of integers denoting the desired rollover intervals
     (in seconds) for percentile latency metrics on the Namenode and Datanode.
     By default, percentile latency metrics are disabled.
   </description>
@@ -2551,8 +2551,8 @@
   <description>
     Whether or not actual block data that is read/written from/to HDFS should
     be encrypted on the wire. This only needs to be set on the NN and DNs,
-    clients will deduce this automatically. It is possible to override this setting 
-    per connection by specifying custom logic via dfs.trustedchannel.resolver.class. 
+    clients will deduce this automatically. It is possible to override this setting
+    per connection by specifying custom logic via dfs.trustedchannel.resolver.class.
   </description>
 </property>
 
@@ -2564,8 +2564,8 @@
     the configured JCE default on the system is used (usually 3DES.) It is
     widely believed that 3DES is more cryptographically secure, but RC4 is
     substantially faster.
-    
-    Note that if AES is supported by both the client and server then this 
+
+    Note that if AES is supported by both the client and server then this
     encryption algorithm will only be used to initially transfer keys for AES.
     (See dfs.encrypt.data.transfer.cipher.suites.)
   </description>
@@ -2596,12 +2596,12 @@
   <name>dfs.trustedchannel.resolver.class</name>
   <value></value>
   <description>
-      TrustedChannelResolver is used to determine whether a channel 
+      TrustedChannelResolver is used to determine whether a channel
       is trusted for plain data transfer. The TrustedChannelResolver is
-      invoked on both client and server side. If the resolver indicates 
-      that the channel is trusted, then the data transfer will not be 
+      invoked on both client and server side. If the resolver indicates
+      that the channel is trusted, then the data transfer will not be
       encrypted even if dfs.encrypt.data.transfer is set to true. The
-      default implementation returns false indicating that the channel 
+      default implementation returns false indicating that the channel
       is not trusted.
   </description>
 </property>
@@ -2842,7 +2842,7 @@
     request, the response from the retry cache is sent. Such operations
     are tagged with annotation @AtMostOnce in namenode protocols. It is
     recommended that this flag be set to true. Setting it to false, will result
-    in clients getting failure responses to retried request. This flag must 
+    in clients getting failure responses to retried request. This flag must
     be enabled in HA setup for transparent fail-overs.
 
     The entries in the cache have expiration time configurable
@@ -3306,13 +3306,13 @@
   <name>dfs.namenode.reject-unresolved-dn-topology-mapping</name>
   <value>false</value>
   <description>
-    If the value is set to true, then namenode will reject datanode 
-    registration if the topology mapping for a datanode is not resolved and 
-    NULL is returned (script defined by net.topology.script.file.name fails 
-    to execute). Otherwise, datanode will be registered and the default rack 
-    will be assigned as the topology path. Topology paths are important for 
-    data resiliency, since they define fault domains. Thus it may be unwanted 
-    behavior to allow datanode registration with the default rack if the 
+    If the value is set to true, then namenode will reject datanode
+    registration if the topology mapping for a datanode is not resolved and
+    NULL is returned (script defined by net.topology.script.file.name fails
+    to execute). Otherwise, datanode will be registered and the default rack
+    will be assigned as the topology path. Topology paths are important for
+    data resiliency, since they define fault domains. Thus it may be unwanted
+    behavior to allow datanode registration with the default rack if the
     resolving topology failed.
   </description>
 </property>
@@ -3794,16 +3794,6 @@
     tries to get local NN thread dump after local NN becomes
     SERVICE_NOT_RESPONDING or SERVICE_UNHEALTHY.
     If it is set to zero, DFS ZKFC won't get local NN thread dump.
-  </description>
-</property>
-
-<property>
-  <name>dfs.ha.zkfc.client.ssl.enabled</name>
-  <value>false</value>
-  <description>
-    Enable SSL/TLS encryption for the ZooKeeper communication from ZKFC.
-    Note: if hadoop.zk.ssl.enabled is set to a value, then that central setting has precedence,
-    and this value will be overridden by the value of hadoop.zk.ssl.enabled.
   </description>
 </property>
 
