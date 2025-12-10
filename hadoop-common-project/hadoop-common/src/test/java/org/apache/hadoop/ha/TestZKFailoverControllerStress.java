@@ -23,7 +23,6 @@ import java.util.Random;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeys;
 import org.apache.hadoop.util.Time;
-import org.apache.zookeeper.server.ServerCnxn;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,13 +34,13 @@ import org.mockito.stubbing.Answer;
  * Stress test for ZKFailoverController.
  * Starts multiple ZKFCs for dummy services, and then performs many automatic
  * failovers. While doing so, ensures that a fake "shared resource"
- * (simulating the shared edits dir) is only owned by one service at a time. 
+ * (simulating the shared edits dir) is only owned by one service at a time.
  */
 public class TestZKFailoverControllerStress extends ClientBaseWithFixes {
-  
+
   private static final int STRESS_RUNTIME_SECS = 30;
   private static final int EXTRA_TIMEOUT_SECS = 10;
-  
+
   private Configuration conf;
   private MiniZKFCCluster cluster;
 
@@ -51,7 +50,7 @@ public class TestZKFailoverControllerStress extends ClientBaseWithFixes {
     conf.set(ZKFailoverController.ZK_QUORUM_KEY, hostPort);
     this.cluster = new MiniZKFCCluster(conf, getServer(serverFactory));
   }
-  
+
   @After
   public void stopCluster() throws Exception {
     if (cluster != null) {
@@ -82,7 +81,7 @@ public class TestZKFailoverControllerStress extends ClientBaseWithFixes {
       i++;
     }
   }
-  
+
   /**
    * Randomly expire the ZK sessions of the two ZKFCs. This differs
    * from the above test in that it is not a controlled failover -
@@ -109,7 +108,7 @@ public class TestZKFailoverControllerStress extends ClientBaseWithFixes {
       Thread.sleep(r.nextInt(300));
     }
   }
-  
+
   /**
    * Have the services fail their health checks half the time,
    * causing the master role to bounce back and forth in the
@@ -132,12 +131,12 @@ public class TestZKFailoverControllerStress extends ClientBaseWithFixes {
     long st = Time.now();
     while (Time.now() - st < runFor) {
       cluster.getTestContext().checkException();
-      serverFactory.closeAll(ServerCnxn.DisconnectReason.SERVER_SHUTDOWN);
+      serverFactory.closeAll();
       Thread.sleep(50);
     }
   }
-  
-  
+
+
   /**
    * Randomly throw an exception half the time the method is called
    */
