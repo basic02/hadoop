@@ -143,6 +143,19 @@
       <includes>
         <include>hadoop-hdfs.sh</include>
         <include>hadoop-httpfs.sh</include>
+        <include>hadoop-distcp.sh</include>
+        <include>hadoop-federation-balance.sh</include>
+      </includes>
+    </fileSet>
+
+    <!-- Copy executable scripts to the libexec/tools directory -->
+    <fileSet>
+      <directory>../../hadoop-dist/target/hadoop-${project.version}/libexec/tools</directory>
+      <outputDirectory>/lib/hdfs_rbf/libexec/tools</outputDirectory>
+      <fileMode>0755</fileMode>
+      <includes>
+        <include>hadoop-distcp.sh</include>
+        <include>hadoop-federation-balance.sh</include>
       </includes>
     </fileSet>
 
