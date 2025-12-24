@@ -82,6 +82,7 @@
       <outputDirectory>/lib/hdfs_rbf/bin</outputDirectory>
       <fileMode>0755</fileMode>
       <includes>
+        <include>hadoop</include>
         <include>hdfs</include>
       </includes>
     </fileSet>
