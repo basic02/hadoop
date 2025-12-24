@@ -57,12 +57,12 @@ public class TestStringUtils extends UnitTestcaseTimeLimit {
   final private static String STR_WITH_ESCAPE = "AB\\";
   final private static String ESCAPED_STR_WITH_ESCAPE = "AB\\\\";
   final private static String STR_WITH_BOTH2 = ",A\\,,B\\\\,";
-  final private static String ESCAPED_STR_WITH_BOTH2 = 
+  final private static String ESCAPED_STR_WITH_BOTH2 =
     "\\,A\\\\\\,\\,B\\\\\\\\\\,";
 
   final private static FastDateFormat FAST_DATE_FORMAT =
       FastDateFormat.getInstance("d-MMM-yyyy HH:mm:ss");
-  
+
   @Test (timeout = 30000)
   public void testEscapeString() throws Exception {
     assertEquals(NULL_STR, StringUtils.escapeString(NULL_STR));
@@ -73,10 +73,10 @@ public class TestStringUtils extends UnitTestcaseTimeLimit {
         StringUtils.escapeString(STR_WITH_COMMA));
     assertEquals(ESCAPED_STR_WITH_ESCAPE,
         StringUtils.escapeString(STR_WITH_ESCAPE));
-    assertEquals(ESCAPED_STR_WITH_BOTH2, 
+    assertEquals(ESCAPED_STR_WITH_BOTH2,
         StringUtils.escapeString(STR_WITH_BOTH2));
   }
-  
+
   @Test (timeout = 30000)
   public void testSplit() throws Exception {
     assertEquals(NULL_STR, StringUtils.split(NULL_STR));
@@ -104,9 +104,9 @@ public class TestStringUtils extends UnitTestcaseTimeLimit {
     assertEquals("B\\\\", splits[2]);
     splits = StringUtils.split(ESCAPED_STR_WITH_BOTH2);
     assertEquals(1, splits.length);
-    assertEquals(ESCAPED_STR_WITH_BOTH2, splits[0]);    
+    assertEquals(ESCAPED_STR_WITH_BOTH2, splits[0]);
   }
-  
+
   @Test (timeout = 30000)
   public void testSimpleSplit() throws Exception {
     final String[] TO_TEST = {
@@ -154,7 +154,7 @@ public class TestStringUtils extends UnitTestcaseTimeLimit {
     assertEquals(STR_WITH_BOTH2,
         StringUtils.unEscapeString(ESCAPED_STR_WITH_BOTH2));
   }
-  
+
   @Test (timeout = 30000)
   public void testTraditionalBinaryPrefix() throws Exception {
     //test string2long(..)
@@ -165,7 +165,7 @@ public class TestStringUtils extends UnitTestcaseTimeLimit {
       assertEquals(m, string2long(1 + s));
       m *= 1024;
     }
-    
+
     assertEquals(0L, string2long("0"));
     assertEquals(1024L, string2long("1k"));
     assertEquals(-1024L, string2long("-1k"));
@@ -229,24 +229,24 @@ public class TestStringUtils extends UnitTestcaseTimeLimit {
 
     final String[] zeros = {" ", ".0 ", ".00 "};
     for(int decimalPlace = 0; decimalPlace < zeros.length; decimalPlace++) {
-      final String trailingZeros = zeros[decimalPlace]; 
+      final String trailingZeros = zeros[decimalPlace];
 
       for(int e = 11; e < Long.SIZE - 1; e++) {
         final TraditionalBinaryPrefix p
-            = TraditionalBinaryPrefix.values()[e/10 - 1]; 
-  
+            = TraditionalBinaryPrefix.values()[e/10 - 1];
+
         { // n = 2^e
           final long n = 1L << e;
           final String expected = (n/p.value) + " " + p.symbol;
           assertEquals("n=" + n, expected, long2String(n, null, 2));
         }
-  
+
         { // n = 2^e + 1
           final long n = (1L << e) + 1;
           final String expected = (n/p.value) + trailingZeros + p.symbol;
           assertEquals("n=" + n, expected, long2String(n, null, decimalPlace));
         }
-  
+
         { // n = 2^e - 1
           final long n = (1L << e) - 1;
           final String expected = ((n+1)/p.value) + trailingZeros + p.symbol;
@@ -268,7 +268,7 @@ public class TestStringUtils extends UnitTestcaseTimeLimit {
     assertEquals("1.50 KB", StringUtils.byteDesc(3L << 9));
     assertEquals("1.50 MB", StringUtils.byteDesc(3L << 19));
     assertEquals("3 GB", StringUtils.byteDesc(3L << 30));
-    
+
     // test formatPercent(..)
     assertEquals("10%", StringUtils.formatPercent(0.1, 0));
     assertEquals("10.0%", StringUtils.formatPercent(0.1, 1));
@@ -296,7 +296,7 @@ public class TestStringUtils extends UnitTestcaseTimeLimit {
     assertEquals("a:b", StringUtils.join(':', s.subList(0, 2)));
     assertEquals("a:b:c", StringUtils.join(':', s.subList(0, 3)));
   }
-  
+
   @Test (timeout = 30000)
   public void testGetTrimmedStrings() throws Exception {
     String compactDirList = "/spindle1/hdfs,/spindle2/hdfs,/spindle3/hdfs";
@@ -305,19 +305,19 @@ public class TestStringUtils extends UnitTestcaseTimeLimit {
     String pathologicalDirList2 = " /spindle1/hdfs  ,  /spindle2/hdfs ,/spindle3/hdfs , ";
     String emptyList1 = "";
     String emptyList2 = "   ";
-    
+
     String[] expectedArray = {"/spindle1/hdfs", "/spindle2/hdfs", "/spindle3/hdfs"};
     String[] emptyArray = {};
-    
+
     assertArrayEquals(expectedArray, StringUtils.getTrimmedStrings(compactDirList));
     assertArrayEquals(expectedArray, StringUtils.getTrimmedStrings(spacedDirList));
     assertArrayEquals(expectedArray, StringUtils.getTrimmedStrings(pathologicalDirList1));
     assertArrayEquals(expectedArray, StringUtils.getTrimmedStrings(pathologicalDirList2));
-    
+
     assertArrayEquals(emptyArray, StringUtils.getTrimmedStrings(emptyList1));
     String[] estring = StringUtils.getTrimmedStrings(emptyList2);
     assertArrayEquals(emptyArray, estring);
-  } 
+  }
 
   @Test (timeout = 30000)
   public void testCamelize() {
@@ -354,7 +354,7 @@ public class TestStringUtils extends UnitTestcaseTimeLimit {
     assertEquals("Yy", StringUtils.camelize("yY"));
     assertEquals("Zz", StringUtils.camelize("zZ"));
   }
-  
+
   @Test (timeout = 30000)
   public void testStringToURI() {
     String[] str = new String[] { "file://" };
@@ -420,7 +420,7 @@ public class TestStringUtils extends UnitTestcaseTimeLimit {
       "begin %foo%_%bar%_%baz% end", pattern, replacements));
   }
 
-  @Test 
+  @Test
   public void testGetUniqueNonEmptyTrimmedStrings (){
     final String TO_SPLIT = ",foo, bar,baz,,blah,blah,bar,";
     Collection<String> col = StringUtils.getTrimmedStringCollection(TO_SPLIT);
@@ -566,6 +566,15 @@ public class TestStringUtils extends UnitTestcaseTimeLimit {
         .containsEntry("element.xyz.key5", "element.abc.val5")
         .containsEntry("element.xyz.key6", "element.abc.val6")
         .containsEntry("element.xyz.key7", "element.abc.val7");
+  }
+
+  @Test
+  public void testForGetStackTrace() {
+    Throwable throwable = new Throwable();
+    int stackLength = throwable.getStackTrace().length;
+    String stackTrace = StringUtils.getStackTrace(new Throwable());
+    String[] splitTrace = stackTrace.split("\n\t");
+    assertEquals(stackLength, splitTrace.length);
   }
 
   // Benchmark for StringUtils split

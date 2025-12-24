@@ -88,6 +88,7 @@ import org.apache.hadoop.security.authentication.util.KerberosUtil;
 import org.apache.hadoop.security.token.Token;
 import org.apache.hadoop.security.token.TokenIdentifier;
 import org.apache.hadoop.util.Shell;
+import org.apache.hadoop.util.StringUtils;
 import org.apache.hadoop.util.Time;
 
 import org.slf4j.Logger;
@@ -96,7 +97,7 @@ import org.slf4j.LoggerFactory;
 /**
  * User and group information for Hadoop.
  * This class wraps around a JAAS Subject and provides methods to determine the
- * user's username and groups. It supports both the Windows, Unix and Kerberos 
+ * user's username and groups. It supports both the Windows, Unix and Kerberos
  * login modules.
  */
 @InterfaceAudience.Public
@@ -125,7 +126,7 @@ public class UserGroupInformation {
     shouldRenewImmediatelyForTests = immediate;
   }
 
-  /** 
+  /**
    * UgiMetrics maintains UGI activity statistics
    * and publishes them through the metrics interfaces.
    */
@@ -165,7 +166,7 @@ public class UserGroupInformation {
       return renewalFailures;
     }
   }
-  
+
   /**
    * A login module that looks at the Kerberos, Unix, or Windows principal and
    * adds the corresponding UserName.
@@ -277,18 +278,18 @@ public class UserGroupInformation {
 
   private static Configuration conf;
 
-  
+
   /**Environment variable pointing to the token cache file*/
-  public static final String HADOOP_TOKEN_FILE_LOCATION = 
+  public static final String HADOOP_TOKEN_FILE_LOCATION =
       "HADOOP_TOKEN_FILE_LOCATION";
   /** Environment variable pointing to the base64 tokens. */
   public static final String HADOOP_TOKEN = "HADOOP_TOKEN";
-  
+
   public static boolean isInitialized() {
     return conf != null;
   }
 
-  /** 
+  /**
    * A method to initialize the fields that depend on a configuration.
    * Must be called before useKerberos or groups is used.
    */
@@ -377,17 +378,17 @@ public class UserGroupInformation {
     setLoginUser(null);
     HadoopKerberosName.setRules(null);
   }
-  
+
   /**
    * Determine if UserGroupInformation is using Kerberos to determine
    * user identities or is relying on simple authentication
-   * 
+   *
    * @return true if UGI is working in a secure environment
    */
   public static boolean isSecurityEnabled() {
     return !isAuthenticationMethodEnabled(AuthenticationMethod.SIMPLE);
   }
-  
+
   @InterfaceAudience.Private
   @InterfaceStability.Evolving
   private static boolean isAuthenticationMethodEnabled(AuthenticationMethod method) {
@@ -423,7 +424,7 @@ public class UserGroupInformation {
 
   private static String OS_LOGIN_MODULE_NAME;
   private static Class<? extends Principal> OS_PRINCIPAL_CLASS;
-  
+
   private static final boolean windows =
       System.getProperty("os.name").startsWith("Windows");
 
@@ -464,20 +465,20 @@ public class UserGroupInformation {
 
   private static class RealUser implements Principal {
     private final UserGroupInformation realUser;
-    
+
     RealUser(UserGroupInformation realUser) {
       this.realUser = realUser;
     }
-    
+
     @Override
     public String getName() {
       return realUser.getUserName();
     }
-    
+
     public UserGroupInformation getRealUser() {
       return realUser;
     }
-    
+
     @Override
     public boolean equals(Object o) {
       if (this == o) {
@@ -488,12 +489,12 @@ public class UserGroupInformation {
         return realUser.equals(((RealUser) o).realUser);
       }
     }
-    
+
     @Override
     public int hashCode() {
       return realUser.hashCode();
     }
-    
+
     @Override
     public String toString() {
       return realUser.toString();
@@ -602,7 +603,7 @@ public class UserGroupInformation {
    *
    * @return                   The most appropriate UserGroupInformation
    * @throws IOException raised on errors performing I/O.
-   */ 
+   */
   public static UserGroupInformation getBestUGI(
       String ticketCachePath, String user) throws IOException {
     if (ticketCachePath != null) {
@@ -611,12 +612,12 @@ public class UserGroupInformation {
       return getCurrentUser();
     } else {
       return createRemoteUser(user);
-    }    
+    }
   }
 
   /**
    * Create a UserGroupInformation from a Kerberos ticket cache.
-   * 
+   *
    * @param user                The principal name to load from the ticket
    *                            cache
    * @param ticketCache     the path to the ticket cache file
@@ -810,7 +811,7 @@ public class UserGroupInformation {
     // logged in ugi if it's different
     loginUserRef.set(ugi);
   }
-  
+
   private String getKeytab() {
     HadoopLoginContext login = getLogin();
     return (login != null)
@@ -836,7 +837,7 @@ public class UserGroupInformation {
     // have removed the keytab from priv creds.  instead, check login params.
     return hasKerberosCredentials() && isHadoopLogin() && getKeytab() != null;
   }
-  
+
   /**
    *  Is this user logged in from a ticket (but no keytab) managed by the UGI?
    * @return true if the credentials are from a ticket cache.
@@ -859,7 +860,7 @@ public class UserGroupInformation {
     }
     return null;
   }
-  
+
   private long getRefreshTime(KerberosTicket tgt) {
     long start = tgt.getStartTime().getTime();
     long end = tgt.getEndTime().getTime();
@@ -1187,10 +1188,10 @@ public class UserGroupInformation {
     LOG.info("Logout successful for user " + getUserName()
         + " using keytab file " + keytabFile);
   }
-  
+
   /**
    * Re-login a user from keytab if TGT is expired or is close to expiry.
-   * 
+   *
    * @throws IOException raised on errors performing I/O.
    * @throws KerberosAuthException if it's a kerberos login exception.
    */
@@ -1355,11 +1356,11 @@ public class UserGroupInformation {
     user.setLastLogin(now);
     try {
       LOG.debug("Initiating logout for {}", getUserName());
-      //clear up the kerberos state. But the tokens are not cleared! As per 
+      //clear up the kerberos state. But the tokens are not cleared! As per
       //the Java kerberos login module code, only the kerberos credentials
       //are cleared
       login.logout();
-      //login and also update the subject field of this instance to 
+      //login and also update the subject field of this instance to
       //have the new credentials (pass it to the LoginContext constructor)
       login = newLoginContext(
         login.getAppName(), login.getSubject(), login.getConfiguration());
@@ -1408,7 +1409,7 @@ public class UserGroupInformation {
     }
     return true;
   }
-  
+
   /**
    * Did the login happen via keytab.
    * @return true or false
@@ -1440,7 +1441,7 @@ public class UserGroupInformation {
   public static UserGroupInformation createRemoteUser(String user) {
     return createRemoteUser(user, AuthMethod.SIMPLE);
   }
-  
+
   /**
    * Create a user from a login name. It is intended to be used for remote
    * users in RPC, since it won't have any credentials.
@@ -1467,7 +1468,7 @@ public class UserGroupInformation {
   @InterfaceAudience.Public
   @InterfaceStability.Evolving
   public enum AuthenticationMethod {
-    // currently we support only one auth per method, but eventually a 
+    // currently we support only one auth per method, but eventually a
     // subtype is needed to differentiate, ex. if digest is token or ldap
     SIMPLE(AuthMethod.SIMPLE,
         HadoopConfiguration.SIMPLE_CONFIG_NAME),
@@ -1477,10 +1478,10 @@ public class UserGroupInformation {
     CERTIFICATE(null),
     KERBEROS_SSL(null),
     PROXY(null);
-    
+
     private final AuthMethod authMethod;
     private final String loginAppName;
-    
+
     private AuthenticationMethod(AuthMethod authMethod) {
       this(authMethod, null);
     }
@@ -1488,11 +1489,11 @@ public class UserGroupInformation {
       this.authMethod = authMethod;
       this.loginAppName = loginAppName;
     }
-    
+
     public AuthMethod getAuthMethod() {
       return authMethod;
     }
-    
+
     String getLoginAppName() {
       if (loginAppName == null) {
         throw new UnsupportedOperationException(
@@ -1500,7 +1501,7 @@ public class UserGroupInformation {
       }
       return loginAppName;
     }
-    
+
     public static AuthenticationMethod valueOf(AuthMethod authMethod) {
       for (AuthenticationMethod value : values()) {
         if (value.getAuthMethod() == authMethod) {
@@ -1562,7 +1563,7 @@ public class UserGroupInformation {
     UserGroupInformation real = user.getRealUser();
     return real != null ? real : user;
   }
-  
+
   /**
    * This class is used for storing the groups for testing. It stores a local
    * map that has the translation of usernames to groups.
@@ -1571,12 +1572,12 @@ public class UserGroupInformation {
     private final Map<String, Set<String>> userToGroupsMapping =
         new HashMap<>();
     private Groups underlyingImplementation;
-    
+
     private TestingGroups(Groups underlyingImplementation) {
       super(new org.apache.hadoop.conf.Configuration());
       this.underlyingImplementation = underlyingImplementation;
     }
-    
+
     @Override
     public List<String> getGroups(String user) throws IOException {
       return new ArrayList<>(getGroupsSet(user));
@@ -1606,7 +1607,7 @@ public class UserGroupInformation {
    */
   @InterfaceAudience.Public
   @InterfaceStability.Evolving
-  public static UserGroupInformation createUserForTesting(String user, 
+  public static UserGroupInformation createUserForTesting(String user,
                                                           String[] userGroups) {
     ensureInitialized();
     UserGroupInformation ugi = createRemoteUser(user);
@@ -1622,7 +1623,7 @@ public class UserGroupInformation {
 
   /**
    * Create a proxy user UGI for testing HDFS and MapReduce
-   * 
+   *
    * @param user
    *          the full user principal name for effective user
    * @param realUser
@@ -1643,7 +1644,7 @@ public class UserGroupInformation {
     ((TestingGroups) groups).setUserGroups(ugi.getShortUserName(), userGroups);
     return ugi;
   }
-  
+
   /**
    * Get the user's login name.
    * @return the user's name up to the first '/' or '@'.
@@ -1674,7 +1675,7 @@ public class UserGroupInformation {
    * Add a TokenIdentifier to this UGI. The TokenIdentifier has typically been
    * authenticated by the RPC layer as belonging to the user represented by this
    * UGI.
-   * 
+   *
    * @param tokenId
    *          tokenIdentifier to be added
    * @return true on successful add of new tokenIdentifier
@@ -1685,16 +1686,16 @@ public class UserGroupInformation {
 
   /**
    * Get the set of TokenIdentifiers belonging to this UGI
-   * 
+   *
    * @return the set of TokenIdentifiers belonging to this UGI
    */
   public synchronized Set<TokenIdentifier> getTokenIdentifiers() {
     return subject.getPublicCredentials(TokenIdentifier.class);
   }
-  
+
   /**
    * Add a token to this UGI
-   * 
+   *
    * @param token Token to be added
    * @return true on successful add of new token
    */
@@ -1704,7 +1705,7 @@ public class UserGroupInformation {
 
   /**
    * Add a named token to this UGI
-   * 
+   *
    * @param alias Name of the token
    * @param token Token to be added
    * @return true on successful add of new token
@@ -1715,10 +1716,10 @@ public class UserGroupInformation {
       return true;
     }
   }
-  
+
   /**
    * Obtain the collection of tokens associated with this user.
-   * 
+   *
    * @return an unmodifiable collection of tokens associated with user
    */
   public Collection<Token<? extends TokenIdentifier>> getTokens() {
@@ -1730,7 +1731,7 @@ public class UserGroupInformation {
 
   /**
    * Obtain the tokens in credentials form associated with this user.
-   * 
+   *
    * @return Credentials of tokens associated with this user
    */
   public Credentials getCredentials() {
@@ -1745,7 +1746,7 @@ public class UserGroupInformation {
       return creds;
     }
   }
-  
+
   /**
    * Add the given Credentials to this user.
    * @param credentials of tokens and secrets
@@ -1828,17 +1829,17 @@ public class UserGroupInformation {
 
   /**
    * Sets the authentication method in the subject
-   * 
+   *
    * @param authMethod authMethod.
    */
-  public synchronized 
+  public synchronized
   void setAuthenticationMethod(AuthenticationMethod authMethod) {
     user.setAuthenticationMethod(authMethod);
   }
 
   /**
    * Sets the authentication method in the subject
-   * 
+   *
    * @param authMethod authMethod.
    */
   public void setAuthenticationMethod(AuthMethod authMethod) {
@@ -1847,7 +1848,7 @@ public class UserGroupInformation {
 
   /**
    * Get the authentication method from the subject
-   * 
+   *
    * @return AuthenticationMethod in the subject, null if not present.
    */
   public synchronized AuthenticationMethod getAuthenticationMethod() {
@@ -1857,7 +1858,7 @@ public class UserGroupInformation {
   /**
    * Get the authentication method from the real user's subject.  If there
    * is no real user, return the given user's authentication method.
-   * 
+   *
    * @return AuthenticationMethod in the subject, null if not present.
    */
   public synchronized AuthenticationMethod getRealAuthenticationMethod() {
@@ -1871,7 +1872,7 @@ public class UserGroupInformation {
   /**
    * Returns the authentication method of a ugi. If the authentication method is
    * PROXY, returns the authentication method of the real user.
-   * 
+   *
    * @param ugi ugi.
    * @return AuthenticationMethod
    */
@@ -1923,13 +1924,10 @@ public class UserGroupInformation {
   @InterfaceAudience.Public
   @InterfaceStability.Evolving
   public <T> T doAs(PrivilegedAction<T> action) {
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("PrivilegedAction [as: {}][action: {}]", this, action,
-          new Exception());
-    }
+    tracePrivilegedAction(action);
     return Subject.doAs(subject, action);
   }
-  
+
   /**
    * Run the given action as the user, potentially throwing an exception.
    * @param <T> the return type of the run method
@@ -1946,10 +1944,7 @@ public class UserGroupInformation {
   public <T> T doAs(PrivilegedExceptionAction<T> action
                     ) throws IOException, InterruptedException {
     try {
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("PrivilegedAction [as: {}][action: {}]", this, action,
-            new Exception());
-      }
+      tracePrivilegedAction(action);
       return Subject.doAs(subject, action);
     } catch (PrivilegedActionException pae) {
       Throwable cause = pae.getCause();
@@ -1968,6 +1963,14 @@ public class UserGroupInformation {
       } else {
         throw new UndeclaredThrowableException(cause);
       }
+    }
+  }
+
+  private void tracePrivilegedAction(Object action) {
+    if (LOG.isTraceEnabled()) {
+      // would be nice if action included a descriptive toString()
+      LOG.trace("PrivilegedAction [as: {}][action: {}][from: {}]", this, action,
+          StringUtils.getStackTrace(new Throwable()));
     }
   }
 
@@ -2028,7 +2031,7 @@ public class UserGroupInformation {
     for(int i=0; i < groups.length; i++) {
       System.out.print(groups[i] + " ");
     }
-    System.out.println();    
+    System.out.println();
   }
 
   /**
@@ -2305,7 +2308,7 @@ public class UserGroupInformation {
     System.out.println("Auth method " + ugi.user.getAuthenticationMethod());
     System.out.println("Keytab " + ugi.isFromKeytab());
     System.out.println("============================================================");
-    
+
     if (args.length == 2) {
       System.out.println("Getting UGI from keytab....");
       loginUserFromKeytab(args[0], args[1]);
