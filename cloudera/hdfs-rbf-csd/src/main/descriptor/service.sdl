@@ -1443,6 +1443,12 @@
             ]
           },
           {
+            "filename": "hadoop-metrics2-router.properties",
+            "configFormat": "properties",
+            "includedParams": [
+            ]
+          },
+          {
             "filename": "hadoop-policy.xml",
             "configFormat": "hadoop_xml",
             "includedParams" : [
