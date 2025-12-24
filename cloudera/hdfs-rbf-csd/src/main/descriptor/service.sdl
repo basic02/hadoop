@@ -1437,6 +1437,12 @@
             ]
           },
           {
+            "filename": "hdfs-fedbalance-site.xml",
+            "configFormat": "hadoop_xml",
+            "includedParams": [
+            ]
+          },
+          {
             "filename": "hadoop-policy.xml",
             "configFormat": "hadoop_xml",
             "includedParams" : [
@@ -1559,6 +1565,12 @@
             "router_client_kerberos_princ_name"
           ],
           "additionalConfigs": [
+          ]
+        },
+        {
+          "filename": "hdfs-rbf-conf/hdfs-fedbalance-site.xml",
+          "configFormat": "hadoop_xml",
+          "includedParams": [
           ]
         }
       ],
