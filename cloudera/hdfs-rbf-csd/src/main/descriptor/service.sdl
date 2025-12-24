@@ -392,7 +392,7 @@
           "name": "router_admin_mount_check_enable",
           "label": "Enable Mount Destination Check",
           "description": "If true, add/update mount table will include a destination check to make sure the file exists in downstream namenodes, and changes to mount table will fail if the file doesn't exist in any of the destination namenode.",
-          "configName": "fs.federation.router.admin.mount.check.enable",
+          "configName": "dfs.federation.router.admin.mount.check.enable",
           "type": "boolean",
           "default": "false",
           "required": "true"
