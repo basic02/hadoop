@@ -124,6 +124,12 @@ function generate_configuration_files {
     if [[ -f ${CONF_DIR}/hadoop-conf/hdfs-site.xml ]]; then
       cp -f ${CONF_DIR}/hadoop-conf/hdfs-site.xml ${CONF_DIR}/
     fi
+    if [[ -f ${CONF_DIR}/yarn-conf/mapred-site.xml ]]; then
+      cp -f ${CONF_DIR}/yarn-conf/mapred-site.xml ${CONF_DIR}/
+    fi
+    if [[ -f ${CONF_DIR}/yarn-conf/yarn-site.xml ]]; then
+      cp -f ${CONF_DIR}/yarn-conf/yarn-site.xml ${CONF_DIR}/
+    fi
   fi
 }
 
