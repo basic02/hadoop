@@ -120,6 +120,11 @@ function generate_configuration_files {
 
     if [[ -f ${CONF_DIR}/hadoop-conf/core-site.xml ]]; then
       cp -f ${CONF_DIR}/hadoop-conf/core-site.xml ${CONF_DIR}/
+      if [ "${HADOOP_SECURE_WEB_UI}" == "true" ]; then
+        change_xml_value "hadoop.http.filter.initializers" "org.apache.hadoop.security.HttpCrossOriginFilterInitializer,org.apache.hadoop.security.authentication.server.ProxyUserAuthenticationFilterInitializer" ${CONF_DIR}/core-site.xml
+        change_xml_value "hadoop.http.authentication.type" "kerberos" ${CONF_DIR}/core-site.xml
+      fi
+      replace "\{\{CMF_CONF_DIR}}" "${CONF_DIR}" ${CONF_DIR}/core-site.xml
     fi
     if [[ -f ${CONF_DIR}/hadoop-conf/hdfs-site.xml ]]; then
       cp -f ${CONF_DIR}/hadoop-conf/hdfs-site.xml ${CONF_DIR}/

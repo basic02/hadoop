@@ -49,6 +49,14 @@
       "required": "true"
     },
     {
+      "name": "hadoop_secure_web_ui",
+      "label": "Enable Kerberos Authentication for HTTP Web-Consoles",
+      "description": "Enables Kerberos authentication for Hadoop HTTP web consoles using the SPNEGO protocol. <b>Note:</b> This is effective only if Kerberos is enabled.",
+      "type": "boolean",
+      "default": "false",
+      "required": "true"
+    },
+    {
       "name": "router_rpc_enable",
       "label": "Enable Router RPC Service",
       "description": "If true, the RPC service to handle client requests in the router is enabled.",
@@ -153,7 +161,8 @@
           "HADOOP_SECURITY_LOGGER": "${hadoop_security_logger}",
           "HADOOP_AUDIT_LOGGER": "${hadoop_audit_logger}",
           "ZOOKEEPER_SERVICE": "${dependency:ZOOKEEPER}",
-          "KERBEROS_AUTH_ENABLED": "${kerberos_auth_enabled}"
+          "KERBEROS_AUTH_ENABLED": "${kerberos_auth_enabled}",
+          "HADOOP_SECURE_WEB_UI": "${hadoop_secure_web_ui}"
         }
       },
       "kerberosPrincipals": [
@@ -1427,7 +1436,40 @@
           {
             "filename": "hadoop-conf/core-site.xml",
             "configFormat": "hadoop_xml",
+            "kerberosPrincipals": [
+              {
+                "principalName": "SPNEGO_PRINCIPAL",
+                "propertyName": "hadoop.http.authentication.kerberos.principal",
+                "instanceWildcard": "_HOST"
+              }
+            ],
             "includedParams": [
+            ],
+            "additionalConfigs": [
+              {
+                "key": "hadoop.http.filter.initializers",
+                "value": "org.apache.hadoop.security.HttpCrossOriginFilterInitializer,org.apache.hadoop.security.AuthenticationFilterInitializer"
+              },
+              {
+                "key": "hadoop.http.authentication.type",
+                "value": "simple"
+              },
+              {
+                "key": "hadoop.http.authentication.signature.secret.file",
+                "value": "{{CMF_CONF_DIR}}/http-auth-signature-secret"
+              },
+              {
+                "key": "hadoop.http.authentication.cookie.domain",
+                "value": ""
+              },
+              {
+                "key": "hadoop.http.authentication.kerberos.keytab",
+                "value": "hdfs_rbf.keytab"
+              },
+              {
+                "key": "hadoop.http.logs.enabled",
+                "value": "true"
+              }
             ]
           },
           {
@@ -1477,6 +1519,10 @@
           {
             "filename": "redaction-rules.json",
             "sourceFilename": "aux/defaults/redaction-rules.json"
+          },
+          {
+            "filename": "http-auth-signature-secret",
+            "sourceFilename": "aux/defaults/http-auth-signature-secret"
           }
         ],
         "peerConfigGenerators": [
