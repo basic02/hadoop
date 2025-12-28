@@ -26,7 +26,8 @@ export HADOOP_TOOLS_LIB_JARS_DIR=lib
 export HADOOP_LIBEXEC_DIR=$HADOOP_HOME/libexec
 export JAVA_LIBRARY_PATH=$HADOOP_HOME/lib/native
 export HADOOP_CONF_DIR=${HADOOP_CONF_DIR:-"/etc/hadoop/conf"}
-export HADOOP_CLASSPATH=$HADOOP_CONF_DIR:$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
+export HDFS_RBF_CONF_DIR=${HDFS_RBF_CONF_DIR:-"/etc/hdfs-rbf/conf"}
+export HADOOP_CLASSPATH=$HDFS_RBF_CONF_DIR:$HADOOP_CONF_DIR:$HADOOP_HOME:$HADOOP_HOME/lib/*.jar
 
 if [ "rbfbalance" = "$1" ]; then
   exec $HADOOP_HOME/bin/hadoop "$@"
