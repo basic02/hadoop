@@ -24,11 +24,26 @@ ln -sf "/etc/hadoop/conf" "conf"
 
 printlog "INFO: Creating symbolic links under lib/native"
 cd "${BUILD_DIRECTORY}/${PARCEL_BASENAME}/lib/hdfs_rbf/lib/native"
-if [[ -f "libhdfs.so.0.0.0" ]]; then
-  ln -sf "libhdfs.so.0.0.0" "libhdfs.so"
+if ls libhadoop.so.* > /dev/null 2>&1; then
+  ln -sf libhadoop.so.* libhadoop.so
 fi
-if [[ -f "libhdfspp.so.0.1.0" ]]; then
-  ln -sf "libhdfspp.so.0.1.0" "libhdfspp.so"
+if ls libhdfspp.so.* > /dev/null 2>&1; then
+  ln -sf libhdfspp.so.* libhdfspp.so
+fi
+if ls libhdfs.so.* > /dev/null 2>&1; then
+  ln -sf libhdfs.so.* libhdfs.so
+fi
+if ls libisal.so.* > /dev/null 2>&1; then
+  ln -sf libisal.so.* libisal.so
+fi
+if ls libnativetask.so.* > /dev/null 2>&1; then
+  ln -sf libnativetask.so.* libnativetask.so
+fi
+if ls libsnappy.so.* > /dev/null 2>&1; then
+  ln -sf libsnappy.so.* libsnappy.so
+fi
+if ls libzstd.so.* > /dev/null 2>&1; then
+  ln -sf libzstd.so.* libzstd.so
 fi
 
 printlog "INFO: Changing to ${BUILD_DIRECTORY} and creating ${TAR_GZ_FILENAME} from ${PARCEL_BASENAME}"
