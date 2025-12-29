@@ -120,8 +120,13 @@
       <directory>../../hadoop-dist/target/hadoop-${project.version}/lib/native</directory>
       <outputDirectory>/lib/hdfs_rbf/lib/native</outputDirectory>
       <includes>
-        <include>libhdfs*</include>
+        <include>lib*</include>
       </includes>
+      <excludes>
+        <exclude>libisal.so.?</exclude>
+        <exclude>libsnappy.so.?</exclude>
+        <exclude>libzstd.so.?</exclude>
+      </excludes>
     </fileSet>
 
     <!-- Copy executable scripts to the libexec directory -->
