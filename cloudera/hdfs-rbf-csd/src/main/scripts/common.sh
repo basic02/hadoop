@@ -11,6 +11,11 @@ function replace {
   perl -pi -e "s#${1}#${replaceText}#g" $3
 }
 
+# Replace {{CMF_CONF_DIR}} with the second arg to the function call
+replace_cmf_conf_dir() {
+  echo $1 | sed "s#{{CMF_CONF_DIR}}#$2#g"
+}
+
 function change_xml_value {
   name=$1
   value=$2
@@ -76,12 +81,6 @@ function update_router_address {
 }
 
 function generate_configuration_files {
-  if [ "${KERBEROS_AUTH_ENABLED}" == "true" ]; then
-    echo "Kerberos is enabled for router"
-    echo "Router principal: ${ROUTER_PRINCIPAL}"
-    echo "Spnego principal: ${SPNEGO_PRINCIPAL}"
-  fi
-
   if [[ -n "${ZOOKEEPER_SERVICE}" && "${ZOOKEEPER_SERVICE}" != "none" ]]; then
     replace "\{\{ZOOKEEPER_QUORUM}}" "${ZK_QUORUM}" ${HDFS_RBF_SITE}
   fi
@@ -111,11 +110,18 @@ function generate_configuration_files {
       fi
     fi
 
-    KERBEROS_PRINCIPAL=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.kerberos.principal" ${HDFS_RBF_SITE})
-    if [[ -n "${KERBEROS_PRINCIPAL}" ]]; then
-      KERBEROS_PRIMARY=$(echo $KERBEROS_PRINCIPAL | cut -d "/" -f 1)
-      KERBEROS_REALM=$(echo $KERBEROS_PRINCIPAL | cut -d "/" -f 2 | cut -d "@" -f 2)
-      export SCM_KERBEROS_PRINCIPAL="${KERBEROS_PRIMARY}/${HOST}@${KERBEROS_REALM}"
+    if [ "${KERBEROS_AUTH_ENABLED}" == "true" ]; then
+      echo "Kerberos is enabled for router"
+      #KERBEROS_PRINCIPAL=$(${PYTHON_COMMAND_INVOKER} ${CONF_DIR}/scripts/get_property.py "dfs.federation.router.kerberos.principal" ${HDFS_RBF_SITE})
+      #if [[ -n "${KERBEROS_PRINCIPAL}" ]]; then
+      #  KERBEROS_PRIMARY=$(echo $KERBEROS_PRINCIPAL | cut -d "/" -f 1)
+      #  KERBEROS_REALM=$(echo $KERBEROS_PRINCIPAL | cut -d "/" -f 2 | cut -d "@" -f 2)
+      #  export SCM_KERBEROS_PRINCIPAL="${KERBEROS_PRIMARY}/${HOST}@${KERBEROS_REALM}"
+      #fi
+      export SCM_KERBEROS_PRINCIPAL=$ROUTER_PRINCIPAL
+      echo "Router principal: ${ROUTER_PRINCIPAL}"
+      echo "SCM principal: ${SCM_KERBEROS_PRINCIPAL}"
+      echo "Spnego principal: ${SPNEGO_PRINCIPAL}"
     fi
 
     if [[ -f ${CONF_DIR}/hadoop-conf/core-site.xml ]]; then
@@ -139,7 +145,8 @@ function generate_configuration_files {
 }
 
 function generate_hadoop_router_opts {
-  export HADOOP_ROUTER_OPTS="${HADOOP_ROUTER_OPTS} -Xms${ROUTER_JAVA_HEAPSIZE}m -Xmx${ROUTER_JAVA_HEAPSIZE}m ${ROUTER_JAVA_EXTRA_OPTS} ${CSD_JAVA_OPTS}"
+  ROUTER_JAVA_OPTS=$(replace_cmf_conf_dir "${ROUTER_JAVA_EXTRA_OPTS}" "${CONF_DIR}")
+  export HADOOP_ROUTER_OPTS="${HADOOP_ROUTER_OPTS} -Xms${ROUTER_JAVA_HEAPSIZE}m -Xmx${ROUTER_JAVA_HEAPSIZE}m ${ROUTER_JAVA_OPTS} ${CSD_JAVA_OPTS}"
   echo "Generated HADOOP_ROUTER_OPTS: ${HADOOP_ROUTER_OPTS}"
 }
 

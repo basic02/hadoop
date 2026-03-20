@@ -1286,7 +1286,7 @@
               "router_java_heapsize",
               "router_java_opts"
             ],
-            "includedParams" : [
+            "includedParams": [
                 "router_default_nameservice_enable",
                 "router_default_nameserviceId",
                 "router_rpc_enable",
@@ -1493,7 +1493,7 @@
           {
             "filename": "hadoop-policy.xml",
             "configFormat": "hadoop_xml",
-            "includedParams" : [
+            "includedParams": [
             ],
             "additionalConfigs": [
               {
@@ -1609,7 +1609,7 @@
           "configFormat": "hadoop_xml",
           "excludedParams": [
           ],
-          "includedParams" :[
+          "includedParams":[
             "router_rpc_address",
             "router_admin_address",
             "router_http_address",
